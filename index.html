@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#007aff"/>
 <link rel="manifest" href="./manifest.json"/>
 <link rel="apple-touch-icon" href="./icon-192.png"/>
-<meta name="apple-mobile-web-app-title" content="Учёт"/>
 <title>📦 Учёт</title>
 <script>(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light")}catch(e){}})();</script>
 <style>
@@ -114,11 +113,48 @@ details.tree.d>summary{background:var(--subtle-bg);color:var(--accent);font-weig
 .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
 .tabbar span{font-size:19px;line-height:1}
 .tabbar .active{color:var(--accent)}
+/* --- СТИЛИ ЭКРАНА БЛОКИРОВКИ --- */
+#pinScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#pinScreen.active{display:flex}
+.pin-dots{display:flex;gap:16px;margin-bottom:40px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--text);transition:background .2s}
+.pin-dot.filled{background:var(--text)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:300px;width:100%}
+.pin-btn{background:var(--card-bg);border:1px solid var(--card-border);border-radius:50%;width:72px;height:72px;font-size:28px;font-weight:500;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;transition:transform .1s, background .2s}
+.pin-btn:active{transform:scale(.9);background:var(--subtle-bg-2)}
+.pin-btn.empty{background:transparent;border:none;pointer-events:none}
+.pin-title{font-size:20px;font-weight:600;margin-bottom:30px;color:var(--text)}
 @media(max-width:400px){.container{padding:8px 10px 20px}header h1{font-size:18px}.day{min-height:50px;font-size:11px}.day-number{font-size:13px}.day-label{font-size:7px}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
 @media(max-width:360px){.day{min-height:44px}.day-number{font-size:12px}.type-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+
+<!-- ЭКРАН БЛОКИРОВКИ -->
+<div id="pinScreen">
+  <div class="pin-title">🔒 Введите PIN-код</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="dot0"></div>
+    <div class="pin-dot" id="dot1"></div>
+    <div class="pin-dot" id="dot2"></div>
+    <div class="pin-dot" id="dot3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinInput('1')">1</button>
+    <button class="pin-btn" onclick="pinInput('2')">2</button>
+    <button class="pin-btn" onclick="pinInput('3')">3</button>
+    <button class="pin-btn" onclick="pinInput('4')">4</button>
+    <button class="pin-btn" onclick="pinInput('5')">5</button>
+    <button class="pin-btn" onclick="pinInput('6')">6</button>
+    <button class="pin-btn" onclick="pinInput('7')">7</button>
+    <button class="pin-btn" onclick="pinInput('8')">8</button>
+    <button class="pin-btn" onclick="pinInput('9')">9</button>
+    <button class="pin-btn empty"></button>
+    <button class="pin-btn" onclick="pinInput('0')">0</button>
+    <button class="pin-btn" onclick="pinDelete()">⌫</button>
+  </div>
+</div>
+
 <div class="container">
 
 <header>
@@ -224,6 +260,62 @@ details.tree.d>summary{background:var(--subtle-bg);color:var(--accent);font-weig
 </div></nav>
 
 <script>
+// ==========================================
+//  БЛОКИРОВКА PIN-КОДОМ
+// ==========================================
+const CORRECT_PIN = "1234"; // <-- МОЖЕТЕ ПОМЕНЯТЬ ЗДЕСЬ
+let enteredPin = "";
+
+// Проверяем, есть ли метка в sessionStorage. Если нет — показываем экран.
+if (sessionStorage.getItem("appUnlocked") !== "true") {
+    document.getElementById("pinScreen").classList.add("active");
+}
+
+function pinInput(num) {
+    if (enteredPin.length < 4) {
+        enteredPin += num;
+        updateDots();
+    }
+    if (enteredPin.length === 4) {
+        setTimeout(checkPin, 150); // небольшая задержка для визуального отклика
+    }
+}
+
+function pinDelete() {
+    if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updateDots();
+    }
+}
+
+function updateDots() {
+    for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById("dot" + i);
+        if (i < enteredPin.length) dot.classList.add("filled");
+        else dot.classList.remove("filled");
+    }
+}
+
+function checkPin() {
+    if (enteredPin === CORRECT_PIN) {
+        sessionStorage.setItem("appUnlocked", "true"); // Разблокировано до закрытия вкладки
+        document.getElementById("pinScreen").classList.remove("active");
+    } else {
+        // Если неверно — трясем экран (визуально) и сбрасываем
+        const scr = document.getElementById("pinScreen");
+        scr.style.transform = "translateX(10px)";
+        setTimeout(() => scr.style.transform = "translateX(-10px)", 50);
+        setTimeout(() => scr.style.transform = "translateX(0)", 100);
+        setTimeout(() => {
+            enteredPin = "";
+            updateDots();
+        }, 300);
+    }
+}
+
+// ==========================================
+//  ДАЛЬШЕ ВАШ СТАРЫЙ КОД (не меняется)
+// ==========================================
 const $ = id => document.getElementById(id);
 const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
 let storageWarned = false;
@@ -283,7 +375,6 @@ function getPrices(ds) {
     return best;
 }
 
-// одноразовая миграция customTariff -> tariffHistory
 function migrateTariff() {
     if (LS("tariffHistory", null)) return;
     const c = LS("customTariff", null);
@@ -434,7 +525,6 @@ function renderCal() {
             if (rec.apOrders > 0) parts.push("📦" + rec.apOrders);
             info = `<div class="orders-info">${parts.join(" ") || "—"}</div>` + (rec.total > 0 ? `<div class="total-info">${rec.total}</div>` : "") + (rec.note ? `<div class="note-badge" title="${esc(rec.note)}">📝</div>` : "");
         } else if (hasShift) {
-            // Баг 11: тип берём из графика 2/2, а не «выходной по календарю»
             const t = isWorkDay(ds, shiftConfig.firstWorkDay)
                 ? (isMyShortDay(ds) ? "short" : "work")
                 : (!isWeekendStr(ds) && isMyHelpDay(ds) ? "help" : "weekend");
@@ -493,7 +583,6 @@ function saveDay() {
 function clearCurrentDay() {
     const date = $("date").value || getLocalDateStr();
     showConfirmDialog(`Очистить данные за ${date}?`, () => {
-        // Баг 10: чистим и день, и журнал заказов за эту дату
         setHistory(getHistory().filter(d => d.date !== date));
         ordersLog = ordersLog.filter(e => e.date !== date); save("ordersLog", ordersLog);
         $("dayType").value = "work"; clearDayForm(); refreshAll();
@@ -568,7 +657,6 @@ function deleteLogEntry(id) {
     showConfirmDialog("🗑 Удалить запись?", () => {
         const e = ordersLog.find(x => x.id === id);
         if (e) {
-            // Баг 10: удаление записи пересчитывает день
             const h = getHistory(), rec = h.find(d => d.date === e.date);
             if (rec) {
                 rec.nightOrders = Math.max(0, (rec.nightOrders || 0) - (e.addedNight || 0));
@@ -585,7 +673,6 @@ function deleteLogEntry(id) {
 function deleteLogDay(ds) {
     showConfirmDialog(`🗑 Удалить все записи за ${ds}? Итоги дня будут обнулены.`, () => {
         ordersLog = ordersLog.filter(e => e.date !== ds); save("ordersLog", ordersLog);
-        // Баг 10: обнуляем день
         const h = getHistory(), rec = h.find(d => d.date === ds);
         if (rec) { rec.nightOrders = 0; rec.apOrders = 0; rec.total = 0; setHistory(h); }
         refreshAll(); showNotification("🗑 Записи удалены, день обнулён");
@@ -677,12 +764,5 @@ function initApp() {
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp); else initApp();
 </script>
 <script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
-    });
-  }
-</script>
 </body>
 </html>

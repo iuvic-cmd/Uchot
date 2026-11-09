@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#007aff"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="apple-mobile-web-app-title" content="Учёт"/>
+<title>⚙ Настройки учёта</title>
+<script>
+(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
+</script>
+<style>
+:root{--bg:#f2f2f7;--text:#1c1c1e;--text-dim:#8e8e93;--card-bg:rgba(255,255,255,.92);--card-border:rgba(255,255,255,.5);--panel-bg:#fff;--subtle-bg:#f8f8fc;--subtle-bg-2:#f0f0f5;--input-bg:#f8f8fc;--input-border:#e5e5ea;--divider:#e5e5ea;--accent:#007aff;--modal-bg:#fff;--good:#2e7d32;
+--work-bg:#e8f5e9;--work-border:#43a047;--work-text:#2e7d32;--help-bg:#e3f2fd;--help-border:#1e88e5;--help-text:#1565c0;--short-bg:#fff3e0;--short-border:#fb8c00;--short-text:#e65100;--replace-bg:#f3e5f5;--replace-border:#8e24aa;--replace-text:#7b1fa2;--short_replace-bg:#fff8e1;--short_replace-border:#f9a825;--short_replace-text:#f57f17;--weekend-bg:#f5f5f5;--weekend-border:#bdbdbd;--weekend-text:#616161}
+:root[data-theme="dark"]{--bg:#0a0a0f;--text:#f2f2f7;--card-bg:rgba(28,28,30,.95);--card-border:rgba(255,255,255,.06);--panel-bg:rgba(28,28,30,.95);--subtle-bg:#1c1c1e;--subtle-bg-2:#2c2c2e;--input-bg:#1c1c1e;--input-border:#3a3a3c;--divider:#2c2c2e;--modal-bg:#1c1c1e;--good:#66bb6a;
+--work-bg:#1a2a1a;--work-border:#2e7d32;--work-text:#66bb6a;--help-bg:#1a2a3a;--help-border:#1565c0;--help-text:#42a5f5;--short-bg:#2a1a0a;--short-border:#e65100;--short-text:#ffa726;--replace-bg:#2a1a2a;--replace-border:#7b1fa2;--replace-text:#ab47bc;--short_replace-bg:#2a2a0a;--short_replace-border:#f9a825;--short_replace-text:#ffca28;--weekend-bg:#1c1c1e;--weekend-border:#3a3a3c;--weekend-text:#8e8e93}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));transition:background .3s}
+.container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:8px}
+header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3);margin-bottom:4px}
+header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.back{display:flex;align-items:center;padding:4px 14px;height:30px;border-radius:30px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.15);text-decoration:none;color:#fff;font-size:14px;font-weight:500}
+.theme-switch{position:relative}.theme-switch input{display:none}
+.theme-label{display:flex;align-items:center;justify-content:space-between;width:56px;height:30px;background:rgba(255,255,255,.2);border-radius:30px;padding:0 6px;cursor:pointer;border:1px solid rgba(255,255,255,.15)}
+.theme-label span{font-size:14px;z-index:2;opacity:.5}
+.toggle-ball{position:absolute;top:2px;left:2px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:1}
+#theme-toggle:checked+.theme-label .toggle-ball{transform:translateX(26px)}
+#theme-toggle:checked+.theme-label .moon,#theme-toggle:not(:checked)+.theme-label .sun{opacity:1}
+.nav-btn{background:none;border:none;font-size:20px;color:var(--accent);cursor:pointer;padding:4px 10px;border-radius:8px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.day-name{padding:6px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text-dim)}
+.day{background:var(--subtle-bg);padding:4px 2px;text-align:center;border-radius:10px;cursor:pointer;min-height:56px;display:flex;flex-direction:column;justify-content:space-between;font-size:12px;border:2px solid transparent;min-width:0}
+.day:active{transform:scale(.94)}
+.day-number{font-weight:600;font-size:14px;line-height:1.3}
+.day-label{font-size:8px;font-weight:600;opacity:.85;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orders-info{font-size:9px;opacity:.8;line-height:1.2}
+.day.empty{background:transparent;cursor:default;min-height:30px}
+.day.selected{border-color:#ff9500!important;background:var(--short-bg)!important}
+.day.work{background:var(--work-bg);border-color:var(--work-border)}.day.help{background:var(--help-bg);border-color:var(--help-border)}.day.short{background:var(--short-bg);border-color:var(--short-border)}.day.replace{background:var(--replace-bg);border-color:var(--replace-border)}.day.short_replace{background:var(--short_replace-bg);border-color:var(--short_replace-border);border-style:dashed}.day.weekend{background:var(--weekend-bg);border-color:var(--weekend-border)}
+.type-btn{padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer}
+.type-btn:active{transform:scale(.95)}
+.type-btn.sel{box-shadow:0 0 0 2px var(--accent)}
+.type-btn.work{background:var(--work-bg);color:var(--work-text)}.type-btn.help{background:var(--help-bg);color:var(--help-text)}.type-btn.short{background:var(--short-bg);color:var(--short-text)}.type-btn.replace{background:var(--replace-bg);color:var(--replace-text)}.type-btn.short_replace{background:var(--short_replace-bg);color:var(--short_replace-text);border:1.5px dashed var(--short_replace-border)}.type-btn.weekend{background:var(--weekend-bg);color:var(--weekend-text)}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+details.acc>summary{padding:14px 18px;background:var(--panel-bg);border-radius:14px;font-size:16px;font-weight:500;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border)}
+details.acc>summary::after{content:"▼";font-size:13px;color:var(--text-dim);transition:transform .3s}
+details[open]>summary::after{transform:rotate(180deg)}
+.acc-body{background:var(--panel-bg);border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border);margin-top:6px}
+.pos{color:var(--good)}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;margin-bottom:4px;font-weight:500;font-size:14px}
+.form-control{width:100%;padding:10px 14px;border:1.5px solid var(--input-border);border-radius:12px;font-size:16px;background:var(--input-bg);-webkit-appearance:none;appearance:none;color:var(--text);min-height:44px;font-family:inherit}
+textarea.form-control{min-height:0}
+.form-control:focus{outline:none;border-color:var(--accent)}
+select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row{display:flex;gap:8px}
+.btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#fff}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#007aff}.btn-green{background:#34c759}.btn-orange{background:#ff9500}.btn-red{background:#ff3b30}
+.plan-card{background:var(--subtle-bg);padding:14px;border-radius:12px;margin-bottom:10px}
+.plan-card:last-child{margin-bottom:0}
+.plan-card h3{font-size:15px;font-weight:600;margin-bottom:10px}
+.hint{font-size:12px;color:var(--text-dim);margin-bottom:8px}
+.box{padding:10px 12px;border-radius:10px;background:var(--subtle-bg-2);font-size:13px;line-height:1.6}
+.box.warn{border-left:3px solid #ff9500}
+.box.danger{border-left:3px solid #ff3b30;background:var(--short-bg);color:var(--short-text)}
+.preview-item{display:inline-block;padding:3px 8px;margin:2px;background:var(--work-bg);color:var(--work-text);border-radius:6px;font-size:12px}
+.mass-preview{margin-top:12px;padding:10px;border:1px dashed #007aff;border-radius:10px;font-size:13px;min-height:40px}
+.partner-btn{padding:8px 14px;border-radius:10px;border:1.5px solid var(--input-border);background:var(--panel-bg);color:var(--text);font-weight:600;font-size:13px;cursor:pointer}
+.partner-btn.active{background:#007aff;color:#fff;border-color:#007aff}
+.pair-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel-bg);border-radius:8px;font-size:13px;margin-bottom:4px}
+.pair-row.mine{background:var(--help-bg);border-left:3px solid #007aff}
+.pair-num{width:22px;height:22px;border-radius:50%;background:#007aff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.shift-preview{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--work-bg);color:var(--work-text);font-size:13px;display:none}
+.shift-preview.visible{display:block}
+.sect-title{padding:6px 8px 4px;font-size:12px;font-weight:700}
+.backup-banner{margin-top:4px;padding:12px 14px;border-radius:14px;background:var(--short-bg);color:var(--short-text);border-left:4px solid #ff9500;font-size:13px;line-height:1.5;display:none}
+.backup-banner.visible{display:block}
+.notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-weight:500;font-size:14px;z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
+.dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center}
+.dialog-box{background:var(--modal-bg);color:var(--text);border-radius:20px;padding:24px 20px 20px;width:85%;max-width:340px}
+.dialog-box p{font-size:15px;text-align:center;margin-bottom:20px;line-height:1.5;white-space:pre-line}
+.dialog-buttons{display:flex;gap:8px}
+.dialog-buttons button{flex:1;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.dialog-yes,.dialog-ok{background:#007aff;color:#fff}.dialog-no{background:var(--subtle-bg-2);color:var(--text)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--panel-bg);border-top:1px solid var(--divider);padding-bottom:env(safe-area-inset-bottom,0px);z-index:100}
+.tabbar .in{display:flex;width:100%;max-width:480px}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;color:var(--text-dim);font-size:11px;font-weight:600;text-decoration:none}
+.tabbar span{font-size:20px;line-height:1}
+.tabbar .active{color:var(--accent)}
+@media(max-width:400px){.container{padding:8px 10px 20px}header h1{font-size:18px}.day{min-height:50px;font-size:11px}.day-number{font-size:13px}.day-label{font-size:7px}}
+@media(max-width:360px){.day{min-height:44px}.day-number{font-size:12px}.type-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>⚙ Настройки</h1>
+  <div class="header-row">
+    <a href="index.html" class="back">← К учёту</a>
+    <div class="theme-switch">
+      <input type="checkbox" id="theme-toggle"/>
+      <label for="theme-toggle" class="theme-label"><span class="sun">☀</span><span class="moon">🌙</span><div class="toggle-ball"></div></label>
+    </div>
+  </div>
+</header>
+
+<div class="backup-banner" id="backupBanner"></div>
+
+<details class="acc" id="shiftSetup"><summary><span>⚡ Короткие дни и подмога</span></summary>
+  <div class="acc-body">
+    <div class="plan-card">
+      <h3>⚡ Автоматические короткие</h3>
+      <p class="hint">Скользящие пары: (1,2)→(3,4)→(5,6)→(7,1)→(2,3)→(4,5)→(6,7)</p>
+      <div class="form-group"><label>📅 Первый рабочий день</label><input type="date" id="shiftFirstDay" class="form-control"/></div>
+      <div class="form-group"><label>Мой номер (1–7)</label>
+        <select id="myNumber" class="form-control" onchange="onMyNumberChange()"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select>
+      </div>
+      <div id="myPairsInfo" style="display:none">
+        <div class="box warn" id="pairInfoBox"></div>
+        <div class="form-group" style="margin-top:8px"><label>📅 Дата короткого дня</label><input type="date" id="refShortDate" class="form-control"/></div>
+        <div class="form-group"><label>Напарник</label><div class="row" style="flex-wrap:wrap" id="partnerBtns"></div></div>
+      </div>
+      <div id="shiftPreview" class="shift-preview"></div>
+      <div class="row" style="margin-top:8px">
+        <button onclick="applyShiftSchedule()" class="btn btn-primary" style="flex:2">✅ Применить</button>
+        <button onclick="clearShiftConfig()" class="btn btn-orange" style="flex:1">🗑 Сброс</button>
+      </div>
+    </div>
+    <div class="plan-card"><h3>📋 Все пары</h3><div id="allPairsList"></div></div>
+    <div class="plan-card">
+      <h3>🤝 Подмога</h3>
+      <div class="form-group"><label>📅 Последняя моя подмога</label><input type="date" id="helpStartDate" class="form-control"/></div>
+      <div class="form-group"><label>📅 Последняя подмога другой смены (№1)</label><input type="date" id="helpOtherStartDate" class="form-control"/><small class="hint">Опционально, для отображения их очереди</small></div>
+      <button onclick="applyHelpSchedule()" class="btn btn-primary">✅ Применить подмогу</button>
+    </div>
+    <div class="plan-card">
+      <h3>👥 Список по сменам</h3>
+      <div class="sect-title pos">Моя (А)</div><div id="rosterA"></div>
+      <div class="sect-title" style="color:var(--accent)">Другая (Б)</div><div id="rosterB"></div>
+      <button onclick="saveRoster()" class="btn btn-primary" style="margin-top:8px">💾 Сохранить</button>
+    </div>
+  </div>
+</details>
+
+<details class="acc" id="planning"><summary><span>🎯 Планирование</span></summary>
+  <div class="acc-body">
+    <div class="plan-card">
+      <h3>✏ Ручное</h3>
+      <div class="form-group"><label>Месяц:</label><select id="planMonth" class="form-control"></select></div>
+      <div class="form-group"><label>Тип:</label><select id="planDayType" class="form-control"></select></div>
+      <div class="form-group"><label>Дни (1,2,5-10):</label><input type="text" id="planDays" placeholder="1,2,5-10" class="form-control"/></div>
+      <button onclick="applyPlan()" class="btn btn-orange">📌 Применить</button>
+    </div>
+    <div class="plan-card">
+      <h3>🔄 2/2 (месяц)</h3>
+      <div class="form-group"><label>Месяц:</label><select id="generateMonth" class="form-control"></select></div>
+      <div class="form-group"><label>Первый рабочий:</label><input type="number" inputmode="numeric" id="firstWorkDay" min="1" max="31" value="1" class="form-control"/></div>
+      <button onclick="generateMonthPlan()" class="btn btn-green">📆 Сгенерировать</button>
+    </div>
+    <div class="plan-card">
+      <h3>📆 2/2 (год)</h3>
+      <div class="form-group"><label>Год:</label><input type="number" inputmode="numeric" id="generateYear" min="2000" max="2100" class="form-control"/></div>
+      <div class="form-group"><label>Первый рабочий:</label><input type="number" inputmode="numeric" id="firstWorkDayYear" min="1" max="31" value="1" class="form-control"/></div>
+      <div class="form-group"><label>Месяц первого:</label><select id="firstWorkMonthYear" class="form-control"></select></div>
+      <button onclick="generateYearPlan()" class="btn btn-green">📅 Сгенерировать</button>
+    </div>
+  </div>
+</details>
+
+<details class="acc" id="massEdit"><summary><span>⚡ Массовое изменение</span></summary>
+  <div class="acc-body">
+    <p class="hint">Выберите дни в календаре</p>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
+      <button class="nav-btn" onclick="changeMassEditMonth(-1)">◀</button><h3 id="massEditCurrentMonth" style="font-size:15px">—</h3><button class="nav-btn" onclick="changeMassEditMonth(1)">▶</button>
+    </div>
+    <div id="massEditCalendar" class="calendar"></div>
+    <div class="form-group" style="margin-top:10px"><label>🎯 Тип:</label><div class="type-grid" id="massTypes" style="margin:0"></div></div>
+    <div class="two-col" style="margin:10px 0">
+      <button onclick="selectAllDays()" class="btn btn-primary">✅ Выбрать все</button>
+      <button onclick="clearSelection()" class="btn btn-red">❌ Очистить</button>
+    </div>
+    <label class="box" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer"><input type="checkbox" id="massEditKeepOrders" checked style="width:18px;height:18px"/><span>📦 Сохранить заказы</span></label>
+    <button onclick="applyMassDayTypeEdit()" class="btn btn-orange">🔄 Применить</button>
+    <div id="massEditPreview" class="mass-preview"></div>
+  </div>
+</details>
+
+<details class="acc" id="importExport"><summary><span>📤 Импорт / Экспорт</span></summary>
+  <div class="acc-body">
+    <div class="plan-card">
+      <h3>📤 Экспорт</h3>
+      <p class="hint">JSON — полная копия всех данных (учёт, скутер, касса, финансы, план, настройки).</p>
+      <div class="row" style="flex-direction:column">
+        <button onclick="exportData('json')" class="btn btn-green">📄 JSON (полная копия)</button>
+        <button onclick="exportData('csv')" class="btn btn-orange">📊 CSV (дни учёта)</button>
+        <button onclick="exportData('excel')" class="btn btn-primary">📋 Excel (дни учёта)</button>
+      </div>
+    </div>
+    <div class="plan-card">
+      <h3>📥 Импорт</h3>
+      <p class="hint">Вставьте JSON или CSV, либо выберите файл</p>
+      <textarea id="importTextarea" class="form-control" rows="4" placeholder="Вставьте данные..."></textarea>
+      <div class="row" style="margin-top:6px">
+        <button onclick="importData('json')" class="btn btn-green" style="flex:1">📄 JSON</button>
+        <button onclick="importData('csv')" class="btn btn-orange" style="flex:1">📊 CSV</button>
+      </div>
+      <div style="margin-top:8px"><label for="importFileInput" class="btn btn-primary" style="width:auto;display:inline-flex">📎 Выбрать файл</label>
+        <input type="file" id="importFileInput" accept=".json,.csv" style="display:none" onchange="importFromFile(this)"/>
+        <span id="importFileName" class="hint"></span></div>
+    </div>
+  </div>
+</details>
+
+<details class="acc" id="tariffSettings"><summary><span>💰 Настройка тарифа</span></summary>
+  <div class="acc-body">
+    <p class="hint">Новый тариф действует с сегодняшнего дня. Старые дни сохраняют свою цену.</p>
+    <div class="form-group"><label>🌙 Ночной (лей)</label><input type="number" inputmode="numeric" id="tariffNight" min="1" class="form-control"/><div class="hint">Сейчас: <b id="currentNightPrice">—</b> лей</div></div>
+    <div class="form-group"><label>📦 Единый (лей)</label><input type="number" inputmode="numeric" id="tariffAp" min="1" class="form-control"/><div class="hint">Сейчас: <b id="currentApPrice">—</b> лей</div></div>
+    <div class="row">
+      <button onclick="saveTariffSettings()" class="btn btn-primary">✅ Сохранить</button>
+      <button onclick="resetTariffSettings()" class="btn btn-orange">🔄 Сбросить</button>
+    </div>
+    <div id="tariffHistoryBox" class="box" style="margin-top:10px;font-size:12px"></div>
+  </div>
+</details>
+
+<button onclick="resetCalendar()" class="btn btn-red" style="margin-top:4px">⚠ Сбросить данные учёта дней</button>
+<p class="hint" style="text-align:center">Касса, скутер, финансы и план хранятся отдельно и не удаляются.</p>
+
+</div>
+
+<nav class="tabbar"><div class="in">
+<a href="index.html"><span>📦</span>Учёт</a>
+<a href="cash.html"><span>🛵</span>Скутер</a>
+<a href="stats.html"><span>📊</span>Статистика</a>
+<a href="fin.html"><span>💼</span>Финансы</a>
+<a href="settings.html" class="active"><span>⚙</span>Настройки</a>
+</div></nav>
+
+<script>
+// ============================================================
+//  «НАСТРОЙКИ» — только localStorage, без облака.
+//  Единый список ключей для полного бэкапа включает все разделы.
+// ============================================================
+
+// Учёт
+const OWN_KEYS = ["courierData", "ordersLog", "shiftConfig", "helpConfig", "rosterConfig", "customTariff", "tariffHistory", "ordersLogBF"];
+// Скутер / Касса
+const SCOOTER_KEYS = ["cashOperations", "cashCategories", "cashCategoriesMigrated", "fuelLog", "mileageData", "oilData", "filterData", "otherParts", "dailyKmLog"];
+// Финансы и план
+const FIN_KEYS = ["fin", "monthPlan"];
+// Все ключи для «полной копии» (без theme — тема не критична)
+const ALL_KEYS = [...OWN_KEYS, ...SCOOTER_KEYS, ...FIN_KEYS];
+
+const $ = id => document.getElementById(id);
+const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+let storageWarned = false;
+const save = (k, v) => {
+    try { localStorage.setItem(k, JSON.stringify(v)); }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные (память браузера заполнена или недоступна)."); } }
+};
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const pad = n => String(n).padStart(2, "0");
+const dstr = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+function getLocalDateStr(d) {
+    const date = d ? new Date(d) : new Date();
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+}
+
+const MONTHS = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+const DAY_TYPES = {
+    work:          { icon: "🏢",   short: "Рабочий",    full: "Рабочий" },
+    help:          { icon: "🤝",   short: "Подмога",    full: "Подмога" },
+    short:         { icon: "⚡",   short: "Короткий",   full: "Короткий" },
+    replace:       { icon: "🔄",   short: "Замена",     full: "Замена" },
+    short_replace: { icon: "⚡🔄", short: "Кор.замена", full: "Короткая замена" },
+    weekend:       { icon: "🏖",   short: "Выходной",   full: "Выходной" }
+};
+const TYPE_KEYS = Object.keys(DAY_TYPES);
+const getDayLabel = t => DAY_TYPES[t] ? DAY_TYPES[t].short : t;
+const validType = t => DAY_TYPES[t] ? t : "work";
+
+const getHistory = () => LS("courierData", []);
+const setHistory = h => { h.sort((a, b) => a.date.localeCompare(b.date)); save("courierData", h); };
+let shiftConfig = LS("shiftConfig", null);
+let helpConfig = LS("helpConfig", null);
+let rosterConfig = LS("rosterConfig", { A: {}, B: {} });
+
+// ---- тарифы: история ----
+const PRICE_CUTOFF = "2026-05-05";
+const OLD_NIGHT_PRICE = 65, OLD_AP_PRICE = 50, NEW_NIGHT_PRICE = 74, NEW_AP_PRICE = 54;
+function getPricesForDate(ds) {
+    if (!ds || ds < PRICE_CUTOFF) return { night: OLD_NIGHT_PRICE, ap: OLD_AP_PRICE };
+    const hist = LS("tariffHistory", null);
+    if (!Array.isArray(hist) || !hist.length) {
+        const c = LS("customTariff", null);
+        return c ? { night: +c.night, ap: +c.ap } : { night: NEW_NIGHT_PRICE, ap: NEW_AP_PRICE };
+    }
+    let best = { night: NEW_NIGHT_PRICE, ap: NEW_AP_PRICE };
+    hist.slice().sort((a, b) => a.from.localeCompare(b.from))
+        .forEach(t => { if (ds >= t.from) best = { night: +t.night, ap: +t.ap }; });
+    return best;
+}
+function migrateTariff() {
+    if (LS("tariffHistory", null)) return;
+    const c = LS("customTariff", null);
+    if (c && +c.night > 0 && +c.ap > 0) {
+        save("tariffHistory", [{ from: PRICE_CUTOFF, night: +c.night, ap: +c.ap }]);
+    }
+}
+
+// ---- уведомления и диалоги ----
+function showNotification(message) {
+    const ex = document.querySelector(".notification"); if (ex) ex.remove();
+    const n = document.createElement("div"); n.className = "notification"; n.innerText = message;
+    document.body.appendChild(n);
+    setTimeout(() => { n.style.opacity = "0"; setTimeout(() => n.remove(), 300); }, 2300);
+}
+function dialog(message, buttons) {
+    const o = document.createElement("div"); o.className = "dialog-overlay";
+    const b = document.createElement("div"); b.className = "dialog-box";
+    const m = document.createElement("p"); m.innerText = message;
+    const row = document.createElement("div"); row.className = "dialog-buttons";
+    buttons.forEach(([text, cls, fn]) => {
+        const btn = document.createElement("button"); btn.className = cls; btn.innerText = text;
+        btn.onclick = () => { o.remove(); if (fn) fn(); }; row.appendChild(btn);
+    });
+    b.append(m, row); o.appendChild(b); document.body.appendChild(o);
+}
+const showAlertDialog = msg => dialog(msg, [["OK", "dialog-ok"]]);
+const showConfirmDialog = (msg, onYes) => dialog(msg, [["✅ Да", "dialog-yes", onYes], ["❌ Нет", "dialog-no"]]);
+function copyToClipboard(text) {
+    const fallback = () => { const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} ta.remove(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(fallback); else fallback();
+}
+function downloadFile(name, content, mime) {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], { type: mime })); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function initThemeToggle() {
+    const t = $("theme-toggle");
+    t.checked = document.documentElement.getAttribute("data-theme") === "dark";
+    t.addEventListener("change", function () {
+        const v = this.checked ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", v);
+        try { localStorage.setItem("theme", v); } catch (e) {}
+    });
+}
+function refreshAll() { renderMassCal(); updateMassEditPreview(); updateBackupBanner(); renderTariffHistoryBox(); }
+
+// ---- баннер «пора сделать бэкап» ----
+function updateBackupBanner() {
+    const last = LS("lastFullBackup", 0);
+    const days = Math.floor((Date.now() - last) / 86400000);
+    const b = $("backupBanner");
+    if (!last || days >= 7) {
+        b.classList.add("visible");
+        b.innerHTML = `💾 <b>Резервная копия.</b> ${last ? "Последняя " + days + " дн. назад." : "Ещё не делали."} Данные хранятся только в этом браузере. ` +
+            `<span style="text-decoration:underline;cursor:pointer" onclick="exportData('json')">Скачать полную копию</span>`;
+    } else {
+        b.classList.remove("visible");
+    }
+}
+
+// ============================================================
+//  СМЕНЫ
+// ============================================================
+const SHIFT_KEY = { "А": "A", "Б": "B", A: "A", B: "B" };
+const personName = (shift, n) => { const r = rosterConfig && rosterConfig[SHIFT_KEY[shift]]; return r && r[n] ? String(r[n]).trim() : ""; };
+const getRotatingPairs = () => [[1,2],[3,4],[5,6],[7,1],[2,3],[4,5],[6,7]];
+const findPairsForNumber = n => getRotatingPairs().map((pair, index) => ({ index, pair, partner: pair[0] === n ? pair[1] : pair[0] })).filter(p => p.pair.includes(n));
+const dayDiff = (a, b) => Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000);
+function isWorkDay(ds, first) { const p = ((dayDiff(first, ds) % 4) + 4) % 4; return p === 0 || p === 1; }
+function getWorkDayIndex(ds, first) {
+    const diff = dayDiff(first, ds), pos = ((diff % 4) + 4) % 4;
+    if (pos >= 2) return null;
+    return (diff >= 0 ? Math.floor(diff / 4) : Math.ceil((diff - 3) / 4)) * 2 + pos;
+}
+const getPairForWorkDay = (wdi, offset) => { const idx = (((wdi + offset) % 7) + 7) % 7; return { index: idx, pair: getRotatingPairs()[idx] }; };
+function isMyShortDay(ds) {
+    if (!shiftConfig || !shiftConfig.myNumber || !shiftConfig.firstWorkDay) return false;
+    const wdi = getWorkDayIndex(ds, shiftConfig.firstWorkDay);
+    return wdi !== null && getPairForWorkDay(wdi, shiftConfig.offset).pair.includes(shiftConfig.myNumber);
+}
+function countNonWorkWeekdays(start, target, firstRef) {
+    if (!firstRef) return -1;
+    const s = new Date(start + "T12:00:00"), t = new Date(target + "T12:00:00");
+    if (t <= s) return -1;
+    let count = 0; const d = new Date(s); d.setDate(d.getDate() + 1);
+    while (d <= t) { const dow = d.getDay(); if (dow !== 0 && dow !== 6 && !isWorkDay(getLocalDateStr(d), firstRef)) count++; d.setDate(d.getDate() + 1); }
+    return count;
+}
+const isWeekendStr = ds => { const w = new Date(ds + "T12:00:00").getDay(); return w === 0 || w === 6; };
+function getHelpPositionForDate(ds) {
+    if (!helpConfig || !helpConfig.lastMyHelpDate || !shiftConfig || !shiftConfig.firstWorkDay || !shiftConfig.myNumber) return null;
+    if (isWeekendStr(ds) || isWorkDay(ds, shiftConfig.firstWorkDay)) return null;
+    const anchor = helpConfig.lastMyHelpDate;
+    if (ds === anchor) return shiftConfig.myNumber;
+    const count = countNonWorkWeekdays(anchor, ds, shiftConfig.firstWorkDay);
+    return count < 0 ? null : (((shiftConfig.myNumber - 1 + count) % 7) + 7) % 7 + 1;
+}
+const isMyHelpDay = ds => !!(helpConfig && shiftConfig && shiftConfig.myNumber && getHelpPositionForDate(ds) === shiftConfig.myNumber);
+function markAutoSchedule() {
+    let h = getHistory().filter(d => !(d.generated && ["help", "short", "work", "weekend"].includes(d.dayType) && !d.nightOrders && !d.apOrders && !d.total && !d.note));
+    if (shiftConfig && shiftConfig.firstWorkDay) {
+        const now = new Date(), idx = new Map(h.map((d, i) => [d.date, i]));
+        for (let mo = -2; mo <= 5; mo++) {
+            const dt = new Date(now.getFullYear(), now.getMonth() + mo, 1), y = dt.getFullYear(), m = dt.getMonth() + 1, last = new Date(y, m, 0).getDate();
+            for (let d = 1; d <= last; d++) {
+                const ds = dstr(y, m, d);
+                const type = isWorkDay(ds, shiftConfig.firstWorkDay) ? (isMyShortDay(ds) ? "short" : "work") : (!isWeekendStr(ds) && isMyHelpDay(ds) ? "help" : "weekend");
+                const i = idx.get(ds);
+                if (i !== undefined) { if (h[i].generated) h[i].dayType = type; }
+                else { idx.set(ds, h.length); h.push({ date: ds, dayType: type, nightOrders: 0, apOrders: 0, total: 0, generated: true }); }
+            }
+        }
+    }
+    setHistory(h); refreshAll();
+}
+
+// ============================================================
+//  СПИСОК ПО СМЕНАМ
+// ============================================================
+function renderRosterInputs() {
+    [["A", "А", "#34c759"], ["B", "Б", "#007aff"]].forEach(([key, cyr, color]) => {
+        let html = "";
+        for (let n = 1; n <= 7; n++) html += `<div class="row" style="align-items:center;margin-bottom:4px"><span style="min-width:34px;padding:2px 6px;background:${color};color:#fff;border-radius:6px;font-weight:700;text-align:center;font-size:12px">${cyr}${n}</span><input type="text" class="form-control" data-roster-shift="${key}" data-roster-num="${n}" value="${esc(personName(key, n))}" placeholder="Имя" style="min-height:36px;padding:6px 8px;font-size:15px"/></div>`;
+        $("roster" + key).innerHTML = html;
+    });
+}
+function saveRoster() {
+    const next = { A: {}, B: {} };
+    document.querySelectorAll("[data-roster-shift]").forEach(i => { const v = i.value.trim(); if (v) next[i.dataset.rosterShift][i.dataset.rosterNum] = v; });
+    rosterConfig = next; save("rosterConfig", next);
+    showNotification("✅ Список сохранён");
+}
+function onMyNumberChange() {
+    const n = parseInt($("myNumber").value) || 0;
+    if (!n) { $("myPairsInfo").style.display = "none"; renderAllPairsList(); return; }
+    $("myPairsInfo").style.display = "block";
+    const mine = findPairsForNumber(n);
+    $("pairInfoBox").innerHTML = `Вы <b>№${n}</b> — в <b>2 парах</b>:<br>` + mine.map(p => `• Пара ${p.index + 1}: <b>(${p.pair[0]}, ${p.pair[1]})</b> — напарник <b>№${p.partner}</b>`).join("<br>");
+    const btns = $("partnerBtns"); btns.innerHTML = "";
+    mine.forEach(p => {
+        const b = document.createElement("button"); b.className = "partner-btn"; b.textContent = `№${p.partner}`;
+        b.onclick = () => { btns.querySelectorAll(".partner-btn").forEach(x => x.classList.remove("active")); b.classList.add("active"); selectedRefPartner = p.partner; };
+        btns.appendChild(b);
+    });
+    selectedRefPartner = null; renderAllPairsList();
+}
+function renderAllPairsList() {
+    const n = parseInt($("myNumber").value) || 0;
+    $("allPairsList").innerHTML = getRotatingPairs().map((p, i) => `<div class="pair-row${n && p.includes(n) ? " mine" : ""}"><span class="pair-num">${i + 1}</span><span>👤 ${p[0]} и 👤 ${p[1]}</span></div>`).join("");
+}
+function applyShiftSchedule() {
+    const first = $("shiftFirstDay").value, myNum = parseInt($("myNumber").value) || 0, ref = $("refShortDate").value;
+    if (!first || !myNum || !ref) { showAlertDialog("Заполните все поля."); return; }
+    if (!selectedRefPartner) { showAlertDialog("Выберите напарника."); return; }
+    const wdi = getWorkDayIndex(ref, first);
+    if (wdi === null) { showAlertDialog("Дата — НЕ рабочий день!"); return; }
+    const refPair = findPairsForNumber(myNum).find(p => p.partner === selectedRefPartner);
+    if (!refPair) { showAlertDialog("Пара не найдена."); return; }
+    const offset = ((refPair.index - wdi) % 7 + 7) % 7;
+    shiftConfig = { firstWorkDay: first, myNumber: myNum, offset, refPartner: selectedRefPartner };
+    save("shiftConfig", shiftConfig);
+    $("shiftPreview").innerHTML = `✅ Настроено!<br>Номер: <b>${myNum}</b>, offset: <b>${offset}</b>`; $("shiftPreview").classList.add("visible");
+    markAutoSchedule(); showNotification("✅ Короткие дни применены!");
+}
+// Баг 8: сброс коротких дней → чистим сгенерированные дни
+function clearShiftConfig() {
+    showConfirmDialog("Сбросить настройки коротких дней?\nСгенерированные «Короткий» и «Подмога» пропадут из календаря (заказы сохранятся).", () => {
+        shiftConfig = null; localStorage.removeItem("shiftConfig");
+        ["shiftFirstDay", "myNumber", "refShortDate"].forEach(i => { $(i).value = ""; });
+        $("myPairsInfo").style.display = "none"; $("shiftPreview").classList.remove("visible");
+        selectedRefPartner = null; renderAllPairsList();
+        // чистка сгенерированных дней
+        const h = getHistory().filter(d => !(d.generated && ["help", "short", "work", "weekend"].includes(d.dayType) && !d.nightOrders && !d.apOrders && !d.total && !d.note));
+        setHistory(h);
+        refreshAll(); showNotification("🗑 Настройки и сгенерированные дни удалены");
+    });
+}
+function applyHelpSchedule() {
+    const mine = $("helpStartDate").value, other = $("helpOtherStartDate").value;
+    if (!mine) { showAlertDialog("Укажите дату вашей последней подмоги."); return; }
+    if (!shiftConfig || !shiftConfig.firstWorkDay || !shiftConfig.myNumber) { showAlertDialog("Сначала настройте короткие дни."); return; }
+    if (isWeekendStr(mine)) { showAlertDialog("Дата не должна быть выходным."); return; }
+    if (isWorkDay(mine, shiftConfig.firstWorkDay)) { showAlertDialog("Это рабочий день, а не подмога."); return; }
+    if (other) {
+        const d = new Date(shiftConfig.firstWorkDay + "T12:00:00"); d.setDate(d.getDate() + 2);
+        const of = getLocalDateStr(d);
+        if (isWeekendStr(other)) { showAlertDialog("Дата другой смены не должна быть выходным."); return; }
+        if (isWorkDay(other, of)) { showAlertDialog("Укажите нерабочий день другой смены."); return; }
+    }
+    helpConfig = { lastMyHelpDate: mine }; if (other) helpConfig.lastOtherHelpDate = other;
+    save("helpConfig", helpConfig); markAutoSchedule(); showNotification("✅ Подмога применена!");
+}
+
+// ============================================================
+//  ПЛАНИРОВАНИЕ
+// ============================================================
+function upsertDays(items, resetOrders = false) {
+    const h = getHistory(), idx = new Map(h.map((d, i) => [d.date, i]));
+    items.forEach(({ date, dayType }) => {
+        const i = idx.get(date);
+        if (i !== undefined) h[i] = resetOrders ? { ...h[i], dayType, nightOrders: 0, apOrders: 0, total: 0 } : { ...h[i], dayType };
+        else { idx.set(date, h.length); h.push({ date, dayType, nightOrders: 0, apOrders: 0, total: 0, generated: true }); }
+    });
+    setHistory(h);
+}
+function renderMassCal() {
+    const y = massEditDate.getFullYear(), m = massEditDate.getMonth();
+    const first = (new Date(y, m, 1).getDay() + 6) % 7, last = new Date(y, m + 1, 0).getDate();
+    $("massEditCurrentMonth").textContent = `${MONTHS[m]} ${y}`;
+    const hist = new Map(getHistory().map(d => [d.date, d]));
+    let html = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(n => `<div class="day-name">${n}</div>`).join("") + '<div class="day empty"></div>'.repeat(first);
+    for (let d = 1; d <= last; d++) {
+        const ds = dstr(y, m + 1, d), rec = hist.get(ds), dow = new Date(y, m, d).getDay();
+        let cls = "day", label = "", info = "";
+        if (selectedDays.has(ds)) cls += " selected";
+        if (rec) {
+            const t = validType(rec.dayType); cls += " " + t; label = getDayLabel(t);
+            const parts = [];
+            if (rec.nightOrders > 0) parts.push("🌙" + rec.nightOrders);
+            if (rec.apOrders > 0) parts.push("📦" + rec.apOrders);
+            info = `<div class="orders-info">${parts.length ? parts.join(" ") : DAY_TYPES[t].icon}</div>`;
+        } else if (dow === 0 || dow === 6) { cls += " weekend"; label = "Выходной"; }
+        html += `<div class="${cls}" data-date="${ds}"><div class="day-number">${d}</div>${label ? `<div class="day-label">${label}</div>` : ""}${info}</div>`;
+    }
+    $("massEditCalendar").innerHTML = html;
+}
+function changeMassEditMonth(dir) { massEditDate = new Date(massEditDate.getFullYear(), massEditDate.getMonth() + dir, 1); renderMassCal(); }
+function toggleDaySelection(ds) { selectedDays.has(ds) ? selectedDays.delete(ds) : selectedDays.add(ds); renderMassCal(); updateMassEditPreview(); }
+function setMassEditTargetType(t) {
+    massTargetType = t;
+    document.querySelectorAll("#massTypes .type-btn").forEach(b => b.classList.toggle("sel", b.dataset.type === t));
+    updateMassEditPreview();
+}
+function selectAllDays() {
+    const y = massEditDate.getFullYear(), m = massEditDate.getMonth() + 1, last = new Date(y, m, 0).getDate();
+    for (let d = 1; d <= last; d++) selectedDays.add(dstr(y, m, d));
+    renderMassCal(); updateMassEditPreview();
+}
+function clearSelection() { selectedDays.clear(); renderMassCal(); updateMassEditPreview(); }
+function updateMassEditPreview() {
+    const p = $("massEditPreview");
+    if (!selectedDays.size) { p.innerHTML = `<span class="hint">Выберите дни!</span>`; return; }
+    const days = [...selectedDays].sort();
+    p.innerHTML = `<b>${DAY_TYPES[massTargetType].icon} ${DAY_TYPES[massTargetType].full} → ${days.length} дней</b><br>` + days.map(d => `<span class="preview-item">${d}</span>`).join("");
+}
+function applyMassDayTypeEdit() {
+    if (!selectedDays.size) { showAlertDialog("Выберите дни!"); return; }
+    const n = selectedDays.size;
+    upsertDays([...selectedDays].map(date => ({ date, dayType: massTargetType })), !$("massEditKeepOrders").checked);
+    selectedDays.clear(); refreshAll();
+    showNotification(`✅ Изменено: ${n} дням`);
+}
+function parseDaysInput(input) {
+    const days = [];
+    input.split(",").forEach(part => {
+        part = part.trim();
+        if (part.includes("-")) { const [s, e] = part.split("-").map(Number); for (let i = s; i <= e; i++) days.push(i); }
+        else { const n = parseInt(part); if (!isNaN(n)) days.push(n); }
+    });
+    return [...new Set(days)].sort((a, b) => a - b);
+}
+function applyPlan() {
+    const input = $("planDays").value.trim();
+    if (!input) { showAlertDialog("Введите дни!"); return; }
+    const [y, m] = $("planMonth").value.split("-").map(Number), last = new Date(y, m, 0).getDate();
+    const days = parseDaysInput(input).filter(d => d >= 1 && d <= last);
+    if (!days.length) { showAlertDialog("Неверный формат!"); return; }
+    upsertDays(days.map(d => ({ date: dstr(y, m, d), dayType: $("planDayType").value })));
+    refreshAll(); $("planDays").value = ""; showNotification(`✅ Применено к ${days.length} дням (${MONTHS[m - 1]} ${y})`);
+}
+function applyCycle(dates, start) { upsertDays(dates.map(date => ({ date, dayType: isWorkDay(date, start) ? "work" : "weekend" }))); refreshAll(); }
+function generateMonthPlan() {
+    const v = $("generateMonth").value, first = parseInt($("firstWorkDay").value) || 1;
+    if (!v) return;
+    const [y, m] = v.split("-").map(Number), last = new Date(y, m, 0).getDate();
+    applyCycle(Array.from({ length: last }, (_, i) => dstr(y, m, i + 1)), dstr(y, m, first));
+    showNotification(`✅ График 2/2 за ${v} создан`);
+}
+function generateYearPlan() {
+    const y = parseInt($("generateYear").value), first = parseInt($("firstWorkDayYear").value) || 1, fm = $("firstWorkMonthYear").value;
+    if (!y || !fm) return;
+    const [sy, sm] = fm.split("-").map(Number), dates = [];
+    for (let m = 1; m <= 12; m++) for (let d = 1, last = new Date(y, m, 0).getDate(); d <= last; d++) dates.push(dstr(y, m, d));
+    applyCycle(dates, dstr(sy, sm, first));
+    showNotification(`✅ График 2/2 за ${y} год создан`);
+}
+function populateMonthSelect(id) {
+    const now = new Date(), cur = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+    let html = "";
+    for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 2; y++) for (let m = 0; m < 12; m++) {
+        const v = `${y}-${pad(m + 1)}`; html += `<option value="${v}"${v === cur ? " selected" : ""}>${MONTHS[m]} ${y}</option>`;
+    }
+    $(id).innerHTML = html;
+}
+
+// ============================================================
+//  ИМПОРТ / ЭКСПОРТ
+// ============================================================
+function csvEscape(v) {
+    const s = String(v == null ? "" : v);
+    return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function exportData(format) {
+    const h = getHistory();
+    if (format === "json") {
+        const obj = { app: "work-day", version: 3, exported: new Date().toISOString() };
+        ALL_KEYS.forEach(k => { obj[k] = LS(k, null); });
+        const s = JSON.stringify(obj, null, 2);
+        copyToClipboard(s); downloadFile(`backup-${getLocalDateStr()}.json`, s, "application/json");
+        save("lastFullBackup", Date.now());
+        updateBackupBanner();
+        showNotification("📄 Полная копия скачана и скопирована");
+    } else if (format === "csv") {
+        const csv = "date,dayType,nightOrders,apOrders,total,note\n" +
+            h.map(d => [d.date, d.dayType, d.nightOrders || 0, d.apOrders || 0, d.total || 0, d.note || ""].map(csvEscape).join(",")).join("\n") + "\n";
+        copyToClipboard(csv); downloadFile("courier_data.csv", csv, "text/csv");
+        showNotification("📊 CSV скачан и скопирован");
+    } else {
+        const rows = h.map(d => `<tr><td>${esc(d.date)}</td><td>${esc(d.dayType)}</td><td>${d.nightOrders || 0}</td><td>${d.apOrders || 0}</td><td>${d.total || 0}</td><td>${esc(d.note || "")}</td></tr>`).join("");
+        downloadFile("courier_data.xls", `<html><head><meta charset="UTF-8"/></head><body><table><tr><th>Дата</th><th>Тип</th><th>Ночной</th><th>Единый</th><th>Сумма</th><th>Заметка</th></tr>${rows}</table></body></html>`, "application/vnd.ms-excel");
+        showNotification("📋 Excel скачан");
+    }
+}
+function mergeHistory(list) {
+    const h = getHistory(), idx = new Map(h.map((d, i) => [d.date, i]));
+    list.forEach(d => {
+        const i = idx.get(d.date);
+        if (i !== undefined) {
+            // сохраняем старую заметку, если в новой нет
+            if (h[i].note && !d.note) d.note = h[i].note;
+            h[i] = d;
+        } else { idx.set(d.date, h.length); h.push(d); }
+    });
+    setHistory(h);
+}
+function importData(format) {
+    const text = $("importTextarea").value.trim();
+    if (!text) { showAlertDialog("Вставьте данные!"); return; }
+    if (format === "json") {
+        let parsed;
+        try { parsed = JSON.parse(text); } catch (e) { showAlertDialog("❌ Ошибка JSON: " + e.message); return; }
+        const isArr = Array.isArray(parsed);
+        if (!isArr && (typeof parsed !== "object" || !parsed)) { showAlertDialog("❌ Неверный JSON!"); return; }
+        showConfirmDialog("Импортировать? Совпадающие ключи будут перезаписаны.", () => {
+            if (isArr) mergeHistory(parsed);
+            else {
+                if (Array.isArray(parsed.courierData)) mergeHistory(parsed.courierData);
+                ALL_KEYS.forEach(k => { if (k !== "courierData" && parsed[k] != null) save(k, parsed[k]); });
+            }
+            location.reload();
+        });
+    } else {
+        const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+        const parseLine = line => {
+            const out = []; let cur = "", q = false;
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (q) { if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; }
+                else { if (c === '"') q = true; else if (c === ",") { out.push(cur); cur = ""; } else cur += c; }
+            }
+            out.push(cur); return out;
+        };
+        const hdr = parseLine(lines[0]).map(h => h.trim().toLowerCase());
+        const col = n => hdr.indexOf(n);
+        if (col("date") < 0) { showAlertDialog("❌ Нет колонки 'date'"); return; }
+        const list = lines.slice(1).map(l => {
+            const c = parseLine(l), ds = (c[col("date")] || "").trim();
+            const n = col("nightorders") >= 0 ? parseInt(c[col("nightorders")]) || 0 : 0;
+            const a = col("aporders") >= 0 ? parseInt(c[col("aporders")]) || 0 : 0;
+            const note = col("note") >= 0 ? (c[col("note")] || "") : "";
+            const p = getPricesForDate(ds);
+            return /^\d{4}-\d{2}-\d{2}$/.test(ds) ? {
+                date: ds, dayType: validType(col("daytype") >= 0 ? (c[col("daytype")] || "").trim() : "work"),
+                nightOrders: n, apOrders: a,
+                total: col("total") >= 0 ? parseInt(c[col("total")]) || 0 : n * p.night + a * p.ap,
+                note, generated: false
+            } : null;
+        }).filter(Boolean);
+        showConfirmDialog(`Импортировать ${list.length} записей из CSV?`, () => { mergeHistory(list); $("importTextarea").value = ""; refreshAll(); showNotification(`✅ CSV импортировано: ${list.length}`); });
+    }
+}
+function importFromFile(input) {
+    const f = input.files[0]; if (!f) return;
+    $("importFileName").textContent = "📄 " + f.name;
+    const r = new FileReader();
+    r.onload = e => { $("importTextarea").value = e.target.result; showNotification("📄 Файл загружен — нажмите JSON или CSV"); };
+    r.readAsText(f);
+}
+
+// ============================================================
+//  ТАРИФЫ (история)
+// ============================================================
+function saveTariffSettings() {
+    const night = parseInt($("tariffNight").value), ap = parseInt($("tariffAp").value);
+    if (!(night > 0) || !(ap > 0)) { showAlertDialog("❌ Введите корректные значения тарифов!"); return; }
+    const today = getLocalDateStr();
+    let hist = LS("tariffHistory", null) || [{ from: PRICE_CUTOFF, night: NEW_NIGHT_PRICE, ap: NEW_AP_PRICE }];
+    const i = hist.findIndex(t => t.from === today);
+    if (i >= 0) hist[i] = { from: today, night, ap };
+    else hist.push({ from: today, night, ap });
+    hist.sort((a, b) => a.from.localeCompare(b.from));
+    save("tariffHistory", hist);
+    save("customTariff", { night, ap }); // совместимость
+    $("tariffNight").value = ""; $("tariffAp").value = "";
+    updateTariffDisplay(); renderTariffHistoryBox();
+    showNotification(`✅ Тариф с ${today}: 🌙${night} / 📦${ap}`);
+}
+function resetTariffSettings() {
+    showConfirmDialog("Сбросить историю тарифов?\nВернутся стандартные 74/54 после 05.05.2026 и 65/50 раньше.", () => {
+        localStorage.removeItem("customTariff"); localStorage.removeItem("tariffHistory");
+        updateTariffDisplay(); renderTariffHistoryBox();
+        showNotification("🔄 Тарифы сброшены");
+    });
+}
+function updateTariffDisplay() {
+    const p = getPricesForDate(getLocalDateStr());
+    $("currentNightPrice").textContent = p.night;
+    $("currentApPrice").textContent = p.ap;
+}
+function renderTariffHistoryBox() {
+    const b = $("tariffHistoryBox"); if (!b) return;
+    const hist = LS("tariffHistory", null);
+    if (!hist || !hist.length) { b.innerHTML = `Стандарт: до 05.05.2026 — 🌙65/📦50, после — 🌙${NEW_NIGHT_PRICE}/📦${NEW_AP_PRICE}.`; return; }
+    b.innerHTML = `<b>История тарифов</b><br>` + hist.slice().sort((a, b) => a.from.localeCompare(b.from))
+        .map(t => `с ${t.from}: 🌙${t.night} / 📦${t.ap}`).join("<br>");
+}
+
+// ============================================================
+//  СБРОС
+// ============================================================
+function resetCalendar() {
+    showConfirmDialog("⚠ Удалить все данные учёта дней, смен и тарифов?\n\nКасса, скутер, финансы, план НЕ пострадают.", () => {
+        OWN_KEYS.forEach(k => localStorage.removeItem(k));
+        location.reload();
+    });
+}
+
+function initShiftUI() {
+    if (shiftConfig) {
+        if (shiftConfig.firstWorkDay) $("shiftFirstDay").value = shiftConfig.firstWorkDay;
+        if (shiftConfig.myNumber) {
+            $("myNumber").value = shiftConfig.myNumber; onMyNumberChange();
+            if (shiftConfig.refPartner) {
+                selectedRefPartner = shiftConfig.refPartner;
+                document.querySelectorAll(".partner-btn").forEach(b => { if (b.textContent === `№${shiftConfig.refPartner}`) b.classList.add("active"); });
+            }
+        }
+        if (shiftConfig.offset !== undefined) { $("shiftPreview").innerHTML = `✅ Настроено! Номер: <b>${shiftConfig.myNumber}</b>`; $("shiftPreview").classList.add("visible"); }
+    }
+    if (helpConfig) {
+        if (helpConfig.lastMyHelpDate) $("helpStartDate").value = helpConfig.lastMyHelpDate;
+        if (helpConfig.lastOtherHelpDate) $("helpOtherStartDate").value = helpConfig.lastOtherHelpDate;
+    }
+    renderAllPairsList(); renderRosterInputs();
+}
+
+// ============================================================
+//  ЗАПУСК
+// ============================================================
+let massEditDate = new Date(), selectedDays = new Set(), massTargetType = "work", selectedRefPartner = null;
+
+function initApp() {
+    migrateTariff();
+    $("planDayType").innerHTML = TYPE_KEYS.map(t => `<option value="${t}">${DAY_TYPES[t].icon} ${DAY_TYPES[t].full}</option>`).join("");
+    $("massTypes").innerHTML = TYPE_KEYS.map(t => `<button class="type-btn ${t}${t === "work" ? " sel" : ""}" data-type="${t}" title="${DAY_TYPES[t].full}" onclick="setMassEditTargetType('${t}')">${DAY_TYPES[t].icon}</button>`).join("");
+    $("generateYear").value = new Date().getFullYear();
+    ["planMonth", "generateMonth", "firstWorkMonthYear"].forEach(populateMonthSelect);
+    $("massEditCalendar").addEventListener("click", e => { const c = e.target.closest(".day[data-date]"); if (c) toggleDaySelection(c.dataset.date); });
+    initThemeToggle(); initShiftUI(); updateTariffDisplay(); renderTariffHistoryBox(); refreshAll();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp); else initApp();
+</script>
+<script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>

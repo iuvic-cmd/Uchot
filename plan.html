@@ -6,9 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#007aff"/>
-<link rel="manifest" href="./manifest.json"/>
-<link rel="apple-touch-icon" href="./icon-192.png"/>
-<meta name="apple-mobile-web-app-title" content="Учёт"/>
 <title>📋 План и факт</title>
 <script>
 (function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
@@ -18,9 +15,9 @@
 :root[data-theme="dark"]{--bg:#0a0a0f;--text:#e8e9ee;--text-dim:#8a90a2;--card:#1c1e26;--card-border:#2a2d3a;--line:#2a2d3a;--panel:#1c1e26;--input-bg:#16171d;--input-border:#3a3a3c;--accent:#4da3ff;--accent2:#66b3ff;--good:#66bb6a;--bad:#ef6b6b;--warn-bg:#2a1f0a;--warn-bd:#ffa726;--btn:#2f6fed;--modal-bg:#1c1e26;--modal-ov:rgba(0,0,0,.6)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(90px + env(safe-area-inset-bottom,0px));max-width:800px;margin:0 auto}
-h1{color:var(--accent2);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:10px;font-size:1.4em}
-h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margin-top:2px}
-.goal-banner{background:var(--warn-bg);border-left:5px solid var(--warn-bd);padding:14px 16px;margin-bottom:16px;border-radius:0 8px 8px 0;font-size:.93em;white-space:pre-line}
+h1{color:var(--accent2);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:10px;font-size:1.4em;cursor:pointer}
+h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margin-top:2px;cursor:pointer}
+.goal-banner{background:var(--warn-bg);border-left:5px solid var(--warn-bd);padding:14px 16px;margin-bottom:16px;border-radius:0 8px 8px 0;font-size:.93em;white-space:pre-line;cursor:pointer}
 .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .tot{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;text-align:center;min-width:0}
 .tot small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase}
@@ -30,13 +27,13 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 .tot.diff b{color:var(--bad)}
 .tot.diff.plus b{color:var(--good)}
 .section{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;margin-bottom:14px;box-shadow:0 4px 6px rgba(0,0,0,.05)}
-.section h2{color:var(--accent2);font-size:1.05em;margin-top:0;border-bottom:1px solid var(--line);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.section h2{color:var(--accent2);font-size:1.05em;margin-top:0;border-bottom:1px solid var(--line);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}
 .section h2 small{font-size:11px;color:var(--text-dim);font-weight:600}
 .task{padding:10px 6px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
 .task:last-child{border-bottom:0}
 .task-row1{display:flex;align-items:flex-start;gap:10px}
 .task-row1 input[type="checkbox"]{width:20px;height:20px;flex:0 0 auto;margin-top:3px;accent-color:var(--accent);cursor:pointer}
-.task-title{flex:1;min-width:0;font-weight:600}
+.task-title{flex:1;min-width:0;font-weight:600;cursor:pointer}
 .task-title.done{text-decoration:line-through;color:var(--text-dim)}
 .task-note{font-size:12px;color:var(--text-dim);font-weight:400;margin-top:3px}
 .task-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:4px;margin-left:30px}
@@ -52,7 +49,6 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 .task-actions{display:flex;gap:4px;margin-left:auto;flex:0 0 auto}
 .task-actions button{background:none;border:none;font-size:15px;cursor:pointer;padding:2px 6px;border-radius:6px;color:var(--text-dim)}
 .task-actions button:hover{background:rgba(127,127,127,.15);color:var(--text)}
-.amount{font-weight:bold;color:var(--bad)}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .toolbar button{flex:1;min-width:120px;padding:10px 12px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--panel);color:var(--text);border:1px solid var(--card-border)}
 .toolbar button.pri{background:var(--btn);color:#fff;border-color:var(--btn)}
@@ -75,15 +71,15 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
 .tabbar span{font-size:19px;line-height:1}
 .tabbar .active{color:var(--accent)}
-.footer{text-align:center;margin-top:20px;font-size:.9em;color:var(--text-dim);white-space:pre-line}
-@media(max-width:480px){body{padding:12px;padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}h1{font-size:1.2em}.toolbar button{min-width:0;font-size:13px;padding:9px 10px}.task-nums{grid-template-columns:1fr 1fr 1fr;margin-left:0}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
+.footer{text-align:center;margin-top:20px;font-size:.9em;color:var(--text-dim);white-space:pre-line;cursor:pointer}
+@media(max-width:480px){body{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}h1{font-size:1.2em}.toolbar button{min-width:0;font-size:13px;padding:9px 10px}.task-nums{grid-template-columns:1fr 1fr 1fr;margin-left:0}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
 </style>
 </head>
 <body>
 
-<h1 id="planTitle">📋 План и факт<span class="mo" id="planMonth">—</span></h1>
+<h1 id="planTitle" onclick="openSettings()">📋 План и факт<span class="mo" id="planMonth">—</span></h1>
 
-<div class="goal-banner" id="goalBanner"></div>
+<div class="goal-banner" id="goalBanner" onclick="openSettings()"></div>
 
 <div class="totals">
   <div class="tot plan"><small>План</small><b id="totPlan">0</b></div>
@@ -93,15 +89,14 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 
 <div class="toolbar">
   <button class="pri" onclick="openTaskModal(null)">➕ Задача</button>
-  <button onclick="pullFacts()">🔄 Подтянуть факт</button>
-  <button onclick="newMonth()">🆕 Новый месяц</button>
-  <button onclick="toggleEdit()" id="editBtn">✏ Редактировать</button>
-  <button onclick="openSettings()">⚙</button>
+  <button onclick="addSection()">📂 Блок</button>
+  <button onclick="pullFacts()">🔄 Подтянуть</button>
+  <button onclick="toggleEdit()" id="editBtn">✏ Режим</button>
 </div>
 
 <div id="sections"></div>
 
-<div class="footer" id="checkpoint"></div>
+<div class="footer" id="checkpoint" onclick="editCheckpoint()"></div>
 
 <nav class="tabbar"><div class="in">
 <a href="index.html"><span>📦</span>Учёт</a>
@@ -123,7 +118,7 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
     <input id="tPlan" inputmode="decimal" placeholder="4620"/>
     <label>Факт (можно оставить 0 и подтянуть)</label>
     <input id="tFact" inputmode="decimal" placeholder="0"/>
-    <label>Источник для «🔄 Подтянуть факт» (необязательно)</label>
+    <label>Источник для «🔄 Подтянуть» (необязательно)</label>
     <select id="tAuto">
       <option value="">— не подтягивать —</option>
       <option value="fin:lombard">Ломбард (fin.istorija, napr:"платёж")</option>
@@ -150,9 +145,9 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
     <h3>Настройки плана</h3>
     <label>Месяц (заголовок)</label>
     <input id="sMonth" placeholder="Ноябрь 2026"/>
-    <label>Цель (баннер)</label>
+    <label>Цель (жёлтый баннер)</label>
     <textarea id="sGoal"></textarea>
-    <label>Футер</label>
+    <label>Футер (мотивация внизу)</label>
     <textarea id="sCheck"></textarea>
     <label>Период подтягивания (ГГГГ-ММ)</label>
     <input id="sPeriod" placeholder="2026-11"/>
@@ -175,10 +170,6 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 </div>
 
 <script>
-// ============================================================
-//  «ПЛАН И ФАКТ» — только localStorage: monthPlan (+ theme).
-//  Чтение источников: fin, cashOperations, fuelLog — только при «Подтянуть факт».
-// ============================================================
 const $ = id => document.getElementById(id);
 const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
 let storageWarned = false;
@@ -190,7 +181,6 @@ const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g,
 const newId = () => "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const fmt = x => (+x || 0).toLocaleString("ru-RU", { maximumFractionDigits: 0 });
 
-// ---------- ПЛАН ПО УМОЛЧАНИЮ (используется только при первой миграции) ----------
 const DEFAULT_PLAN = {
     month: "Ноябрь 2026",
     goal: "Доходы: Зарплата ~18 015 (после налогов) + Стас 2 000 = 20 015 лей.\nГлавная цель: Оплатить двойной ломбард, обслужить технику и выйти из минуса по кредитке.",
@@ -222,25 +212,18 @@ const CURRENT_SCHEMA = 2;
 let P = loadPlan();
 let editingTaskId = null;
 let editMode = false;
+let editingSectionKey = null;
 
-// ---------- ЗАГРУЗКА + МИГРАЦИЯ (баг 4) ----------
 function loadPlan() {
     const saved = LS("monthPlan", null);
-
-    // нет ничего — создаём дефолт и сразу помечаем схемой
     if (!saved || !Array.isArray(saved.sections)) {
         const def = JSON.parse(JSON.stringify(DEFAULT_PLAN));
         def.schema = CURRENT_SCHEMA;
         save("monthPlan", def);
         return def;
     }
-
-    // уже актуальная схема — просто возвращаем как есть, ничего не доливаем
     if (saved.schema === CURRENT_SCHEMA) return saved;
-
-    // миграция v1 -> v2 (один раз)
     const migrated = JSON.parse(JSON.stringify(saved));
-    // старый формат { amount } и { checked:{id:true} } -> plan/fact/done
     if (migrated.checked && typeof migrated.checked === "object") {
         migrated.sections.forEach(s => s.tasks.forEach(t => {
             if (t.done === undefined) t.done = !!migrated.checked[t.id];
@@ -250,12 +233,10 @@ function loadPlan() {
         }));
         delete migrated.checked;
     }
-    // гарантируем обязательные поля
     migrated.sections.forEach(s => {
         if (!Array.isArray(s.tasks)) s.tasks = [];
         s.tasks.forEach(t => { if (t.done === undefined) t.done = false; if (t.fact === undefined) t.fact = 0; if (t.plan === undefined) t.plan = 0; });
     });
-    // доливаем недостающие дефолтные задачи ТОЛЬКО сейчас
     const byId = new Set();
     migrated.sections.forEach(s => s.tasks.forEach(t => byId.add(t.id)));
     DEFAULT_PLAN.sections.forEach(ds => ds.tasks.forEach(dt => {
@@ -272,7 +253,6 @@ function loadPlan() {
 }
 function persist() { save("monthPlan", P); }
 
-// ---------- ДИАЛОГИ (замена alert/confirm) ----------
 function showDialog(message, onYes, onNo) {
     $("dlgText").textContent = message;
     $("dialogModal").classList.add("on");
@@ -288,7 +268,6 @@ function notify(msg) {
     setTimeout(() => { n.style.opacity = "0"; setTimeout(() => n.remove(), 300); }, 2200);
 }
 
-// ---------- ИСТОЧНИКИ ФАКТА (только чтение) ----------
 function num(v) { const n = parseFloat(String(v == null ? "" : v).replace(/\s/g, "").replace(",", ".")); return isFinite(n) ? n : 0; }
 function period() { return P.period || (new Date().toISOString().slice(0, 7)); }
 function inPeriod(d) { return String(d || "").slice(0, 7) === period(); }
@@ -306,7 +285,6 @@ function computeAuto(src) {
     }
     if (src === "fin:debt") {
         if (!finS) return 0;
-        // Баг 7: учитываем только «вернул я», а не «вернули мне»
         return (finS.istorija || []).reduce((s, z) => {
             if (z && z.tip === "Долг" && z.napr === "вернул я" && inPeriod(z.data)) return s + num(z.summa);
             return s;
@@ -364,7 +342,7 @@ function pullFacts() {
     notify(changed ? `Факт подтянут из источников (${changed})` : "Нет задач с источником");
 }
 
-// ---------- РЕНДЕР ----------
+// ---------------- РЕНДЕР ----------------
 function render() {
     const first = (P.month || "").split(" ")[0] || "Месяц";
     $("planTitle").firstChild.nodeValue = "📋 План и факт · " + first + " ";
@@ -386,7 +364,7 @@ function render() {
         const sPlan = sec.tasks.reduce((a, t) => a + num(t.plan), 0);
         const sFact = sec.tasks.reduce((a, t) => a + num(t.fact), 0);
         return `<div class="section">
-            <h2><span>${esc(sec.title)}</span><small>План ${fmt(sPlan)} · Факт ${fmt(sFact)}</small></h2>
+            <h2 onclick="editSection('${esc(sec.key)}')"><span>${esc(sec.title)}</span><small>План ${fmt(sPlan)} · Факт ${fmt(sFact)}</small></h2>
             ${sec.tasks.map(t => {
                 const tDiff = num(t.fact) - num(t.plan);
                 const dCls = tDiff < 0 ? "diff-neg" : tDiff > 0 ? "diff-pos" : "";
@@ -394,12 +372,11 @@ function render() {
                 return `<div class="task">
                     <div class="task-row1">
                         <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleDone('${esc(t.id)}', this.checked)"/>
-                        <div class="task-title ${t.done ? "done" : ""}">
+                        <div class="task-title ${t.done ? "done" : ""}" onclick="openTaskModal('${esc(t.id)}')">
                             ${esc(t.title)}${sourceLabel}
                             ${t.note ? `<div class="task-note">${esc(t.note)}</div>` : ""}
                         </div>
                         ${editMode ? `<div class="task-actions">
-                            <button title="Изменить" onclick="openTaskModal('${esc(t.id)}')">✏</button>
                             <button title="Удалить" onclick="removeTask('${esc(t.id)}')">🗑</button>
                         </div>` : ""}
                     </div>
@@ -414,19 +391,15 @@ function render() {
     }).join("");
 
     $("tSection").innerHTML = P.sections.map(s => `<option value="${esc(s.key)}">${esc(s.title)}</option>`).join("");
-    $("editBtn").textContent = editMode ? "✅ Готово" : "✏ Редактировать";
+    $("editBtn").textContent = editMode ? "✅ Готово" : "✏ Режим";
 }
 
 function autoLabel(src) {
     return {
-        "fin:lombard": "факт из fin (ломбард)",
-        "fin:debt": "факт из fin (вернул я)",
-        "fin:kredit": "факт из fin (кредит)",
-        "fin:kartka": "факт из fin (кредитка)",
-        "cash:expense": "факт из кассы (расходы)",
-        "cash:fuel": "факт из кассы (топливо)",
-        "cash:debt": "факт из кассы (долги)",
-        "fuel:month": "факт из fuelLog"
+        "fin:lombard": "fin:ломбард", "fin:debt": "fin:вернул я",
+        "fin:kredit": "fin:кредит", "fin:kartka": "fin:кредитка",
+        "cash:expense": "касса:расходы", "cash:fuel": "касса:топливо",
+        "cash:debt": "касса:долги", "fuel:month": "fuelLog"
     }[src] || src;
 }
 
@@ -438,24 +411,65 @@ function findTask(id) {
     return null;
 }
 
-// ---------- ДЕЙСТВИЯ ----------
 function toggleDone(id, val) { const f = findTask(id); if (!f) return; f.task.done = !!val; persist(); render(); }
 function setNum(id, field, val) {
     const f = findTask(id); if (!f) return;
-    const n = Math.max(0, Math.round(num(val)));
-    f.task[field] = n;
+    f.task[field] = Math.max(0, Math.round(num(val)));
     persist(); render();
 }
 function toggleEdit() { editMode = !editMode; render(); }
 
 function removeTask(id) {
     const f = findTask(id); if (!f) return;
-    showConfirm("Удалить задачу «" + f.task.title + "»?\nОна больше не появится при следующей загрузке.", () => {
+    showConfirm("Удалить задачу «" + f.task.title + "»?", () => {
         f.sec.tasks.splice(f.idx, 1); persist(); render(); notify("🗑 Задача удалена");
     });
 }
 
-// ---------- МОДАЛКА ЗАДАЧИ ----------
+// ---------------- БЛОКИ ----------------
+function addSection() {
+    showPrompt("Название нового блока:", "", (title) => {
+        if (!title.trim()) return;
+        P.sections.push({ key: "s_" + Date.now().toString(36), title: title.trim(), tasks: [] });
+        persist(); render(); notify("✅ Блок добавлен");
+    });
+}
+function editSection(key) {
+    const sec = P.sections.find(s => s.key === key); if (!sec) return;
+    if (!editMode) return; // переименование только в режиме редактирования
+    showPrompt("Переименовать блок:", sec.title, (newTitle) => {
+        if (!newTitle.trim()) return;
+        sec.title = newTitle.trim(); persist(); render();
+    }, () => {
+        showConfirm("Удалить весь блок «" + sec.title + "» со всеми задачами?", () => {
+            P.sections = P.sections.filter(s => s.key !== key);
+            persist(); render(); notify("🗑 Блок удалён");
+        });
+    });
+}
+
+// ---------------- МОДАЛКИ ----------------
+function showPrompt(msg, val, onOk, onDelete) {
+    $("sh").innerHTML = `<h2>${esc(msg)}</h2>
+        <input id="promptInput" value="${esc(val)}" />
+        <div class="row">
+            <button class="ok" id="promptOk">OK</button>
+            <button class="no" onclick="closeModal()">Отмена</button>
+        </div>
+        ${onDelete ? `<button class="no" style="margin-top:10px;background:#ff3b30;color:#fff" id="promptDel">Удалить</button>` : ""}`;
+    $("ov").classList.add("on");
+    setTimeout(() => $("promptInput").focus(), 100);
+    
+    $("promptOk").onclick = () => {
+        const v = $("promptInput").value;
+        closeModal(); onOk(v);
+    };
+    if (onDelete) $("promptDel").onclick = () => { closeModal(); onDelete(); };
+}
+function closeModal() { $("ov").classList.remove("on"); }
+// (добавим оверлей для промптов в HTML внизу)
+
+// ---------------- ЗАДАЧИ ----------------
 function openTaskModal(id) {
     editingTaskId = id;
     const f = id ? findTask(id) : null;
@@ -492,23 +506,7 @@ function saveTask() {
     persist(); closeTaskModal(); render();
 }
 
-// ---------- НОВЫЙ МЕСЯЦ ----------
-function newMonth() {
-    showConfirm(
-        "Начать новый месяц?\n\n• Все задачи и разделы сохранятся\n• Поле «Факт» обнулится\n• Отметки «выполнено» сбросятся\n• План (суммы) останется",
-        () => {
-            P.sections.forEach(s => s.tasks.forEach(t => { t.fact = 0; t.done = false; }));
-            const d = new Date();
-            const months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-            P.month = months[d.getMonth()] + " " + d.getFullYear();
-            P.period = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
-            persist(); render();
-            notify("🆕 Новый месяц: " + P.month);
-        }
-    );
-}
-
-// ---------- НАСТРОЙКИ ----------
+// ---------------- НАСТРОЙКИ / ТЕКСТЫ ----------------
 function openSettings() {
     $("sMonth").value = P.month || "";
     $("sGoal").value = P.goal || "";
@@ -522,21 +520,30 @@ function saveSettings() {
     const m = $("sMonth").value.trim();
     if (!m) { $("sErr").textContent = "Укажите месяц"; return; }
     const per = $("sPeriod").value.trim();
-    if (per && !/^\d{4}-\d{2}$/.test(per)) { $("sErr").textContent = "Период в формате 2026-11"; return; }
+    if (per && !/^\d{4}-\d{2}$/.test(per)) { $("sErr").textContent = "Формат: 2026-11"; return; }
     P.month = m; P.goal = $("sGoal").value; P.checkpoint = $("sCheck").value; P.period = per;
     persist(); closeSettings(); render();
 }
 
-// ---------- ЗАКРЫТИЕ МОДАЛОК ----------
 $("taskModal").addEventListener("click", e => { if (e.target.id === "taskModal") closeTaskModal(); });
 $("setModal").addEventListener("click", e => { if (e.target.id === "setModal") closeSettings(); });
-
-// ---------- СИНХРОНИЗАЦИЯ ТЕМЫ ----------
 window.addEventListener("storage", e => { if (e.key === "theme" && e.newValue) document.documentElement.setAttribute("data-theme", e.newValue); });
 
-// ---------- ЗАПУСК ----------
 render();
 </script>
+<!-- Оверлей для промптов -->
+<div id="ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:4000;overflow-y:auto">
+  <div id="sh" style="background:var(--modal-bg);color:var(--text);margin:max(env(safe-area-inset-top,0px),20vh) auto 24px;padding:20px;border-radius:16px;width:88%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)"></div>
+</div>
+<style>
+#ov.on { display: block !important; }
+#sh h2 { font-size: 16px; margin-bottom: 12px; text-align: center; }
+#sh input { width: 100%; padding: 10px; border: 1.5px solid var(--input-border); border-radius: 10px; font-size: 16px; background: var(--input-bg); color: var(--text); margin-bottom: 12px; }
+#sh .row { display: flex; gap: 8px; }
+#sh .row button { flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; border: none; cursor: pointer; }
+#sh .ok { background: var(--btn); color: #fff; }
+#sh .no { background: rgba(127,127,127,.15); color: var(--text); }
+</style>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

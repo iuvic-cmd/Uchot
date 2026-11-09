@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/><meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Учёт"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#007aff"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="apple-mobile-web-app-title" content="Учёт"/>
+<title>📦 Учёт</title>
+<script>(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light")}catch(e){}})();</script>
+<style>
+:root{--bg:#f2f2f7;--text:#1c1c1e;--text-dim:#8e8e93;--card-bg:rgba(255,255,255,.92);--card-border:rgba(255,255,255,.5);--panel-bg:#fff;--subtle-bg:#f8f8fc;--subtle-bg-2:#f0f0f5;--input-bg:#f8f8fc;--input-border:#e5e5ea;--divider:#e5e5ea;--accent:#007aff;--modal-bg:#fff;--good:#2e7d32;
+--work-bg:#e8f5e9;--work-border:#43a047;--work-text:#2e7d32;--help-bg:#e3f2fd;--help-border:#1e88e5;--help-text:#1565c0;--short-bg:#fff3e0;--short-border:#fb8c00;--short-text:#e65100;--replace-bg:#f3e5f5;--replace-border:#8e24aa;--replace-text:#7b1fa2;--short_replace-bg:#fff8e1;--short_replace-border:#f9a825;--short_replace-text:#f57f17;--weekend-bg:#f5f5f5;--weekend-border:#bdbdbd;--weekend-text:#616161}
+:root[data-theme="dark"]{--bg:#0a0a0f;--text:#f2f2f7;--card-bg:rgba(28,28,30,.95);--card-border:rgba(255,255,255,.06);--panel-bg:rgba(28,28,30,.95);--subtle-bg:#1c1c1e;--subtle-bg-2:#2c2c2e;--input-bg:#1c1c1e;--input-border:#3a3a3c;--divider:#2c2c2e;--modal-bg:#1c1c1e;--good:#66bb6a;
+--work-bg:#1a2a1a;--work-border:#2e7d32;--work-text:#66bb6a;--help-bg:#1a2a3a;--help-border:#1565c0;--help-text:#42a5f5;--short-bg:#2a1a0a;--short-border:#e65100;--short-text:#ffa726;--replace-bg:#2a1a2a;--replace-border:#7b1fa2;--replace-text:#ab47bc;--short_replace-bg:#2a2a0a;--short_replace-border:#f9a825;--short_replace-text:#ffca28;--weekend-bg:#1c1c1e;--weekend-border:#3a3a3c;--weekend-text:#8e8e93}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));transition:background .3s}
+.container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:12px}
+header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3)}
+header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
+.header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px}
+.badge{background:rgba(255,255,255,.2);padding:4px 14px;border-radius:20px;font-size:15px;font-weight:500;color:#fff}
+.head-tools{display:flex;align-items:center;gap:8px}
+.gear{display:flex;align-items:center;justify-content:center;width:34px;height:30px;border-radius:30px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.15);text-decoration:none;font-size:16px;color:#fff}
+.theme-switch{position:relative}.theme-switch input{display:none}
+.theme-label{display:flex;align-items:center;justify-content:space-between;width:56px;height:30px;background:rgba(255,255,255,.2);border-radius:30px;padding:0 6px;cursor:pointer;border:1px solid rgba(255,255,255,.15)}
+.theme-label span{font-size:14px;z-index:2;opacity:.5}
+.toggle-ball{position:absolute;top:2px;left:2px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:1}
+#theme-toggle:checked+.theme-label .toggle-ball{transform:translateX(26px)}
+#theme-toggle:checked+.theme-label .moon,#theme-toggle:not(:checked)+.theme-label .sun{opacity:1}
+.calendar-section{background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:16px 12px 12px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--card-border)}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
+.calendar-header h2{font-size:17px;font-weight:600}
+.nav-btn{background:none;border:none;font-size:20px;color:var(--accent);cursor:pointer;padding:4px 10px;border-radius:8px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.day-name{padding:6px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text-dim)}
+.day{background:var(--subtle-bg);padding:4px 2px;text-align:center;border-radius:10px;cursor:pointer;min-height:56px;display:flex;flex-direction:column;justify-content:space-between;font-size:12px;border:2px solid transparent;min-width:0}
+.day:active{transform:scale(.94)}
+.day-number{font-weight:600;font-size:14px;line-height:1.3}
+.day-label{font-size:8px;font-weight:600;opacity:.85;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orders-info{font-size:9px;opacity:.8;line-height:1.2}
+.total-info{font-size:10px;font-weight:600;color:var(--accent)}
+.note-badge{font-size:8px;opacity:.7}
+.day.empty{background:transparent;cursor:default;min-height:30px}
+.day.today{border-color:var(--accent)!important;box-shadow:0 0 0 2px #007aff,0 4px 12px rgba(0,122,255,.2)}
+.day.today .day-number{color:var(--accent);font-weight:700}
+.day.work{background:var(--work-bg);border-color:var(--work-border)}.day.help{background:var(--help-bg);border-color:var(--help-border)}.day.short{background:var(--short-bg);border-color:var(--short-border)}.day.replace{background:var(--replace-bg);border-color:var(--replace-border)}.day.short_replace{background:var(--short_replace-bg);border-color:var(--short_replace-border);border-style:dashed}.day.weekend{background:var(--weekend-bg);border-color:var(--weekend-border)}
+.type-btn{padding:8px 4px;border:none;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer}
+.type-btn:active{transform:scale(.95)}
+.type-btn.work{background:var(--work-bg);color:var(--work-text)}.type-btn.help{background:var(--help-bg);color:var(--help-text)}.type-btn.short{background:var(--short-bg);color:var(--short-text)}.type-btn.replace{background:var(--replace-bg);color:var(--replace-text)}.type-btn.short_replace{background:var(--short_replace-bg);color:var(--short_replace-text);border:1.5px dashed var(--short_replace-border)}.type-btn.weekend{background:var(--weekend-bg);color:var(--weekend-text)}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+details.menu>summary{width:100%;padding:14px;background:linear-gradient(135deg,#007aff,#0055b3);border-radius:14px;color:#fff;font-size:17px;font-weight:600;display:flex;justify-content:center;align-items:center;gap:8px;box-shadow:0 2px 12px rgba(0,122,255,.3)}
+details.menu>summary::after{content:"▼";font-size:14px;transition:transform .3s}
+details.menu[open]>summary::after{transform:rotate(180deg)}
+.menu-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+details.acc>summary{padding:14px 18px;background:var(--panel-bg);border-radius:14px;font-size:16px;font-weight:500;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border)}
+details.acc>summary::after{content:"▼";font-size:13px;color:var(--text-dim);transition:transform .3s}
+details[open]>summary::after{transform:rotate(180deg)}
+.acc-body{background:var(--panel-bg);border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border);margin-top:6px}
+.pos{color:var(--good)}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;margin-bottom:4px;font-weight:500;font-size:14px}
+.form-control{width:100%;padding:10px 14px;border:1.5px solid var(--input-border);border-radius:12px;font-size:16px;background:var(--input-bg);-webkit-appearance:none;appearance:none;color:var(--text);min-height:44px;font-family:inherit}
+textarea.form-control{min-height:0}
+.form-control:focus{outline:none;border-color:var(--accent)}
+select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row{display:flex;gap:8px}
+.btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#fff}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#007aff}.btn-orange{background:#ff9500}.btn-red{background:#ff3b30}.btn-gray{background:#8e8e93}
+.plan-card{background:var(--subtle-bg);padding:14px;border-radius:12px;margin-bottom:10px}
+.plan-card h3{font-size:15px;font-weight:600;margin-bottom:10px}
+.hint{font-size:12px;color:var(--text-dim);margin-bottom:8px}
+.box{padding:10px 12px;border-radius:10px;background:var(--subtle-bg-2);font-size:13px;line-height:1.6}
+.empty-note{text-align:center;color:var(--text-dim);padding:16px;font-size:13px}
+.tree-wrap{max-height:320px;overflow-y:auto;border-radius:12px}
+details.tree{margin-bottom:4px;border-radius:10px;overflow:hidden;background:var(--subtle-bg)}
+details.tree>summary{padding:9px 14px;font-weight:600;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+details.tree.y>summary{background:#007aff;color:#fff}
+details.tree.m>summary{background:var(--subtle-bg-2);font-weight:500}
+details.tree.d>summary{background:var(--subtle-bg);color:var(--accent);font-weight:500;font-size:12px}
+.tree-body{padding:8px 14px;background:var(--panel-bg);font-size:13px}
+.tree-body>div{padding:4px 0;border-bottom:1px solid var(--divider)}
+.tree-total{font-weight:700;margin-top:6px;background:var(--subtle-bg-2);border-radius:8px;padding:6px!important}
+.log-row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.log-del{background:#ff3b30;color:#fff;border:none;border-radius:6px;padding:2px 10px;font-size:12px;cursor:pointer}
+.status-person{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:4px}
+.status-person.work{background:var(--work-bg);color:var(--work-text)}.status-person.short{background:var(--short-bg);color:var(--short-text)}.status-person.help{background:var(--help-bg);color:var(--help-text)}.status-person.weekend{background:var(--weekend-bg);color:var(--weekend-text)}
+.status-person.me{box-shadow:0 0 0 2px #007aff}
+.sp-num{width:26px;height:24px;border-radius:12px;background:rgba(128,128,128,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sect-title{padding:6px 8px 4px;font-size:12px;font-weight:700}
+#overviewTable table{width:100%;border-collapse:collapse;font-size:12px}
+#overviewTable th{padding:6px 4px;background:#007aff;color:#fff;text-align:center;font-weight:600}
+#overviewTable td{padding:5px 3px;text-align:center;border-bottom:1px solid var(--divider)}
+#overviewTable tr.even{background:var(--subtle-bg)}#overviewTable tr.now{background:var(--help-bg)}
+.modal{display:none;position:fixed;z-index:1000;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow-y:auto}
+.modal-content{background:var(--modal-bg);color:var(--text);margin:max(env(safe-area-inset-top,0px),12vh) auto 24px;padding:24px 20px 20px;border-radius:20px;width:88%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-content h3{font-size:18px;font-weight:600;margin-bottom:16px;text-align:center}
+.close{float:right;font-size:28px;cursor:pointer;color:var(--text-dim);line-height:1;padding:0 4px}
+.notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-weight:500;font-size:14px;z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
+.dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center}
+.dialog-box{background:var(--modal-bg);color:var(--text);border-radius:20px;padding:24px 20px 20px;width:85%;max-width:340px}
+.dialog-box p{font-size:15px;text-align:center;margin-bottom:20px;line-height:1.5;white-space:pre-line}
+.dialog-buttons{display:flex;gap:8px}
+.dialog-buttons button{flex:1;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.dialog-yes,.dialog-ok{background:#007aff;color:#fff}.dialog-no{background:var(--subtle-bg-2);color:var(--text)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--panel-bg);border-top:1px solid var(--divider);padding-bottom:env(safe-area-inset-bottom,0px);z-index:100}
+.tabbar .in{display:flex;width:100%;max-width:560px}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
+.tabbar span{font-size:19px;line-height:1}
+.tabbar .active{color:var(--accent)}
+@media(max-width:400px){.container{padding:8px 10px 20px}header h1{font-size:18px}.day{min-height:50px;font-size:11px}.day-number{font-size:13px}.day-label{font-size:7px}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
+@media(max-width:360px){.day{min-height:44px}.day-number{font-size:12px}.type-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>📦 Учёт рабочего дня</h1>
+  <div class="header-row">
+    <div class="row" style="align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="badge" id="realTimeClock">--:--</span>
+      <span class="badge" id="monthlyCounter" style="font-weight:600">📦 0</span>
+      <span class="badge" id="monthlyMoney" style="font-weight:600">💰 0 лей</span>
+    </div>
+    <div class="head-tools">
+      <a href="settings.html" class="gear" title="Настройки">⚙</a>
+      <div class="theme-switch">
+        <input type="checkbox" id="theme-toggle"/>
+        <label for="theme-toggle" class="theme-label"><span class="sun">☀</span><span class="moon">🌙</span><div class="toggle-ball"></div></label>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="calendar-section">
+  <div class="calendar-header">
+    <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+    <h2 id="currentMonth">—</h2>
+    <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+  </div>
+  <div id="calendar" class="calendar"></div>
+</div>
+
+<details class="menu" id="mainMenu">
+<summary>☰ Меню</summary>
+<div class="menu-list">
+
+  <details class="acc" id="shiftOverview"><summary><span>🗓 График смены</span></summary>
+    <div class="acc-body"><div class="plan-card">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <button class="nav-btn" onclick="changeOverviewMonth(-1)">◀</button><h3 id="overviewMonthTitle" style="margin:0">—</h3><button class="nav-btn" onclick="changeOverviewMonth(1)">▶</button>
+      </div>
+      <div id="overviewTable" style="overflow-x:auto"></div>
+    </div></div>
+  </details>
+
+  <details class="acc" id="shiftStatus"><summary><span>✅ Статус дня</span></summary>
+    <div class="acc-body"><div class="plan-card">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <button class="nav-btn" onclick="changeStatusDay(-1)">◀</button>
+        <h3 id="statusDayTitle" onclick="openStatusDayPicker()" style="margin:0;cursor:pointer;text-decoration:underline dotted">Сегодня</h3>
+        <button class="nav-btn" onclick="changeStatusDay(1)">▶</button>
+      </div>
+      <div class="row" style="justify-content:center;margin-bottom:8px">
+        <input type="date" id="statusDayPicker" onchange="pickStatusDay(this.value)" class="form-control" style="width:auto;min-height:36px;padding:4px 8px"/>
+        <button onclick="goToStatusToday()" class="btn btn-primary" style="width:auto;padding:4px 12px;font-size:13px">📅 Сегодня</button>
+      </div>
+      <div id="statusGrid"></div>
+    </div></div>
+  </details>
+
+  <details class="acc" id="edit"><summary><span>✏ Редактировать день</span></summary>
+    <div class="acc-body">
+      <div class="type-grid" id="quickTypes"></div>
+      <div class="form-group"><label for="date">📅 Дата:</label><input type="date" id="date" class="form-control"/></div>
+      <div class="form-group"><label for="dayType">📋 Тип:</label><select id="dayType" class="form-control"></select></div>
+      <div class="two-col">
+        <div class="form-group"><label for="nightOrders">🌙 Ночной:</label><input type="number" inputmode="numeric" id="nightOrders" min="0" placeholder="0" class="form-control"/></div>
+        <div class="form-group"><label for="apOrders">📦 Единый:</label><input type="number" inputmode="numeric" id="apOrders" min="0" placeholder="0" class="form-control"/></div>
+      </div>
+      <div class="form-group"><label for="dayNote">📝 Заметка:</label><textarea id="dayNote" class="form-control" rows="2" placeholder="Кого заменяешь, договорённости..."></textarea></div>
+      <button onclick="openAddOrdersModal()" class="btn btn-primary">➕ Добавить заказы</button>
+      <label class="box" style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer"><input type="checkbox" id="singleDayOnly" style="width:18px;height:18px"/><span>✏ Только этот день (подмога не пересчитывается)</span></label>
+      <div class="row" style="margin-top:10px">
+        <button onclick="saveDay()" class="btn btn-primary" style="flex:2">💾 Сохранить день</button>
+        <button onclick="clearCurrentDay()" class="btn btn-orange" style="flex:1">🗑 Очистить</button>
+      </div>
+    </div>
+  </details>
+
+  <details class="acc" id="historySection"><summary><span>🕒 История</span></summary><div class="acc-body"><div id="history" class="tree-wrap"></div></div></details>
+  <details class="acc" id="ordersLogSection"><summary><span>🧾 Лог заказов</span></summary><div class="acc-body"><div id="ordersLog" class="tree-wrap"></div></div></details>
+
+</div>
+</details>
+
+</div>
+
+<div id="addOrdersModal" class="modal"><div class="modal-content">
+  <span class="close" onclick="closeAddOrdersModal()">&times;</span>
+  <h3>➕ Добавить заказы</h3>
+  <div class="form-group"><label for="addNightOrders">➕ Ночной:</label><input type="number" inputmode="numeric" id="addNightOrders" min="0" placeholder="0" class="form-control"/></div>
+  <div class="form-group"><label for="addApOrders">➕ Единый:</label><input type="number" inputmode="numeric" id="addApOrders" min="0" placeholder="0" class="form-control"/></div>
+  <div class="row" style="margin-top:12px">
+    <button onclick="addOrders()" class="btn btn-primary">✅ Добавить</button>
+    <button onclick="closeAddOrdersModal()" class="btn btn-gray">❌ Отмена</button>
+  </div>
+</div></div>
+
+<nav class="tabbar"><div class="in">
+<a href="index.html" class="active"><span>📦</span>Учёт</a>
+<a href="cash.html"><span>🛵</span>Скутер</a>
+<a href="stats.html"><span>📊</span>Статистика</a>
+<a href="fin.html"><span>💼</span>Финансы</a>
+<a href="plan.html"><span>📋</span>План</a>
+<a href="settings.html"><span>⚙</span>Настройки</a>
+</div></nav>
+
+<script>
+const $ = id => document.getElementById(id);
+const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+let storageWarned = false;
+const save = (k, v) => {
+    try { localStorage.setItem(k, JSON.stringify(v)); }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные (память браузера заполнена или недоступна)."); } }
+};
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const pad = n => String(n).padStart(2, "0");
+const dstr = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+const sum = (arr, f) => arr.reduce((s, x) => s + f(x), 0);
+const empty = t => `<p class="empty-note">${t}</p>`;
+function getLocalDateStr(d) {
+    const date = d ? new Date(d) : new Date();
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+}
+
+const MONTHS = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+const DOW = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+const DAY_TYPES = {
+    work:          { icon: "🏢",   short: "Рабочий",    full: "Рабочий" },
+    help:          { icon: "🤝",   short: "Подмога",    full: "Подмога" },
+    short:         { icon: "⚡",   short: "Короткий",   full: "Короткий" },
+    replace:       { icon: "🔄",   short: "Замена",     full: "Замена" },
+    short_replace: { icon: "⚡🔄", short: "Кор.замена", full: "Короткая замена" },
+    weekend:       { icon: "🏖",   short: "Выходной",   full: "Выходной" }
+};
+const TYPE_KEYS = Object.keys(DAY_TYPES);
+const getDayLabel = t => DAY_TYPES[t] ? DAY_TYPES[t].short : t;
+const getDayTypeIcon = t => DAY_TYPES[t] ? DAY_TYPES[t].icon : "📅";
+const validType = t => DAY_TYPES[t] ? t : "work";
+
+const getHistory = () => LS("courierData", []);
+const setHistory = h => { h.sort((a, b) => a.date.localeCompare(b.date)); save("courierData", h); };
+let ordersLog = LS("ordersLog", []);
+let shiftConfig = LS("shiftConfig", null);
+let helpConfig = LS("helpConfig", null);
+let rosterConfig = LS("rosterConfig", { A: {}, B: {} });
+
+// ============================================================
+//  ТАРИФЫ: история изменений (баг 9)
+// ============================================================
+const PRICE_CUTOFF = "2026-05-05";
+const OLD_NIGHT_PRICE = 65, OLD_AP_PRICE = 50;
+const NEW_NIGHT_PRICE = 74, NEW_AP_PRICE = 54;
+
+function getPrices(ds) {
+    if (!ds || ds < PRICE_CUTOFF) return { night: OLD_NIGHT_PRICE, ap: OLD_AP_PRICE };
+    const hist = LS("tariffHistory", null);
+    if (!Array.isArray(hist) || !hist.length) {
+        const c = LS("customTariff", null);
+        return c ? { night: +c.night, ap: +c.ap } : { night: NEW_NIGHT_PRICE, ap: NEW_AP_PRICE };
+    }
+    let best = { night: NEW_NIGHT_PRICE, ap: NEW_AP_PRICE };
+    hist.slice().sort((a, b) => a.from.localeCompare(b.from))
+        .forEach(t => { if (ds >= t.from) best = { night: +t.night, ap: +t.ap }; });
+    return best;
+}
+
+// одноразовая миграция customTariff -> tariffHistory
+function migrateTariff() {
+    if (LS("tariffHistory", null)) return;
+    const c = LS("customTariff", null);
+    if (c && +c.night > 0 && +c.ap > 0) {
+        save("tariffHistory", [{ from: PRICE_CUTOFF, night: +c.night, ap: +c.ap }]);
+    }
+}
+
+const __locks = {};
+function guardAction(key, ms = 700) {
+    if (__locks[key]) return false;
+    __locks[key] = true; setTimeout(() => { __locks[key] = false; }, ms); return true;
+}
+function showNotification(message) {
+    const ex = document.querySelector(".notification"); if (ex) ex.remove();
+    const n = document.createElement("div"); n.className = "notification"; n.innerText = message;
+    document.body.appendChild(n);
+    setTimeout(() => { n.style.opacity = "0"; setTimeout(() => n.remove(), 300); }, 2300);
+}
+function dialog(message, buttons) {
+    const o = document.createElement("div"); o.className = "dialog-overlay";
+    const b = document.createElement("div"); b.className = "dialog-box";
+    const m = document.createElement("p"); m.innerText = message;
+    const row = document.createElement("div"); row.className = "dialog-buttons";
+    buttons.forEach(([text, cls, fn]) => {
+        const btn = document.createElement("button"); btn.className = cls; btn.innerText = text;
+        btn.onclick = () => { o.remove(); if (fn) fn(); }; row.appendChild(btn);
+    });
+    b.append(m, row); o.appendChild(b); document.body.appendChild(o);
+}
+const showAlertDialog = msg => dialog(msg, [["OK", "dialog-ok"]]);
+const showConfirmDialog = (msg, onYes) => dialog(msg, [["✅ Да", "dialog-yes", onYes], ["❌ Нет", "dialog-no"]]);
+
+function updateClock() { const el = $("realTimeClock"); if (el) el.innerText = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }); }
+setInterval(updateClock, 1000);
+function initThemeToggle() {
+    const t = $("theme-toggle");
+    t.checked = document.documentElement.getAttribute("data-theme") === "dark";
+    t.addEventListener("change", function () {
+        const v = this.checked ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", v);
+        try { localStorage.setItem("theme", v); } catch (e) {}
+    });
+}
+function updateMonthCounter() {
+    const prefix = currentDate.getFullYear() + "-" + pad(currentDate.getMonth() + 1);
+    const days = getHistory().filter(d => d.date.startsWith(prefix));
+    const night = sum(days, d => d.nightOrders || 0), ap = sum(days, d => d.apOrders || 0);
+    const money = sum(days, d => d.total || 0);
+    const el = $("monthlyCounter");
+    el.textContent = `📦 ${night + ap}`; el.title = `🌙${night} 📦${ap}`;
+    const m = $("monthlyMoney");
+    m.textContent = `💰 ${money.toLocaleString("ru-RU")} лей`;
+    m.title = `К получению за ${MONTHS[currentDate.getMonth()]}`;
+}
+function refreshAll() {
+    renderCal(); updateMonthCounter(); loadHistory(); displayOrdersLog();
+    renderStatusGrid(); renderShiftOverview();
+}
+
+const SHIFT_KEY = { "А": "A", "Б": "B", A: "A", B: "B" };
+const personName = (shift, n) => { const r = rosterConfig && rosterConfig[SHIFT_KEY[shift]]; return r && r[n] ? String(r[n]).trim() : ""; };
+const personLabel = (shift, n) => { const nm = personName(shift, n); return nm ? `${shift}${n} ${nm}` : `${shift}${n}`; };
+const getRotatingPairs = () => [[1,2],[3,4],[5,6],[7,1],[2,3],[4,5],[6,7]];
+const dayDiff = (a, b) => Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000);
+function isWorkDay(ds, first) { const p = ((dayDiff(first, ds) % 4) + 4) % 4; return p === 0 || p === 1; }
+function getWorkDayIndex(ds, first) {
+    const diff = dayDiff(first, ds), pos = ((diff % 4) + 4) % 4;
+    if (pos >= 2) return null;
+    return (diff >= 0 ? Math.floor(diff / 4) : Math.ceil((diff - 3) / 4)) * 2 + pos;
+}
+const getPairForWorkDay = (wdi, offset) => { const idx = (((wdi + offset) % 7) + 7) % 7; return { index: idx, pair: getRotatingPairs()[idx] }; };
+function isMyShortDay(ds) {
+    if (!shiftConfig || !shiftConfig.myNumber || !shiftConfig.firstWorkDay) return false;
+    const wdi = getWorkDayIndex(ds, shiftConfig.firstWorkDay);
+    return wdi !== null && getPairForWorkDay(wdi, shiftConfig.offset).pair.includes(shiftConfig.myNumber);
+}
+function getOtherShiftFirstWorkDay() {
+    if (!shiftConfig || !shiftConfig.firstWorkDay) return null;
+    const d = new Date(shiftConfig.firstWorkDay + "T12:00:00"); d.setDate(d.getDate() + 2); return getLocalDateStr(d);
+}
+function countNonWorkWeekdays(start, target, firstRef) {
+    if (!firstRef) return -1;
+    const s = new Date(start + "T12:00:00"), t = new Date(target + "T12:00:00");
+    if (t <= s) return -1;
+    let count = 0; const d = new Date(s); d.setDate(d.getDate() + 1);
+    while (d <= t) { const dow = d.getDay(); if (dow !== 0 && dow !== 6 && !isWorkDay(getLocalDateStr(d), firstRef)) count++; d.setDate(d.getDate() + 1); }
+    return count;
+}
+const isWeekendStr = ds => { const w = new Date(ds + "T12:00:00").getDay(); return w === 0 || w === 6; };
+function getHelpPositionForDate(ds) {
+    if (!helpConfig || !helpConfig.lastMyHelpDate || !shiftConfig || !shiftConfig.firstWorkDay || !shiftConfig.myNumber) return null;
+    if (isWeekendStr(ds) || isWorkDay(ds, shiftConfig.firstWorkDay)) return null;
+    const anchor = helpConfig.lastMyHelpDate;
+    if (ds === anchor) return shiftConfig.myNumber;
+    const count = countNonWorkWeekdays(anchor, ds, shiftConfig.firstWorkDay);
+    return count < 0 ? null : (((shiftConfig.myNumber - 1 + count) % 7) + 7) % 7 + 1;
+}
+function getHelpPositionForDateOther(ds) {
+    if (!helpConfig || !helpConfig.lastOtherHelpDate) return null;
+    const otherFirst = getOtherShiftFirstWorkDay();
+    if (!otherFirst || isWeekendStr(ds) || isWorkDay(ds, otherFirst)) return null;
+    const anchor = helpConfig.lastOtherHelpDate;
+    if (ds === anchor) return 1;
+    const count = countNonWorkWeekdays(anchor, ds, otherFirst);
+    return count < 0 ? null : count % 7 + 1;
+}
+const isMyHelpDay = ds => !!(helpConfig && shiftConfig && shiftConfig.myNumber && getHelpPositionForDate(ds) === shiftConfig.myNumber);
+function getShortPairForOtherShift(ds) {
+    const of = getOtherShiftFirstWorkDay();
+    if (!of || !shiftConfig || shiftConfig.offset === undefined) return null;
+    const wdi = getWorkDayIndex(ds, of);
+    return wdi === null ? null : getPairForWorkDay(wdi, shiftConfig.offset).pair;
+}
+function markAutoSchedule() {
+    let h = getHistory().filter(d => !(d.generated && ["help", "short", "work", "weekend"].includes(d.dayType) && !d.nightOrders && !d.apOrders && !d.total && !d.note));
+    if (shiftConfig && shiftConfig.firstWorkDay) {
+        const now = new Date(), idx = new Map(h.map((d, i) => [d.date, i]));
+        for (let mo = -2; mo <= 5; mo++) {
+            const dt = new Date(now.getFullYear(), now.getMonth() + mo, 1), y = dt.getFullYear(), m = dt.getMonth() + 1, last = new Date(y, m, 0).getDate();
+            for (let d = 1; d <= last; d++) {
+                const ds = dstr(y, m, d);
+                const type = isWorkDay(ds, shiftConfig.firstWorkDay) ? (isMyShortDay(ds) ? "short" : "work") : (!isWeekendStr(ds) && isMyHelpDay(ds) ? "help" : "weekend");
+                const i = idx.get(ds);
+                if (i !== undefined) { if (h[i].generated) h[i].dayType = type; }
+                else { idx.set(ds, h.length); h.push({ date: ds, dayType: type, nightOrders: 0, apOrders: 0, total: 0, generated: true }); }
+            }
+        }
+    }
+    setHistory(h); refreshAll();
+}
+
+function renderCal() {
+    const y = currentDate.getFullYear(), m = currentDate.getMonth();
+    const first = (new Date(y, m, 1).getDay() + 6) % 7, last = new Date(y, m + 1, 0).getDate();
+    $("currentMonth").textContent = `${MONTHS[m]} ${y}`;
+    const hist = new Map(getHistory().map(d => [d.date, d])), today = getLocalDateStr();
+    const hasShift = !!(shiftConfig && shiftConfig.firstWorkDay);
+    let html = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(n => `<div class="day-name">${n}</div>`).join("") + '<div class="day empty"></div>'.repeat(first);
+    for (let d = 1; d <= last; d++) {
+        const ds = dstr(y, m + 1, d), rec = hist.get(ds), dow = new Date(y, m, d).getDay();
+        let cls = "day", label = "", info = "";
+        if (ds === today) cls += " today";
+        if (rec) {
+            const t = validType(rec.dayType); cls += " " + t; label = getDayLabel(t);
+            const parts = [];
+            if (rec.nightOrders > 0) parts.push("🌙" + rec.nightOrders);
+            if (rec.apOrders > 0) parts.push("📦" + rec.apOrders);
+            info = `<div class="orders-info">${parts.join(" ") || "—"}</div>` + (rec.total > 0 ? `<div class="total-info">${rec.total}</div>` : "") + (rec.note ? `<div class="note-badge" title="${esc(rec.note)}">📝</div>` : "");
+        } else if (hasShift) {
+            // Баг 11: тип берём из графика 2/2, а не «выходной по календарю»
+            const t = isWorkDay(ds, shiftConfig.firstWorkDay)
+                ? (isMyShortDay(ds) ? "short" : "work")
+                : (!isWeekendStr(ds) && isMyHelpDay(ds) ? "help" : "weekend");
+            cls += " " + t; label = getDayLabel(t);
+        } else if (dow === 0 || dow === 6) { cls += " weekend"; label = "Выходной"; }
+        else if (isMyShortDay(ds)) { cls += " short"; label = "⚡авто"; }
+        else if (isMyHelpDay(ds)) { cls += " help"; label = "🤝авто"; }
+        html += `<div class="${cls}" data-date="${ds}"><div class="day-number">${d}</div>${label ? `<div class="day-label">${label}</div>` : ""}${info}</div>`;
+    }
+    $("calendar").innerHTML = html;
+}
+function changeMonth(dir) { currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + dir, 1); renderCal(); updateMonthCounter(); }
+
+function editDay(ds) {
+    $("mainMenu").open = true; $("edit").open = true;
+    $("date").value = ds;
+    const d = getHistory().find(x => x.date === ds) || {};
+    $("dayType").value = d.dayType || "work";
+    $("nightOrders").value = d.nightOrders || "";
+    $("apOrders").value = d.apOrders || "";
+    $("dayNote").value = d.note || "";
+    $("edit").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function clearDayForm() { $("nightOrders").value = ""; $("apOrders").value = ""; $("dayNote").value = ""; $("singleDayOnly").checked = false; }
+function saveDay() {
+    if (!guardAction("saveDay")) return;
+    const date = $("date").value;
+    if (!date) { showAlertDialog("❌ Выберите дату!"); return; }
+    const dayType = $("dayType").value;
+    const nightOrders = parseInt($("nightOrders").value) || 0, apOrders = parseInt($("apOrders").value) || 0;
+    const p = getPrices(date), total = nightOrders * p.night + apOrders * p.ap;
+    const singleOnly = $("singleDayOnly").checked;
+    const rec = { date, dayType, nightOrders, apOrders, total, generated: false, note: $("dayNote").value };
+
+    const h = getHistory(), i = h.findIndex(d => d.date === date);
+    const _o = i >= 0 ? h[i] : null, _dn = nightOrders - (_o ? _o.nightOrders || 0 : 0), _da = apOrders - (_o ? _o.apOrders || 0 : 0);
+    if (_dn || _da) { ordersLog.push({ id: Date.now() + "_" + Math.random().toString(36).slice(2, 7), date, time: new Date().toLocaleString(), addedNight: _dn, addedAp: _da }); save("ordersLog", ordersLog); }
+    if (i >= 0) h[i] = rec; else h.push(rec);
+    setHistory(h);
+
+    let msg = "✅ День сохранён";
+    if (dayType === "help" && !singleOnly) {
+        const dow = new Date(date + "T12:00:00").getDay();
+        if (!shiftConfig || !shiftConfig.firstWorkDay || !shiftConfig.myNumber) showAlertDialog("Сначала настройте короткие дни (⚙ Настройки).");
+        else if (dow === 0 || dow === 6) showAlertDialog("Дата подмоги не должна быть выходным. День сохранён.");
+        else if (isWorkDay(date, shiftConfig.firstWorkDay)) showAlertDialog("Это рабочий день — нельзя как якорь подмоги. День сохранён.");
+        else {
+            helpConfig = { ...(helpConfig || {}), lastMyHelpDate: date };
+            save("helpConfig", helpConfig);
+            markAutoSchedule();
+            msg = "✅ Подмога пересчитана от " + date;
+        }
+    }
+    clearDayForm(); refreshAll(); showNotification(msg);
+}
+function clearCurrentDay() {
+    const date = $("date").value || getLocalDateStr();
+    showConfirmDialog(`Очистить данные за ${date}?`, () => {
+        // Баг 10: чистим и день, и журнал заказов за эту дату
+        setHistory(getHistory().filter(d => d.date !== date));
+        ordersLog = ordersLog.filter(e => e.date !== date); save("ordersLog", ordersLog);
+        $("dayType").value = "work"; clearDayForm(); refreshAll();
+        showNotification(`🗑 День очищен: ${date}`);
+    });
+}
+
+function openAddOrdersModal() {
+    if (!$("date").value) { showAlertDialog("Выберите дату!"); return; }
+    $("addOrdersModal").style.display = "block";
+    setTimeout(() => $("addNightOrders").focus(), 100);
+}
+function closeAddOrdersModal() { $("addOrdersModal").style.display = "none"; $("addNightOrders").value = ""; $("addApOrders").value = ""; }
+function addOrders() {
+    if (!guardAction("addOrders")) return;
+    const date = $("date").value;
+    const n = parseInt($("addNightOrders").value) || 0, a = parseInt($("addApOrders").value) || 0;
+    if (!n && !a) { showAlertDialog("Добавьте заказ!"); return; }
+    const h = getHistory(), p = getPrices(date);
+    let rec = h.find(d => d.date === date);
+    if (rec) { rec.nightOrders = (rec.nightOrders || 0) + n; rec.apOrders = (rec.apOrders || 0) + a; rec.total = rec.nightOrders * p.night + rec.apOrders * p.ap; }
+    else { rec = { date, dayType: "work", nightOrders: n, apOrders: a, total: n * p.night + a * p.ap, generated: false }; h.push(rec); }
+    setHistory(h);
+    ordersLog.push({ id: Date.now() + "_" + Math.random().toString(36).slice(2, 7), date, time: new Date().toLocaleString(), addedNight: n, addedAp: a });
+    save("ordersLog", ordersLog);
+    $("nightOrders").value = rec.nightOrders; $("apOrders").value = rec.apOrders;
+    closeAddOrdersModal(); refreshAll();
+    showNotification(`✅ Добавлено: +${n}🌙 +${a}📦`);
+}
+
+function groupYMD(items, getDate) {
+    const g = {};
+    items.forEach(it => { const ds = getDate(it), y = ds.slice(0, 4), m = ds.slice(5, 7); ((g[y] = g[y] || {})[m] = g[y][m] || []).push(it); });
+    return g;
+}
+function loadHistory() {
+    const rows = getHistory().filter(d => d.total > 0), el = $("history");
+    if (!rows.length) { el.innerHTML = empty("📭 Нет данных"); return; }
+    const g = groupYMD(rows, d => d.date);
+    el.innerHTML = Object.keys(g).sort().reverse().map(y => `<details class="tree y"><summary><span>📅 ${y} год</span><span>${Object.keys(g[y]).length} мес</span></summary>` +
+        Object.keys(g[y]).sort().reverse().map(m => {
+            const days = g[y][m];
+            return `<details class="tree m"><summary><span>${MONTHS[+m - 1]} ${y}</span><span>${days.length} дн.</span></summary><div class="tree-body">` +
+                days.map(d => `<div>${d.date.slice(8)}.${m}.${y} ${getDayTypeIcon(d.dayType)} ${getDayLabel(d.dayType)} | Н:${d.nightOrders} АП:${d.apOrders} | <b>${d.total} лей</b></div>`).join("") +
+                `<div class="tree-total">📊 Итого: <b>${sum(days, d => d.total || 0)} лей</b></div></div></details>`;
+        }).join("") + `</details>`).join("");
+}
+function displayOrdersLog() {
+    const el = $("ordersLog");
+    if (!ordersLog.length && !LS("ordersLogBF", false)) {
+        getHistory().filter(d => (d.nightOrders || 0) + (d.apOrders || 0) > 0).forEach(d => ordersLog.push({ id: "bf_" + d.date, date: d.date, time: "из истории дня", addedNight: d.nightOrders || 0, addedAp: d.apOrders || 0 }));
+        save("ordersLogBF", true); save("ordersLog", ordersLog);
+    }
+    if (!ordersLog.length) { el.innerHTML = empty("Нет записей"); return; }
+    const g = groupYMD(ordersLog, e => e.date);
+    el.innerHTML = Object.keys(g).sort().reverse().map(y => {
+        const months = g[y], cnt = sum(Object.values(months), a => a.length);
+        return `<details class="tree y"><summary><span>📅 ${y}</span><span>${cnt} записей</span></summary>` +
+            Object.keys(months).sort().reverse().map(m => {
+                const byDay = {}; months[m].forEach(e => (byDay[e.date] = byDay[e.date] || []).push(e));
+                return `<details class="tree m"><summary><span>${MONTHS[+m - 1]} ${y}</span><span>${months[m].length} записей</span></summary>` +
+                    Object.keys(byDay).sort().reverse().map(ds => {
+                        const es = byDay[ds], label = ds.split("-").reverse().join(".");
+                        return `<details class="tree d"><summary><span>📅 ${label}</span><span>🌙${sum(es, e => e.addedNight || 0)} 📦${sum(es, e => e.addedAp || 0)} (${es.length})</span></summary><div class="tree-body">` +
+                            es.map(e => `<div class="log-row"><span>🕐 ${esc(e.time)} | ${(e.addedNight > 0 ? "+" : "") + e.addedNight}🌙 ${(e.addedAp > 0 ? "+" : "") + e.addedAp}📦</span><button class="log-del" data-id="${esc(e.id)}" onclick="deleteLogEntry(this.dataset.id)">🗑</button></div>`).join("") +
+                            `<button class="btn btn-red" style="margin-top:6px;padding:6px;font-size:12px" data-date="${ds}" onclick="deleteLogDay(this.dataset.date)">🗑 Удалить все ${label}</button></div></details>`;
+                    }).join("") + `</details>`;
+            }).join("") + `</details>`;
+    }).join("");
+}
+function deleteLogEntry(id) {
+    showConfirmDialog("🗑 Удалить запись?", () => {
+        const e = ordersLog.find(x => x.id === id);
+        if (e) {
+            // Баг 10: удаление записи пересчитывает день
+            const h = getHistory(), rec = h.find(d => d.date === e.date);
+            if (rec) {
+                rec.nightOrders = Math.max(0, (rec.nightOrders || 0) - (e.addedNight || 0));
+                rec.apOrders = Math.max(0, (rec.apOrders || 0) - (e.addedAp || 0));
+                const p = getPrices(rec.date);
+                rec.total = rec.nightOrders * p.night + rec.apOrders * p.ap;
+                setHistory(h);
+            }
+        }
+        ordersLog = ordersLog.filter(x => x.id !== id); save("ordersLog", ordersLog);
+        refreshAll(); showNotification("🗑 Запись удалена и день пересчитан");
+    });
+}
+function deleteLogDay(ds) {
+    showConfirmDialog(`🗑 Удалить все записи за ${ds}? Итоги дня будут обнулены.`, () => {
+        ordersLog = ordersLog.filter(e => e.date !== ds); save("ordersLog", ordersLog);
+        // Баг 10: обнуляем день
+        const h = getHistory(), rec = h.find(d => d.date === ds);
+        if (rec) { rec.nightOrders = 0; rec.apOrders = 0; rec.total = 0; setHistory(h); }
+        refreshAll(); showNotification("🗑 Записи удалены, день обнулён");
+    });
+}
+
+function changeStatusDay(dir) { statusDayDate = new Date(statusDayDate); statusDayDate.setDate(statusDayDate.getDate() + dir); renderStatusGrid(); }
+function pickStatusDay(v) { if (v) { statusDayDate = new Date(v + "T12:00:00"); renderStatusGrid(); } }
+function goToStatusToday() { statusDayDate = new Date(); renderStatusGrid(); }
+function openStatusDayPicker() { const p = $("statusDayPicker"); if (p.showPicker) { try { p.showPicker(); return; } catch (e) {} } p.focus(); p.click(); }
+function changeOverviewMonth(dir) { overviewMonthDate = new Date(overviewMonthDate.getFullYear(), overviewMonthDate.getMonth() + dir, 1); renderShiftOverview(); }
+const shiftReady = () => shiftConfig && shiftConfig.firstWorkDay && shiftConfig.myNumber;
+const NEED_SETUP = `<div class="hint" style="text-align:center;padding:12px">Сначала настройте короткие дни: <a href="settings.html" style="color:var(--accent)">⚙ Настройки</a></div>`;
+
+function renderShiftOverview() {
+    const c = $("overviewTable"), y = overviewMonthDate.getFullYear(), m = overviewMonthDate.getMonth();
+    $("overviewMonthTitle").textContent = `${MONTHS[m]} ${y}`;
+    if (!shiftReady()) { c.innerHTML = NEED_SETUP; return; }
+    const myNum = shiftConfig.myNumber, first = shiftConfig.firstWorkDay, otherFirst = getOtherShiftFirstWorkDay(), last = new Date(y, m + 1, 0).getDate(), today = getLocalDateStr();
+    let rows = "", nWork = 0, nShort = 0, nHelp = 0;
+    for (let d = 1; d <= last; d++) {
+        const ds = dstr(y, m + 1, d), dow = new Date(y, m, d).getDay(), weekend = dow === 0 || dow === 6, myWorks = isWorkDay(ds, first);
+        let myShort = "—", myHelp = "—", othShort = "—", othHelp = "—";
+        if (myWorks) {
+            const wdi = getWorkDayIndex(ds, first);
+            if (wdi !== null) myShort = getPairForWorkDay(wdi, shiftConfig.offset).pair.map(n => n === myNum ? `<b>А${n}</b>` : `А${n}`).join(",");
+            if (!weekend) { const hp = getHelpPositionForDateOther(ds); othHelp = hp !== null ? `Б${hp}` : (!helpConfig || !helpConfig.lastOtherHelpDate ? "?" : "—"); }
+        } else {
+            if (!weekend) { const hp = getHelpPositionForDate(ds); if (hp !== null) myHelp = hp === myNum ? `<b>А${hp}</b>` : `А${hp}`; }
+            if (otherFirst) { const wdi = getWorkDayIndex(ds, otherFirst); if (wdi !== null) othShort = getPairForWorkDay(wdi, shiftConfig.offset).pair.map(n => `Б${n}`).join(","); }
+        }
+        if (isMyShortDay(ds)) nShort++; else if (myWorks) nWork++;
+        if (isMyHelpDay(ds)) nHelp++;
+        rows += `<tr class="${ds === today ? "now" : d % 2 === 0 ? "even" : ""}"><td><b>${d}</b> ${DOW[dow]}${ds === today ? " 📍" : ""}</td><td>${myShort}</td><td>${myHelp}</td><td>${othShort}</td><td>${othHelp}</td></tr>`;
+    }
+    c.innerHTML = `<table><thead><tr><th>Дата</th><th>Моя ⚡</th><th>Моя 🤝</th><th>Другая ⚡</th><th>Другая 🤝</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="box" style="margin-top:8px;text-align:center">Ваши дни: 🏢 <b>${nWork}</b> · ⚡ <b>${nShort}</b> · 🤝 <b>${nHelp}</b></div>` +
+      (!helpConfig || !helpConfig.lastOtherHelpDate ? `<div class="hint" style="text-align:center;margin-top:4px">ℹ Укажите якорь подмоги другой смены в настройках.</div>` : "");
+}
+
+function renderStatusGrid() {
+    const grid = $("statusGrid"), title = $("statusDayTitle");
+    if (!shiftReady()) { grid.innerHTML = NEED_SETUP; return; }
+    const ds = getLocalDateStr(statusDayDate), dow = statusDayDate.getDay(), weekend = dow === 0 || dow === 6;
+    title.textContent = (ds === getLocalDateStr() ? "Сегодня — " : "") + `${DOW[dow]}, ${statusDayDate.getDate()}.${pad(statusDayDate.getMonth() + 1)}`;
+    $("statusDayPicker").value = ds;
+    const myWorks = isWorkDay(ds, shiftConfig.firstWorkDay);
+    const myPair = myWorks ? (() => { const w = getWorkDayIndex(ds, shiftConfig.firstWorkDay); return w === null ? null : getPairForWorkDay(w, shiftConfig.offset).pair; })() : null;
+    const othPair = !myWorks ? getShortPairForOtherShift(ds) : null;
+    const myHelp = !myWorks && !weekend ? getHelpPositionForDate(ds) : null, othHelp = myWorks && !weekend ? getHelpPositionForDateOther(ds) : null;
+
+    const cell = (label, n, mine) => {
+        let status = "weekend", text = "🏖 Выходной";
+        if (mine ? myWorks : !myWorks) {
+            const pair = mine ? myPair : othPair;
+            if (pair && pair.includes(n)) { status = "short"; text = `⚡ Короткий (с ${personLabel(label, pair[0] === n ? pair[1] : pair[0])})`; }
+            else { status = "work"; text = "🏢 Работа"; }
+        } else if (!weekend && (mine ? myHelp : othHelp) === n) { status = "help"; text = "🤝 Подмога"; }
+        const nm = personName(label, n);
+        return `<div class="status-person ${status}${mine && n === shiftConfig.myNumber ? " me" : ""}"><span class="sp-num">${label}${n}</span><span>${text}${nm ? `<span style="opacity:.7;font-size:.85em"> · ${esc(nm)}</span>` : ""}</span></div>`;
+    };
+    let html = "";
+    if (myWorks && myPair) html += `<div class="sect-title" style="color:#ff9500">⚡ Короткий (А): ${esc(personLabel("А", myPair[0]))}, ${esc(personLabel("А", myPair[1]))}</div>`;
+    if (!myWorks && othPair) html += `<div class="sect-title" style="color:#ff9500">⚡ Короткий (Б): ${esc(personLabel("Б", othPair[0]))}, ${esc(personLabel("Б", othPair[1]))}</div>`;
+    html += `<div class="sect-title pos">👥 Моя смена (А) ${myWorks ? "— работает" : "— выходной"}</div>`;
+    for (let n = 1; n <= 7; n++) html += cell("А", n, true);
+    html += `<div class="sect-title" style="color:var(--accent);margin-top:6px">👥 Другая смена (Б) ${!myWorks ? "— работает" : "— выходной"}</div>`;
+    for (let n = 1; n <= 7; n++) html += cell("Б", n, false);
+    if (myWorks && !weekend && !(helpConfig && helpConfig.lastOtherHelpDate)) html += `<div class="hint" style="text-align:center">ℹ Укажите якорь подмоги другой смены в настройках.</div>`;
+    grid.innerHTML = html;
+}
+
+let currentDate = new Date(), statusDayDate = new Date(), overviewMonthDate = new Date();
+
+function initApp() {
+    migrateTariff();
+    $("dayType").innerHTML = TYPE_KEYS.map(t => `<option value="${t}">${DAY_TYPES[t].icon} ${DAY_TYPES[t].full}</option>`).join("");
+    $("quickTypes").innerHTML = TYPE_KEYS.map(t => `<button class="type-btn ${t}" onclick="$('dayType').value='${t}'">${DAY_TYPES[t].icon} ${DAY_TYPES[t].short}</button>`).join("");
+    $("date").value = getLocalDateStr();
+    $("calendar").addEventListener("click", e => { const c = e.target.closest(".day[data-date]"); if (c) editDay(c.dataset.date); });
+    $("addOrdersModal").addEventListener("click", e => { if (e.target.id === "addOrdersModal") closeAddOrdersModal(); });
+    initThemeToggle(); updateClock(); refreshAll();
+
+    const reload = () => { shiftConfig = LS("shiftConfig", null); helpConfig = LS("helpConfig", null); rosterConfig = LS("rosterConfig", { A: {}, B: {} }); ordersLog = LS("ordersLog", []); refreshAll(); };
+    window.addEventListener("storage", reload);
+    window.addEventListener("pageshow", e => { if (e.persisted) reload(); });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) reload(); });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp); else initApp();
+</script>
+<script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>

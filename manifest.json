@@ -1,7 +1,7 @@
 {
-  "name": "Мой Учёт",
+  "name": "Учёт",
   "short_name": "Учёт",
-  "description": "Учёт смен, скутера, финансов и плана",
+  "description": "Учёт смен, скутера и финансов",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -11,13 +11,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icon-192.PNG",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "icon-512.PNG",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

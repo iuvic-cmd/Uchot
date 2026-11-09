@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#007aff"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="apple-mobile-web-app-title" content="Учёт"/>
+<title>🛵 Скутер</title>
+<script>
+(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
+</script>
+<style>
+:root{--bg:#f2f2f7;--text:#1c1c1e;--text-dim:#8e8e93;--card-bg:rgba(255,255,255,.92);--card-border:rgba(255,255,255,.5);--panel-bg:#fff;--subtle-bg-2:#f0f0f5;--input-bg:#f8f8fc;--input-border:#e5e5ea;--divider:#e5e5ea;--accent:#007aff;--modal-bg:#fff;
+--tone-warn-text:#e65100;--tone-good-text:#2e7d32;--tone-bad-text:#c62828;
+--green-bg:#e8f5e9;--green-fg:#2e7d32;--orange-bg:#fff3e0;--orange-fg:#e65100;--purple-bg:#f3e5f5;--purple-fg:#7b1fa2;--gray-bg:#eceff1;--gray-fg:#37474f;--brown-bg:#efebe9;--brown-fg:#4e342e;--red-bg:#ffebee;--red-fg:#c62828;--blue-bg:#e3f2fd;--blue-fg:#0d47a1}
+:root[data-theme="dark"]{--bg:#0a0a0f;--text:#f2f2f7;--card-bg:rgba(28,28,30,.95);--card-border:rgba(255,255,255,.06);--panel-bg:rgba(28,28,30,.95);--subtle-bg-2:#2c2c2e;--input-bg:#1c1c1e;--input-border:#3a3a3c;--divider:#2c2c2e;--modal-bg:#1c1c1e;
+--tone-warn-text:#ffa726;--tone-good-text:#66bb6a;--tone-bad-text:#ff6b6b;
+--green-bg:#1a2a1a;--green-fg:#81c784;--orange-bg:#2a1a0a;--orange-fg:#ffa726;--purple-bg:#2a1a2e;--purple-fg:#ce93d8;--gray-bg:#2c2c2e;--gray-fg:#b0bec5;--brown-bg:#2a211e;--brown-fg:#bcaaa4;--red-bg:#2a1414;--red-fg:#ef9a9a;--blue-bg:#1a2a3a;--blue-fg:#90caf9}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);transition:background .3s;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+.container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:12px}
+header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3)}
+header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
+.header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px}
+.clock-badge{background:rgba(255,255,255,.2);padding:4px 14px;border-radius:20px;font-size:15px;font-weight:500;color:#fff}
+.theme-switch{position:relative}.theme-switch input{display:none}
+.theme-label{display:flex;align-items:center;justify-content:space-between;width:56px;height:30px;background:rgba(255,255,255,.2);border-radius:30px;padding:0 6px;cursor:pointer;border:1px solid rgba(255,255,255,.15)}
+.theme-label .sun,.theme-label .moon{font-size:14px;z-index:2;opacity:.5}
+.toggle-ball{position:absolute;top:2px;left:2px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:1}
+#theme-toggle:checked+.theme-label .toggle-ball{transform:translateX(26px)}
+#theme-toggle:checked+.theme-label .moon{opacity:1}
+#theme-toggle:not(:checked)+.theme-label .sun{opacity:1}
+.card{background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:16px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--card-border)}
+.card h3{font-size:16px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-highlight{border-left:4px solid #ff9500}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;margin-bottom:4px;font-weight:500;font-size:13px}
+.form-control{width:100%;padding:10px 14px;border:1.5px solid var(--input-border);border-radius:12px;font-size:16px;background:var(--input-bg);transition:all .2s;-webkit-appearance:none;appearance:none;color:var(--text);min-height:44px}
+.form-control:focus{outline:none;border-color:var(--accent);background:var(--panel-bg)}
+select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#007aff;color:#fff}.btn-start{background:#34c759;color:#fff}.btn-clear-day{background:#ff9500;color:#fff}.btn-purple{background:#af52de;color:#fff}.btn-gray{background:var(--subtle-bg-2);color:var(--text)}
+.t-green{background:var(--green-bg);color:var(--green-fg)}.t-orange{background:var(--orange-bg);color:var(--orange-fg)}.t-purple{background:var(--purple-bg);color:var(--purple-fg)}.t-gray{background:var(--gray-bg);color:var(--gray-fg)}.t-brown{background:var(--brown-bg);color:var(--brown-fg)}.t-red{background:var(--red-bg);color:var(--red-fg)}.t-blue{background:var(--blue-bg);color:var(--blue-fg)}
+.stats-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.scooter-stat-mini{background:var(--panel-bg);border-radius:10px;padding:8px 4px;text-align:center;min-width:0}
+.scooter-stat-mini .mini-label{display:block;font-size:10px;color:var(--text-dim)}
+.scooter-stat-mini .mini-value{display:block;font-size:14px;font-weight:700;margin-top:2px;overflow-wrap:anywhere}
+.scooter-stat-mini .sub{font-size:10px;color:var(--text-dim)}
+[class*="t-"].scooter-stat-mini .mini-label{color:inherit;opacity:.75}
+[class*="t-"].scooter-stat-mini .mini-value{color:inherit}
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.quick-btn{padding:10px 4px;border:none;border-radius:10px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.quick-btn:active{transform:scale(.95)}
+.quick-btn .qb-icon{font-size:18px}.quick-btn .qb-label{font-size:11px}
+.debt-btn{padding:14px 8px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.debt-btn:active{transform:scale(.96)}
+.debt-btn .db-icon{font-size:24px}.debt-btn .db-sub{font-size:11px;font-weight:500;opacity:.7}
+.cash-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.cash-filter-bar button{padding:6px 12px;border-radius:20px;border:1.5px solid var(--input-border);background:var(--panel-bg);color:var(--text);font-size:12px;cursor:pointer}
+.cash-filter-bar button.active{background:#007aff;color:#fff;border-color:#007aff}
+.cash-operation-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--divider);font-size:13px;gap:6px;flex-wrap:wrap}
+.cash-operation-row .op-type{font-weight:600;min-width:60px}
+.cash-operation-row .op-amount{font-weight:700;min-width:60px;text-align:right}
+.cash-operation-row .op-comment{flex:1;color:var(--text-dim);font-size:12px;min-width:60px;overflow-wrap:anywhere}
+.cash-operation-row .op-date{font-size:11px;color:var(--text-dim);min-width:70px}
+.cash-operation-row .op-actions{display:flex;gap:4px}
+.cash-operation-row .op-actions button{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:6px}
+.cash-total-row{font-weight:700;padding:8px 12px;background:var(--subtle-bg-2);border-radius:10px;display:flex;justify-content:space-between;margin-top:8px}
+.banner{padding:14px;border-radius:12px;border-left:4px solid;font-size:13px;line-height:1.5}
+.banner.warn{background:var(--blue-bg);color:var(--blue-fg);border-color:#007aff}
+.banner.ok{background:var(--green-bg);color:var(--green-fg);border-color:#34c759}
+.menu-toggle{width:100%;padding:14px;background:var(--panel-bg);color:var(--text);font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border);border-radius:14px}
+.menu-toggle:active{transform:scale(.98)}
+.menu-toggle .icon{margin-right:8px;font-size:18px}
+.menu-toggle .arrow{font-size:14px;transition:transform .3s;color:var(--text-dim)}
+.menu-toggle .arrow.rotated{transform:rotate(180deg)}
+.menu-content{display:none;background:var(--panel-bg);border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border);margin-top:-6px}
+.menu-content.show{display:block;animation:fadeSlide .25s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.maint-row{border-bottom:1px solid var(--divider)}.maint-row:last-child{border-bottom:none}
+.maint-head{display:flex;align-items:center;gap:8px;padding:10px 2px;cursor:pointer}
+.maint-title{font-weight:600;font-size:14px;flex:0 0 auto}
+.maint-summary{flex:1;text-align:right;font-size:12px;color:var(--text-dim)}
+.maint-arrow{font-size:12px;color:var(--text-dim);transition:transform .2s}
+.maint-row.open .maint-arrow{transform:rotate(180deg)}
+.maint-form{display:none;padding:4px 0 10px}.maint-row.open .maint-form{display:block}
+.list-row{display:flex;justify-content:space-between;padding:6px 8px;border-bottom:1px solid var(--divider);font-size:13px;gap:6px}
+.scroll-list{max-height:200px;overflow-y:auto}
+.empty-note{text-align:center;color:var(--text-dim);padding:8px;font-size:13px}
+.block-heading{font-size:13px;font-weight:600;margin-bottom:8px}
+.info-box{margin-top:12px;padding:12px;background:var(--subtle-bg-2);border-radius:12px}
+.mini-metric-label{font-size:11px;color:var(--text-dim)}
+.mini-metric-value{font-size:15px;font-weight:700;color:var(--accent)}
+.text-pos,.tone-good{color:var(--tone-good-text)}.text-neg,.tone-bad{color:var(--tone-bad-text)}.tone-warn{color:var(--tone-warn-text)}
+.modal{display:none;position:fixed;z-index:1000;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow-y:auto}
+.modal-content{background:var(--modal-bg);color:var(--text);margin:max(env(safe-area-inset-top,0px),12vh) auto 24px;padding:24px 20px 20px;border-radius:20px;width:88%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-content h3{font-size:18px;font-weight:600;margin-bottom:16px;text-align:center}
+.close{float:right;font-size:28px;cursor:pointer;color:var(--text-dim);line-height:1;padding:0 4px}
+.category-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--divider);gap:6px}
+.category-item .cat-name{font-weight:500}
+.category-item .cat-type{font-size:11px;color:var(--text-dim)}
+.category-item .cat-actions{display:flex;gap:4px}
+.category-item .cat-actions button{padding:4px 10px;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+.cat-edit{background:#007aff;color:#fff}.cat-delete{background:#ff3b30;color:#fff}.cat-system{font-size:11px;color:var(--text-dim)}
+.notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-weight:500;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
+.dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center}
+.dialog-box{background:var(--modal-bg);color:var(--text);border-radius:20px;padding:24px 20px 20px;width:85%;max-width:340px}
+.dialog-box p{font-size:15px;text-align:center;margin-bottom:16px;line-height:1.5;white-space:pre-line}
+.dialog-box input{margin-bottom:16px}
+.dialog-buttons{display:flex;gap:8px}
+.dialog-buttons button{flex:1;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.dialog-yes,.dialog-ok{background:#007aff;color:#fff}.dialog-no{background:var(--subtle-bg-2);color:var(--text)}
+.dialog-ok{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--panel-bg);border-top:1px solid var(--divider);padding-bottom:env(safe-area-inset-bottom,0px);z-index:100}
+.tabbar .in{display:flex;width:100%;max-width:480px}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;color:var(--text-dim);font-size:11px;font-weight:600;text-decoration:none}
+.tabbar span{font-size:20px;line-height:1}
+.tabbar .active{color:var(--accent)}
+@media(max-width:400px){.container{padding:8px 10px 20px}header h1{font-size:18px}.stats-row-3{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>🛵 Скутер</h1>
+  <div class="header-row">
+    <span class="clock-badge" id="realTimeClock">--:--</span>
+    <div class="theme-switch">
+      <input type="checkbox" id="theme-toggle"/>
+      <label for="theme-toggle" class="theme-label"><span class="sun">☀</span><span class="moon">🌙</span><div class="toggle-ball"></div></label>
+    </div>
+  </div>
+</header>
+
+<div class="card">
+  <h3>⚡ Быстрые операции</h3>
+  <div class="quick-actions">
+    <button class="quick-btn t-green" onclick="quickAdd('tips')"><span class="qb-icon">💵</span><span class="qb-label">Чаевые</span></button>
+    <button class="quick-btn t-brown" onclick="quickAdd('coffee')"><span class="qb-icon">☕</span><span class="qb-label">Кофе</span></button>
+    <button class="quick-btn t-orange" onclick="quickAdd('lunch_work')"><span class="qb-icon">🍱</span><span class="qb-label">Обед</span></button>
+    <button class="quick-btn t-gray" onclick="quickAdd('fuel_quick')"><span class="qb-icon">⛽</span><span class="qb-label">Топливо</span></button>
+    <button class="quick-btn t-blue" onclick="quickAdd('wash')"><span class="qb-icon">🧼</span><span class="qb-label">Мойка</span></button>
+    <button class="quick-btn t-red" onclick="quickAdd('consumables')"><span class="qb-icon">🛢</span><span class="qb-label">Расходники</span></button>
+    <button class="quick-btn t-purple" onclick="quickAdd('service')"><span class="qb-icon">🔧</span><span class="qb-label">Сервис</span></button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🤝 Долги</h3>
+  <div class="two-col">
+    <button class="debt-btn t-green" onclick="quickAdd('debt_taken')"><span class="db-icon">📥</span><span>Взял в долг</span><span class="db-sub">мне дали</span></button>
+    <button class="debt-btn t-red" onclick="quickAdd('debt_given')"><span class="db-icon">📤</span><span>Дал в долг</span><span class="db-sub">я дал</span></button>
+  </div>
+  <div class="two-col" style="margin-top:6px;">
+    <button class="debt-btn t-orange" style="padding:12px 8px;" onclick="quickAdd('debt_repaid')"><span class="db-icon" style="font-size:20px;">✅</span><span style="font-size:13px;">Вернул долг</span><span class="db-sub">я отдал</span></button>
+    <button class="debt-btn t-blue" style="padding:12px 8px;" onclick="quickAdd('debt_returned')"><span class="db-icon" style="font-size:20px;">✅</span><span style="font-size:13px;">Мне вернули</span><span class="db-sub">мне отдали</span></button>
+  </div>
+  <div class="two-col" style="margin-top:10px;">
+    <div class="t-green" style="border-radius:10px;padding:8px;text-align:center;">
+      <div style="font-size:10px;">📥 Мне должны</div>
+      <div id="debtOwedToMeCard" style="font-size:16px;font-weight:700;margin-top:2px;">0.00</div>
+    </div>
+    <div class="t-red" style="border-radius:10px;padding:8px;text-align:center;">
+      <div style="font-size:10px;">📤 Я должен</div>
+      <div id="debtIOweCard" style="font-size:16px;font-weight:700;margin-top:2px;">0.00</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="addOperationCard">
+  <h3 id="opFormTitle">➕ Новая операция</h3>
+  <div class="two-col">
+    <div class="form-group" style="margin-bottom:0;"><label>📅 Дата</label><input type="date" id="cashOpDate" class="form-control"/></div>
+    <div class="form-group" style="margin-bottom:0;"><label>💰 Сумма</label><input type="number" inputmode="decimal" id="cashOpAmount" step="0.01" placeholder="0.00" class="form-control"/></div>
+  </div>
+  <div class="two-col" style="margin-top:10px;">
+    <div class="form-group" style="margin-bottom:0;"><label>📋 Категория</label>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <select id="cashOpType" class="form-control" style="flex:1;min-width:0;"></select>
+        <button onclick="openCategoryManager()" style="padding:8px 10px;background:#007aff;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;min-height:44px;">⚙</button>
+      </div>
+    </div>
+    <div id="cashPersonWrap" class="form-group" style="margin-bottom:6px;display:none;grid-column:1/-1;"><label>👤 Кому / от кого</label><select id="cashOpPerson" class="form-control"></select></div>
+    <div class="form-group" style="margin-bottom:0;"><label>📝 Комментарий</label><input type="text" id="cashOpComment" placeholder="Кому/от кого" class="form-control"/></div>
+  </div>
+  <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">⛽ Для топлива в комментарии можно писать «литры*цена», например 5.8*32.5</p>
+  <div style="display:flex;gap:6px;margin-top:10px;">
+    <button onclick="addCashOperation()" id="opSubmitBtn" class="btn btn-primary" style="flex:2">➕ Добавить</button>
+    <button onclick="resetAllCash()" id="opSecondBtn" class="btn btn-clear-day" style="flex:1">🗑 Сброс</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="justify-content:space-between">
+    <button onclick="shiftCashMonth(-1)" style="background:none;border:none;font-size:20px;color:var(--accent);padding:4px 10px">◀</button>
+    <span id="cashMonthLabel">📋 Операции</span>
+    <button onclick="shiftCashMonth(1)" style="background:none;border:none;font-size:20px;color:var(--accent);padding:4px 10px">▶</button>
+  </h3>
+  <div class="cash-filter-bar" id="cashFilterBar">
+    <button class="active" data-filter="all" onclick="setCashFilter('all',this)">📋 Все</button>
+    <button data-filter="tips" onclick="setCashFilter('tips',this)">💵 Чаевые</button>
+    <button data-filter="debt_taken" onclick="setCashFilter('debt_taken',this)">📥 Взял</button>
+    <button data-filter="debt_given" onclick="setCashFilter('debt_given',this)">📤 Дал</button>
+    <button data-filter="debt_repaid" onclick="setCashFilter('debt_repaid',this)">✅ Вернул</button>
+    <button data-filter="debt_returned" onclick="setCashFilter('debt_returned',this)">✅ Вернули</button>
+  </div>
+  <div id="cashOperationsList" style="max-height:400px;overflow-y:auto;"></div>
+  <div class="cash-total-row"><span>📊 Итого за период</span><span id="cashPeriodTotal">0.00 лей</span></div>
+</div>
+
+</div>
+
+<button class="menu-toggle" onclick="toggleMenu('mileageBox',this)"><span><span class="icon">📟</span> Пробег скутера</span><span class="arrow">▼</span></button>
+<div id="mileageBox" class="menu-content">
+  <div class="two-col">
+    <div class="form-group"><label>Начальный (км)</label><input type="number" inputmode="decimal" id="mStartKm" min="0" placeholder="0" class="form-control"/></div>
+    <div class="form-group"><label>Текущий (км)</label><input type="number" inputmode="decimal" id="mCurrentKm" min="0" placeholder="0" class="form-control"/></div>
+  </div>
+  <button onclick="saveMileage()" class="btn btn-primary">💾 Сохранить пробег</button>
+  <div class="stats-row-3" style="margin-top:10px;">
+    <div class="scooter-stat-mini"><span class="mini-label">📊 Всего км</span><span class="mini-value" id="mTotalKm">0</span></div>
+    <div class="scooter-stat-mini"><span class="mini-label">📊 За сегодня</span><span class="mini-value" id="mTodayKm">0 км</span></div>
+    <div class="scooter-stat-mini"><span class="mini-label">⛽ Расход</span><span class="mini-value" id="mConsumption">0 л/100км</span></div>
+  </div>
+  <div class="form-group" style="margin-top:12px;">
+    <label>📏 Добавить пройденный км за день</label>
+    <div class="two-col">
+      <input type="date" id="dailyKmDate" class="form-control"/>
+      <input type="number" inputmode="decimal" id="dailyKmValue" min="0" placeholder="0" class="form-control"/>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;">
+    <button onclick="addDailyKm()" class="btn btn-start" style="flex:2">➕ Добавить км</button>
+    <button onclick="resetTodayMileage()" class="btn btn-clear-day" style="flex:1">🗑 Сброс дня</button>
+  </div>
+</div>
+
+<button class="menu-toggle" onclick="toggleMenu('fuelBox',this)"><span><span class="icon">⛽</span> Топливо</span><span class="arrow">▼</span></button>
+<div id="fuelBox" class="menu-content">
+  <div class="form-group"><label>📅 Дата заправки</label><input type="date" id="fuelDate" class="form-control"/></div>
+  <div class="two-col">
+    <div class="form-group"><label>Заправлено (л)</label><input type="number" inputmode="decimal" id="fuelLiters" step="0.01" min="0" placeholder="0" class="form-control"/></div>
+    <div class="form-group"><label>Цена за литр (лей)</label><input type="number" inputmode="decimal" id="fuelPricePerL" step="0.01" min="0" placeholder="0" class="form-control"/></div>
+  </div>
+  <div class="form-group"><label>🧾 Сумма по чеку (необязательно)</label><input type="number" inputmode="decimal" id="fuelTotalInput" step="0.01" min="0" placeholder="если указать, цена за литр пересчитается" class="form-control"/></div>
+  <div style="display:flex;gap:6px;">
+    <button onclick="addFuel()" id="fuelSubmitBtn" class="btn btn-start" style="flex:2">⛽ Добавить заправку</button>
+    <button onclick="endFuelEdit(true)" id="fuelCancelBtn" class="btn btn-gray" style="flex:1;display:none">❌ Отмена</button>
+  </div>
+  <div class="stats-row-3" style="margin-top:10px;">
+    <div class="scooter-stat-mini"><span class="mini-label">Всего литров</span><span class="mini-value" id="fuelTotalLiters">0</span></div>
+    <div class="scooter-stat-mini"><span class="mini-label">💰 Всего затрат</span><span class="mini-value" id="fuelTotalCost">0 лей</span></div>
+    <div class="scooter-stat-mini"><span class="mini-label">💰 1 км</span><span class="mini-value" id="fuelCostPerKm">0 лей</span></div>
+  </div>
+  <div style="margin-top:12px;"><div class="block-heading">📋 История заправок</div><div class="scroll-list" id="fuelHistoryList"></div></div>
+  <button onclick="resetFuelLog()" class="btn btn-clear-day" style="margin-top:8px;">🗑 Сбросить топливо</button>
+  <button onclick="resetKmCostCalculation()" class="btn btn-purple" style="margin-top:6px;">🔄 Сбросить расчёт 1 км</button>
+</div>
+
+<button class="menu-toggle" onclick="toggleMenu('maintBox',this)"><span><span class="icon">🔧</span> ТО / Расходники</span><span class="arrow">▼</span></button>
+<div id="maintBox" class="menu-content"><div id="maintList"></div></div>
+
+<button class="menu-toggle" onclick="toggleMenu('analyticsBox',this)"><span><span class="icon">📊</span> Аналитика расходов скутера</span><span class="arrow">▼</span></button>
+<div id="analyticsBox" class="menu-content"><div id="expensesAnalyticsContent"></div></div>
+
+<button class="menu-toggle" onclick="toggleMenu('backupBox',this)"><span><span class="icon">💾</span> Резервная копия</span><span class="arrow">▼</span></button>
+<div id="backupBox" class="menu-content">
+  <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">Данные хранятся только в этом браузере. Если очистить данные сайта, всё пропадёт, поэтому иногда делайте копию.</p>
+  <button onclick="exportData()" class="btn btn-primary">⬇ Скачать копию</button>
+  <button onclick="document.getElementById('importFile').click()" class="btn btn-gray" style="margin-top:6px;">⬆ Восстановить из файла</button>
+  <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)"/>
+</div>
+
+<div id="categoryManagerModal" class="modal"><div class="modal-content">
+  <span class="close" onclick="closeCategoryManager()">&times;</span>
+  <h3>⚙ Управление категориями</h3>
+  <div style="display:flex;gap:6px;margin-bottom:12px;">
+    <input type="text" id="newCategoryName" placeholder="Название" class="form-control" style="flex:1;min-width:0;"/>
+    <select id="newCategoryType" class="form-control" style="flex:.8;min-width:0;"><option value="expense">💰 Расход</option><option value="income">📈 Приход</option></select>
+    <button onclick="addCategory()" class="btn btn-primary" style="width:auto;padding:8px 12px;">➕</button>
+  </div>
+  <div id="categoryList" style="max-height:300px;overflow-y:auto;"></div>
+  <div style="margin-top:12px;font-size:12px;color:var(--text-dim);padding:8px;background:var(--subtle-bg-2);border-radius:8px;">💡 Системные категории не удаляются.</div>
+</div></div>
+
+<div id="quickModal" class="modal"><div class="modal-content">
+  <span class="close" onclick="closeQuickModal()">&times;</span>
+  <h3 id="quickModalTitle">⚡ Быстрая операция</h3>
+  <div class="form-group"><label>💰 Сумма</label><input type="number" inputmode="decimal" id="quickAmount" step="0.01" placeholder="0.00" class="form-control"/></div>
+  <div class="form-group"><label>📅 Дата</label><input type="date" id="quickDate" class="form-control"/></div>
+  <div class="form-group" id="quickLitersWrap" style="display:none;"><label>⛽ Литров (необязательно)</label><input type="number" inputmode="decimal" id="quickLiters" step="0.01" placeholder="5.84" class="form-control"/></div>
+  <div class="form-group"><label>📝 Комментарий</label><input type="text" id="quickComment" placeholder="Например: Иван" class="form-control"/></div>
+  <div style="display:flex;gap:8px;margin-top:12px;">
+    <button onclick="confirmQuickAdd()" class="btn btn-primary" style="flex:1">✅ Добавить</button>
+    <button onclick="closeQuickModal()" class="btn btn-clear-day" style="flex:1">❌ Отмена</button>
+  </div>
+</div></div>
+
+<nav class="tabbar"><div class="in">
+<a href="index.html"><span>📦</span>Учёт</a>
+<a href="cash.html" class="active"><span>🛵</span>Скутер</a>
+<a href="stats.html"><span>📊</span>Статистика</a>
+<a href="fin.html"><span>💼</span>Финансы</a>
+<a href="plan.html"><span>📋</span>План</a>
+<a href="settings.html"><span>⚙</span>Настройки</a>
+</div></nav>
+
+<script>
+// ===== ХРАНИЛИЩЕ (только локально) =====
+const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+let storageWarned = false;
+const save = (k, v) => {
+    try { localStorage.setItem(k, JSON.stringify(v)); }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные (память браузера недоступна или заполнена)."); } }
+};
+// Полный набор ключей — для «единой копии»
+const ALL_KEYS = [
+    "courierData","ordersLog","shiftConfig","helpConfig","rosterConfig","customTariff","tariffHistory","ordersLogBF",
+    "cashOperations","cashCategories","cashCategoriesMigrated","fuelLog","mileageData","oilData","filterData","otherParts","dailyKmLog",
+    "fin","monthPlan"
+];
+
+let cashOperations = LS("cashOperations", []);
+let cashFilter = "all";
+let cashMonth = getLocalDateStr().slice(0, 7);
+const CM = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+function cashMonthLabel() { const p = cashMonth.split("-"); return CM[+p[1] - 1] + " " + p[0]; }
+function shiftCashMonth(d) { const p = cashMonth.split("-").map(Number), dt = new Date(p[0], p[1] - 1 + d, 1); cashMonth = dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0"); refreshAll(); }
+const SYSTEM_CATEGORIES = ['tips', 'debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
+const DEBT_TYPES = ['debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
+let pendingQuickType = null;
+let editingId = null;
+let mileageData = LS("mileageData", { startKm: 0, currentKm: 0, lastDate: "", history: [], initialized: false });
+let fuelLog = LS("fuelLog", []);
+let oilData = LS("oilData", null);
+let filterData = LS("filterData", null);
+let otherParts = LS("otherParts", { belt: 0, pads: 0, candles: 0 });
+let dailyKmLog = LS("dailyKmLog", []);
+
+// ===== УТИЛИТЫ =====
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const newId = () => Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+const opTs = op => op.ts || parseInt(op.id, 10) || 0;
+const sumBy = (arr, f) => arr.reduce((s, o) => s + f(o), 0);
+function getLocalDateStr(d) {
+    const date = d ? new Date(d) : new Date();
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+}
+const __actionLocks = {};
+function guardAction(key, ms = 700) {
+    if (__actionLocks[key]) return false;
+    __actionLocks[key] = true;
+    setTimeout(() => { __actionLocks[key] = false; }, ms);
+    return true;
+}
+function showNotification(message) {
+    const ex = document.querySelector(".notification"); if (ex) ex.remove();
+    const n = document.createElement("div");
+    n.className = "notification"; n.innerText = message;
+    document.body.appendChild(n);
+    setTimeout(() => { n.style.opacity = "0"; setTimeout(() => n.remove(), 300); }, 2200);
+}
+function showAlertDialog(message) {
+    const o = document.createElement("div"); o.className = "dialog-overlay";
+    const b = document.createElement("div"); b.className = "dialog-box";
+    const m = document.createElement("p"); m.innerText = message;
+    const ok = document.createElement("button"); ok.className = "dialog-ok"; ok.innerText = "OK";
+    ok.onclick = () => o.remove();
+    b.append(m, ok); o.appendChild(b); document.body.appendChild(o);
+}
+function showConfirmDialog(message, onConfirm) {
+    const o = document.createElement("div"); o.className = "dialog-overlay";
+    const b = document.createElement("div"); b.className = "dialog-box";
+    const m = document.createElement("p"); m.innerText = message;
+    const row = document.createElement("div"); row.className = "dialog-buttons";
+    const y = document.createElement("button"); y.className = "dialog-yes"; y.innerText = "✅ Да";
+    const n = document.createElement("button"); n.className = "dialog-no"; n.innerText = "❌ Нет";
+    y.onclick = () => { o.remove(); onConfirm(); };
+    n.onclick = () => o.remove();
+    row.append(y, n); b.append(m, row); o.appendChild(b); document.body.appendChild(o);
+}
+function showPromptDialog(message, value, onOk) {
+    const o = document.createElement("div"); o.className = "dialog-overlay";
+    const b = document.createElement("div"); b.className = "dialog-box";
+    const m = document.createElement("p"); m.innerText = message;
+    const inp = document.createElement("input"); inp.type = "text"; inp.className = "form-control"; inp.value = value || "";
+    const row = document.createElement("div"); row.className = "dialog-buttons";
+    const y = document.createElement("button"); y.className = "dialog-yes"; y.innerText = "💾 OK";
+    const n = document.createElement("button"); n.className = "dialog-no"; n.innerText = "Отмена";
+    const done = () => { const v = inp.value; o.remove(); onOk(v); };
+    y.onclick = done; n.onclick = () => o.remove();
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") done(); });
+    row.append(y, n); b.append(m, inp, row); o.appendChild(b); document.body.appendChild(o);
+    setTimeout(() => inp.focus(), 50);
+}
+
+// ===== КАТЕГОРИИ =====
+const loadCustomCategories = () => LS('cashCategories', []);
+const saveCategories = c => save('cashCategories', c);
+function getAllCategories() {
+    const system = [
+        { id: 'tips', name: '💵 Чаевые', type: 'income' },
+        { id: 'debt_taken', name: '📥 Взял в долг', type: 'income' },
+        { id: 'debt_given', name: '📤 Дал в долг', type: 'expense' },
+        { id: 'debt_repaid', name: '✅ Вернул долг', type: 'expense' },
+        { id: 'debt_returned', name: '✅ Мне вернули', type: 'income' }
+    ];
+    loadCustomCategories().forEach(c => { if (!system.find(s => s.id === c.id)) system.push(c); });
+    return system;
+}
+const getCategory = id => getAllCategories().find(c => c.id === id);
+const getCategoryName = id => { const c = getCategory(id); return c ? c.name : "❔ Удалённая категория"; };
+const getCategoryType = id => { const c = getCategory(id); return c ? c.type : 'expense'; };
+
+// Баг 5: дефолтные «быстрые» категории создаём ТОЛЬКО один раз
+function ensureQuickCategories() {
+    if (LS("cashCategoriesMigrated", false)) return;
+    const custom = loadCustomCategories();
+    const wanted = [
+        { id: 'food', name: '🍔 Еда', type: 'expense' },
+        { id: 'service', name: '🔧 Сервис', type: 'expense' },
+        { id: 'fuel_quick', name: '⛽ Топливо', type: 'expense' },
+        { id: 'coffee', name: '☕ Кофе', type: 'expense' },
+        { id: 'lunch_work', name: '🍱 Обед на работе', type: 'expense' },
+        { id: 'wash', name: '🧼 Мойка мопеда', type: 'expense' },
+        { id: 'consumables', name: '🛢 Расходники', type: 'expense' }
+    ];
+    let changed = false;
+    wanted.forEach(w => { if (!getAllCategories().find(c => c.id === w.id)) { custom.push(w); changed = true; } });
+    if (changed) saveCategories(custom);
+    save("cashCategoriesMigrated", true);
+}
+const isRealExpense = op => op.amount < 0 && !DEBT_TYPES.includes(op.type);
+
+// ===== ДОЛГИ =====
+function calcDebts() {
+    const given = sumBy(cashOperations.filter(o => o.type === 'debt_given'), o => Math.abs(o.amount));
+    const returned = sumBy(cashOperations.filter(o => o.type === 'debt_returned'), o => Math.abs(o.amount));
+    const taken = sumBy(cashOperations.filter(o => o.type === 'debt_taken'), o => Math.abs(o.amount));
+    const repaid = sumBy(cashOperations.filter(o => o.type === 'debt_repaid'), o => Math.abs(o.amount));
+    return { owedToMe: Math.max(given - returned, 0), iOwe: Math.max(taken - repaid, 0) };
+}
+function checkDebtLimits(op) {
+    const amount = Math.abs(op.amount);
+    if (op.type === 'debt_repaid') {
+        const owed = calcDebts().iOwe;
+        if (amount > owed + 0.001) { showAlertDialog(`Нельзя вернуть больше, чем должен.\nТекущий долг: ${owed.toFixed(2)} лей`); return false; }
+    }
+    if (op.type === 'debt_returned') {
+        const owedMe = calcDebts().owedToMe;
+        if (amount > owedMe + 0.001) { showAlertDialog(`Вам должны только ${owedMe.toFixed(2)} лей.\nНельзя вернуть больше.`); return false; }
+    }
+    return true;
+}
+
+// ===== ЧАСЫ И ТЕМА =====
+function updateClock() {
+    const el = document.getElementById("realTimeClock");
+    if (el) el.innerText = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+}
+setInterval(updateClock, 1000);
+function initThemeToggle() {
+    const t = document.getElementById("theme-toggle"); if (!t) return;
+    t.checked = document.documentElement.getAttribute("data-theme") === "dark";
+    t.addEventListener("change", function () {
+        const v = this.checked ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", v);
+        try { localStorage.setItem("theme", v); } catch (e) {}
+        // перерисовываем канвасы — они запекают цвета из CSS
+        renderExpensesAnalytics();
+    });
+}
+
+// ===== МЕНЮ =====
+function toggleMenu(id, btn) {
+    const box = document.getElementById(id); if (!box) return;
+    const arrow = btn ? btn.querySelector(".arrow") : null;
+    const show = box.classList.toggle("show");
+    if (arrow) arrow.classList.toggle("rotated", show);
+    if (id === 'analyticsBox' && show) renderExpensesAnalytics();
+}
+
+// ===== КАТЕГОРИИ UI =====
+function openCategoryManager() { document.getElementById('categoryManagerModal').style.display = 'block'; renderCategoryList(); }
+function closeCategoryManager() { document.getElementById('categoryManagerModal').style.display = 'none'; }
+function refreshCategoryUI() { renderCategoryList(); populateCategorySelect(); updateCategoryFilters(); renderCashList(); renderExpensesAnalytics(); }
+function addCategory() {
+    const ni = document.getElementById('newCategoryName');
+    const name = ni.value.trim().replace(/\s+/g, ' '), type = document.getElementById('newCategoryType').value;
+    if (!name) { showAlertDialog('Введите название категории'); return; }
+    if (getAllCategories().find(c => c.name.trim().toLowerCase() === name.toLowerCase())) { showAlertDialog('Категория с таким названием уже существует'); return; }
+    const custom = loadCustomCategories();
+    custom.push({ id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name, type });
+    saveCategories(custom);
+    ni.value = '';
+    refreshCategoryUI();
+    showNotification('✅ Категория добавлена: ' + name);
+}
+function editCategory(id) {
+    const custom = loadCustomCategories();
+    const i = custom.findIndex(c => c.id === id);
+    if (i === -1) { showAlertDialog('Категория не найдена'); return; }
+    showPromptDialog('Новое название:', custom[i].name, nn => {
+        const t = nn.trim();
+        if (!t) { showAlertDialog('Название не может быть пустым'); return; }
+        if (getAllCategories().find(c => c.name.trim().toLowerCase() === t.toLowerCase() && c.id !== id)) { showAlertDialog('Категория с таким названием уже существует'); return; }
+        custom[i].name = t;
+        saveCategories(custom);
+        refreshCategoryUI();
+        showNotification('✅ Категория переименована');
+    });
+}
+function deleteCategory(id) {
+    if (SYSTEM_CATEGORIES.includes(id)) { showAlertDialog('Системную категорию нельзя удалить'); return; }
+    const has = cashOperations.some(op => op.type === id);
+    showConfirmDialog(has ? '⚠ Есть операции с этой категорией — они останутся без названия. Удалить?' : `Удалить категорию "${getCategoryName(id)}"?`, () => {
+        saveCategories(loadCustomCategories().filter(c => c.id !== id));
+        if (cashFilter === id) cashFilter = 'all';
+        refreshCategoryUI();
+        showNotification('🗑 Категория удалена');
+    });
+}
+function renderCategoryList() {
+    const c = document.getElementById('categoryList'); if (!c) return;
+    const custom = loadCustomCategories();
+    c.innerHTML = getAllCategories().map(cat => {
+        const isC = custom.some(x => x.id === cat.id);
+        const tl = cat.type === 'income' ? '📈 Приход' : '💰 Расход';
+        return `<div class="category-item"><div><span class="cat-name">${esc(cat.name)}</span> <span class="cat-type">(${tl})</span></div><div class="cat-actions">${isC ? `<button class="cat-edit" data-id="${esc(cat.id)}" onclick="editCategory(this.dataset.id)">✏</button><button class="cat-delete" data-id="${esc(cat.id)}" onclick="deleteCategory(this.dataset.id)">🗑</button>` : `<span class="cat-system">🔒 система</span>`}</div></div>`;
+    }).join('');
+}
+(function () {
+    const t = document.getElementById('cashOpType');
+    if (t) t.addEventListener('change', () => refreshPerson());
+})();
+function populateCategorySelect() {
+    const s = document.getElementById('cashOpType'); if (!s) return;
+    const cats = getAllCategories(), cur = s.value;
+    s.innerHTML = '';
+    [['📈 Приход', 'income'], ['💰 Расход', 'expense']].forEach(([label, type]) => {
+        const list = cats.filter(c => c.type === type);
+        if (!list.length) return;
+        const og = document.createElement('optgroup'); og.label = label;
+        list.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; og.appendChild(o); });
+        s.appendChild(og);
+    });
+    if (cur && s.querySelector(`option[value="${cur}"]`)) s.value = cur;
+}
+(function () { const o = populateCategorySelect; populateCategorySelect = function () { o.apply(this, arguments); refreshPerson(); }; })();
+function updateCategoryFilters() {
+    const bar = document.getElementById('cashFilterBar'); if (!bar) return;
+    document.querySelectorAll('.cash-filter-custom').forEach(el => el.remove());
+    getAllCategories().filter(c => !SYSTEM_CATEGORIES.includes(c.id)).forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'cash-filter-custom'; b.dataset.filter = c.id; b.textContent = c.name;
+        b.onclick = () => setCashFilter(c.id, b);
+        bar.appendChild(b);
+    });
+    bar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.filter === cashFilter));
+}
+
+// ===== ТОПЛИВО =====
+function isFuelOp(op) {
+    return op.amount < 0 && (op.type === 'fuel_quick' || /топлив/i.test(getCategoryName(op.type)));
+}
+function parseFuel(t) {
+    const m = (t || '').replace(/,/g, '.').match(/(\d+(?:\.\d+)?)\s*[*xх×]\s*(\d+(?:\.\d+)?)/i);
+    return m ? { liters: +m[1], price: +m[2] } : { liters: 0, price: 0 };
+}
+function syncFuelFromOp(op, liters, price) {
+    fuelLog = fuelLog.filter(f => f.cashId !== op.id);
+    const amount = Math.abs(op.amount);
+    if (!liters && !price) { const p = parseFuel(op.comment); liters = p.liters; price = p.price; }
+    if (liters && !price) price = amount / liters;
+    fuelLog.push({ date: op.date, liters: liters || 0, price: price || 0, amount, cashId: op.id, time: op.timestamp });
+    op.fuelSynced = true;
+}
+function refreshAll() {
+    save('cashOperations', cashOperations);
+    save('fuelLog', fuelLog);
+    renderCashList(); renderFuelStats(); renderMileageStats(); renderFuelHistory(); renderExpensesAnalytics();
+}
+
+// ===== ОПЕРАЦИИ КАССЫ =====
+const NEW_PERSON = '➕ Новое имя…';
+function knownPeople() {
+    const m = new Map();
+    cashOperations.filter(o => DEBT_TYPES.includes(o.type) && o.comment && o.comment !== getCategoryName(o.type)).forEach(o => {
+        const n = o.comment.trim().replace(/\s+/g, ' '), k = n.toLowerCase();
+        if (n && !m.has(k)) m.set(k, n);
+    });
+    return [...m.values()].sort((a, b) => a.localeCompare(b, 'ru'));
+}
+function refreshPerson(prefill) {
+    const t = document.getElementById('cashOpType'), w = document.getElementById('cashPersonWrap'),
+          sel = document.getElementById('cashOpPerson'), inp = document.getElementById('cashOpComment');
+    if (!t || !w || !sel || !inp) return;
+    const isDebt = DEBT_TYPES.includes(t.value);
+    w.style.display = isDebt ? 'block' : 'none';
+    if (!isDebt) { inp.style.display = ''; return; }
+    const people = knownPeople();
+    const keep = prefill !== undefined ? prefill : (sel.value || '');
+    sel.innerHTML = '';
+    const add = (v, label) => { const o = document.createElement('option'); o.value = v; o.textContent = label; sel.appendChild(o); };
+    add('', '— выбери человека —');
+    people.forEach(p => add(p, p));
+    add(NEW_PERSON, NEW_PERSON);
+    const hit = people.find(p => p.toLowerCase() === String(keep).trim().toLowerCase());
+    if (hit) { sel.value = hit; if (prefill !== undefined) inp.value = ''; }
+    else if (keep === NEW_PERSON || String(keep).trim()) sel.value = NEW_PERSON;
+    else sel.value = '';
+    inp.style.display = sel.value === NEW_PERSON ? '' : 'none';
+    sel.onchange = () => { inp.style.display = sel.value === NEW_PERSON ? '' : 'none'; if (sel.value === NEW_PERSON) inp.focus(); };
+}
+function addCashOperation() {
+    if (!guardAction('addCashOp')) return;
+    const date = document.getElementById("cashOpDate").value || getLocalDateStr();
+    let amount = parseFloat(document.getElementById("cashOpAmount").value) || 0;
+    const type = document.getElementById("cashOpType").value;
+    let comment = document.getElementById("cashOpComment").value.trim();
+    if (DEBT_TYPES.includes(type)) {
+        const ps = document.getElementById('cashOpPerson');
+        if (ps && ps.value === '') { showAlertDialog('Выбери человека из списка (или «➕ Новое имя…»)'); return; }
+        if (ps && ps.value !== NEW_PERSON) comment = ps.value;
+        else {
+            comment = comment.replace(/\s+/g, ' ');
+            if (!comment) { showAlertDialog('Введи имя'); return; }
+            const ex = knownPeople().find(p => p.toLowerCase() === comment.toLowerCase());
+            if (ex) comment = ex;
+        }
+    }
+    if (amount === 0) { showAlertDialog("Введите сумму."); return; }
+    amount = Math.abs(amount);
+    if (getCategoryType(type) === 'expense') amount = -amount;
+    const prev = editingId ? cashOperations.find(o => o.id === editingId) : null;
+    const op = { id: prev ? prev.id : newId(), ts: prev ? opTs(prev) : Date.now(), date, type, amount, comment: comment || getCategoryName(type), timestamp: prev ? prev.timestamp : new Date().toLocaleString() };
+    const backup = cashOperations;
+    if (prev) cashOperations = cashOperations.filter(o => o.id !== prev.id);
+    if (!checkDebtLimits(op)) { cashOperations = backup; return; }
+    cashOperations.push(op);
+    fuelLog = fuelLog.filter(f => f.cashId !== op.id);
+    if (isFuelOp(op)) syncFuelFromOp(op, 0, 0);
+    const wasEdit = !!prev;
+    endEdit();
+    document.getElementById("cashOpAmount").value = "";
+    document.getElementById("cashOpComment").value = "";
+    refreshPerson('');
+    refreshAll();
+    showNotification(`${wasEdit ? '💾 Изменено' : '✅ Добавлено'}: ${amount.toFixed(2)} лей`);
+}
+function startEdit(id) {
+    const op = cashOperations.find(o => o.id === id); if (!op) return;
+    editingId = id;
+    document.getElementById("cashOpDate").value = op.date;
+    document.getElementById("cashOpAmount").value = Math.abs(op.amount);
+    document.getElementById("cashOpType").value = op.type;
+    let comment = op.comment || "";
+    const fe = fuelLog.find(f => f.cashId === id);
+    if (fe && fe.liters && !parseFuel(comment).liters) comment = `${fe.liters}*${+(fe.price || 0).toFixed(2)}`;
+    document.getElementById("cashOpComment").value = comment;
+    refreshPerson(comment);
+    document.getElementById("opFormTitle").textContent = "✏ Редактирование";
+    document.getElementById("opSubmitBtn").textContent = "💾 Сохранить";
+    const sb = document.getElementById("opSecondBtn");
+    sb.textContent = "❌ Отмена"; sb.onclick = () => { endEdit(); document.getElementById("cashOpAmount").value = ""; document.getElementById("cashOpComment").value = ""; refreshPerson(''); };
+    scrollToForm();
+}
+function endEdit() {
+    editingId = null;
+    document.getElementById("opFormTitle").textContent = "➕ Новая операция";
+    document.getElementById("opSubmitBtn").textContent = "➕ Добавить";
+    const sb = document.getElementById("opSecondBtn");
+    sb.textContent = "🗑 Сброс"; sb.onclick = resetAllCash;
+}
+function deleteCashOp(id) {
+    showConfirmDialog("Удалить операцию?", () => {
+        cashOperations = cashOperations.filter(op => op.id !== id);
+        fuelLog = fuelLog.filter(f => f.cashId !== id);
+        if (editingId === id) endEdit();
+        refreshAll();
+        showNotification("🗑 Операция удалена");
+    });
+}
+function resetAllCash() {
+    showConfirmDialog("Сбросить ВСЕ операции по кассе?\n(записи топлива, связанные с кассой, тоже удалятся)", () => {
+        cashOperations = [];
+        fuelLog = fuelLog.filter(f => !f.cashId);
+        endEdit();
+        refreshAll();
+        showNotification("🗑 Все операции удалены");
+    });
+}
+function setCashFilter(type, btn) {
+    cashFilter = type;
+    document.querySelectorAll(".cash-filter-bar button").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    renderCashList();
+}
+function renderCashList() {
+    const container = document.getElementById("cashOperationsList"); if (!container) return;
+    const inM = op => (op.date || "").slice(0, 7) === cashMonth;
+    const filtered = (cashFilter === "all" ? [...cashOperations] : cashOperations.filter(op => op.type === cashFilter)).filter(inM);
+    filtered.sort((a, b) => b.date.localeCompare(a.date) || opTs(b) - opTs(a));
+    container.innerHTML = filtered.length ? filtered.map(op => {
+        const sign = op.amount >= 0 ? "+" : "";
+        const cls = op.amount >= 0 ? "text-pos" : "text-neg";
+        return `<div class="cash-operation-row"><span class="op-date">${esc(op.date)}</span><span class="op-type">${esc(getCategoryName(op.type))}</span><span class="op-amount ${cls}">${sign}${op.amount.toFixed(2)}</span><span class="op-comment">${esc(op.comment || "")}</span><div class="op-actions"><button data-id="${esc(op.id)}" onclick="startEdit(this.dataset.id)">✏</button><button data-id="${esc(op.id)}" onclick="deleteCashOp(this.dataset.id)">🗑</button></div></div>`;
+    }).join("") : `<p class="empty-note">Нет операций</p>`;
+
+    const total = sumBy(filtered, op => op.amount);
+    const te = document.getElementById("cashPeriodTotal");
+    if (te) { te.textContent = total.toFixed(2) + " лей"; te.className = total >= 0 ? "text-pos" : "text-neg"; }
+
+    const debts = calcDebts();
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    set("debtOwedToMeCard", debts.owedToMe.toFixed(2));
+    set("debtIOweCard", debts.iOwe.toFixed(2));
+    set("cashMonthLabel", "📋 " + cashMonthLabel());
+}
+
+// ===== БЫСТРЫЕ ОПЕРАЦИИ =====
+const QK = {
+    coffee: '☕ Кофе', lunch_work: '🍱 Обед на работе', wash: '🧼 Мойка мопеда',
+    consumables: '🛢 Расходники (масло, фильтр)', service: '🔧 Сервис', fuel_quick: '⛽ Топливо',
+    tips: '💵 Чаевые', debt_taken: '📥 Взял в долг', debt_given: '📤 Дал в долг',
+    debt_repaid: '✅ Вернул долг (я отдал)', debt_returned: '✅ Мне вернули долг'
+};
+function quickAdd(type) {
+    pendingQuickType = type;
+    document.getElementById("quickModalTitle").textContent = QK[type] || '⚡ Быстрая операция';
+    document.getElementById("quickAmount").value = "";
+    document.getElementById("quickComment").value = "";
+    document.getElementById("quickLiters").value = "";
+    document.getElementById("quickLitersWrap").style.display = type === 'fuel_quick' ? 'block' : 'none';
+    document.getElementById("quickComment").placeholder =
+        (type === 'debt_taken')    ? 'У кого взял? (Иван)' :
+        (type === 'debt_given')    ? 'Кому дал? (Пётр)' :
+        (type === 'debt_repaid')   ? 'Кому вернул? (Иван)' :
+        (type === 'debt_returned') ? 'Кто вернул? (Пётр)' : 'Описание';
+    document.getElementById("quickModal").style.display = "block";
+    setTimeout(() => document.getElementById("quickAmount").focus(), 100);
+}
+function closeQuickModal() { document.getElementById("quickModal").style.display = "none"; pendingQuickType = null; }
+function confirmQuickAdd() {
+    if (!pendingQuickType || !guardAction('quickAdd')) return;
+    const amount = parseFloat(document.getElementById("quickAmount").value) || 0;
+    const liters = parseFloat(document.getElementById("quickLiters").value) || 0;
+    const comment = document.getElementById("quickComment").value.trim();
+    if (amount <= 0) { showAlertDialog("Введите сумму больше нуля."); return; }
+    const type = pendingQuickType;
+    const signed = getCategoryType(type) === 'expense' ? -Math.abs(amount) : Math.abs(amount);
+    const op = { id: newId(), ts: Date.now(), date: getLocalDateStr(), type, amount: signed, comment: comment || getCategoryName(type), timestamp: new Date().toLocaleString() };
+    if (!checkDebtLimits(op)) return;
+    cashOperations.push(op);
+    if (type === 'fuel_quick') syncFuelFromOp(op, liters, 0);
+    closeQuickModal();
+    refreshAll();
+    showNotification(`✅ ${getCategoryName(type)}: ${signed.toFixed(2)} лей`);
+}
+function scrollToForm() {
+    const el = document.getElementById("addOperationCard");
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => document.getElementById("cashOpAmount").focus(), 300); }
+}
+
+// ===== ПРОБЕГ =====
+function saveMileage() {
+    if (!guardAction('saveMileage')) return;
+    const startKm = parseFloat(document.getElementById("mStartKm").value) || 0;
+    const currentKm = parseFloat(document.getElementById("mCurrentKm").value) || 0;
+    if (currentKm < startKm) { showAlertDialog("Текущий пробег не может быть меньше начального."); return; }
+    const today = getLocalDateStr();
+    if (!mileageData.history) mileageData.history = [];
+    const oldCurrent = mileageData.currentKm || 0;
+    const delta = currentKm - oldCurrent;
+    if (mileageData.initialized) mileageData.history.push({ date: today, km: currentKm });
+    Object.assign(mileageData, { startKm, currentKm, lastDate: today, initialized: true });
+    save("mileageData", mileageData);
+    // также пишем дельту в dailyKmLog, чтобы stats считал правильно
+    if (delta > 0) {
+        dailyKmLog.push({ date: today, km: delta, time: new Date().toLocaleString(), source: 'saveMileage' });
+        save("dailyKmLog", dailyKmLog);
+    }
+    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
+    showNotification("💾 Пробег сохранён");
+}
+function addDailyKm() {
+    if (!guardAction('addDailyKm')) return;
+    const date = document.getElementById("dailyKmDate").value || getLocalDateStr();
+    const km = parseFloat(document.getElementById("dailyKmValue").value) || 0;
+    if (km <= 0) { showAlertDialog("Введите пройденный километраж."); return; }
+    dailyKmLog.push({ date, km, time: new Date().toLocaleString() });
+    save("dailyKmLog", dailyKmLog);
+    mileageData.currentKm = (mileageData.currentKm || 0) + km;
+    mileageData.lastDate = date;
+    mileageData.initialized = true;
+    if (!mileageData.history) mileageData.history = [];
+    mileageData.history.push({ date, km: mileageData.currentKm });
+    save("mileageData", mileageData);
+    document.getElementById("dailyKmValue").value = "";
+    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
+    showNotification(`✅ Добавлено ${km} км за ${date}`);
+}
+function resetTodayMileage() {
+    const today = getLocalDateStr();
+    showConfirmDialog("Сбросить километраж за сегодня?", () => {
+        const sumToday = sumBy(dailyKmLog.filter(e => e.date === today), e => e.km || 0);
+        dailyKmLog = dailyKmLog.filter(e => e.date !== today);
+        save("dailyKmLog", dailyKmLog);
+        if (sumToday > 0) mileageData.currentKm = Math.max((mileageData.currentKm || 0) - sumToday, mileageData.startKm || 0);
+        if (mileageData.history) mileageData.history = mileageData.history.filter(h => h.date !== today);
+        save("mileageData", mileageData);
+        renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
+        showNotification("🗑 Километраж за сегодня сброшен");
+    });
+}
+function renderMileageStats() {
+    const totalKm = Math.max((mileageData.currentKm || 0) - (mileageData.startKm || 0), 0);
+    const el = id => document.getElementById(id);
+    if (el("mStartKm")) el("mStartKm").value = mileageData.startKm || "";
+    if (el("mCurrentKm")) el("mCurrentKm").value = mileageData.currentKm || "";
+    if (el("mTotalKm")) el("mTotalKm").innerText = +totalKm.toFixed(1);
+    const today = getLocalDateStr();
+    const todayKm = sumBy(dailyKmLog.filter(e => e.date === today), e => e.km || 0);
+    if (el("mTodayKm")) el("mTodayKm").innerText = +todayKm.toFixed(1) + " км";
+    const liters = sumBy(fuelLog, e => e.liters || 0);
+    if (el("mConsumption")) el("mConsumption").innerText = (totalKm > 0 ? liters / totalKm * 100 : 0).toFixed(2) + " л/100км";
+    updateMaintSummaries();
+}
+
+// ===== ТОПЛИВО =====
+function addFuel() {
+    if (!guardAction('addFuel')) return;
+    const date = document.getElementById("fuelDate").value || getLocalDateStr();
+    const liters = parseFloat(document.getElementById("fuelLiters").value) || 0;
+    let price = parseFloat(document.getElementById("fuelPricePerL").value) || 0;
+    const receiptTotal = parseFloat(document.getElementById("fuelTotalInput").value) || 0;
+    if (liters <= 0 || (price <= 0 && receiptTotal <= 0)) { showAlertDialog("Заполните литры и цену (или сумму по чеку)."); return; }
+    let amount;
+    if (receiptTotal > 0) { amount = Math.round(receiptTotal * 100) / 100; price = amount / liters; }
+    else { amount = Math.round(liters * price * 100) / 100; }
+
+    if (editingFuelId) {
+        let fe = fuelLog.find(f => f.cashId === editingFuelId);
+        if (!fe) { fe = { cashId: editingFuelId, time: new Date().toLocaleString() }; fuelLog.push(fe); }
+        Object.assign(fe, { date, liters, price, amount });
+        const op = cashOperations.find(o => o.id === editingFuelId);
+        if (op) Object.assign(op, { date, amount: -amount, comment: +liters.toFixed(2) + '*' + +price.toFixed(2), fuelSynced: true });
+        endFuelEdit();
+        refreshAll();
+        showNotification(`💾 Заправка изменена: ${liters.toFixed(2)} л, ${amount.toFixed(2)} лей`);
+        return;
+    }
+    const id = newId();
+    fuelLog.push({ date, liters, price, amount, cashId: id, time: new Date().toLocaleString() });
+    cashOperations.push({ id, ts: Date.now(), date, type: 'fuel_quick', amount: -amount, comment: liters + '*' + price, timestamp: new Date().toLocaleString(), fuelSynced: true });
+    document.getElementById("fuelLiters").value = "";
+    document.getElementById("fuelPricePerL").value = "";
+    refreshAll();
+    showNotification(`⛽ Заправка: ${amount.toFixed(2)} лей`);
+}
+// Сброс ТОЛЬКО журнала топлива; касса не трогается
+function resetFuelLog() {
+    showConfirmDialog("Сбросить журнал топлива?\nОперации в кассе останутся, статистика топлива обнулится.", () => {
+        fuelLog = [];
+        refreshAll();
+        showNotification("🗑 Журнал топлива очищен (касса сохранена)");
+    });
+}
+function resetKmCostCalculation() {
+    showConfirmDialog("🔄 Сбросить расчёт стоимости 1 км?\n\n• Начальный пробег = текущему\n• Журнал топлива очищен\n• Дневной лог км очищен\n\nКасса не тронется.", () => {
+        const cur = mileageData.currentKm || 0;
+        Object.assign(mileageData, { startKm: cur, currentKm: cur, lastDate: getLocalDateStr(), initialized: true, history: [] });
+        save("mileageData", mileageData);
+        fuelLog = []; dailyKmLog = [];
+        save("dailyKmLog", dailyKmLog);
+        refreshAll();
+        showNotification("🔄 Точка отсчёта: " + cur + " км");
+    });
+}
+function renderFuelStats() {
+    const liters = sumBy(fuelLog, e => e.liters || 0);
+    const cost = sumBy(fuelLog, e => e.amount || 0);
+    const km = Math.max((mileageData.currentKm || 0) - (mileageData.startKm || 0), 0);
+    const el = id => document.getElementById(id);
+    if (el("fuelTotalLiters")) el("fuelTotalLiters").innerText = liters.toFixed(2);
+    if (el("fuelTotalCost")) el("fuelTotalCost").innerText = cost.toFixed(2) + " лей";
+    if (el("fuelCostPerKm")) el("fuelCostPerKm").innerText = (km > 0 ? cost / km : 0).toFixed(2) + " лей";
+}
+let editingFuelId = null;
+function renderFuelHistory() {
+    const c = document.getElementById("fuelHistoryList"); if (!c) return;
+    if (!fuelLog.length) { c.innerHTML = `<p class="empty-note">Нет заправок</p>`; return; }
+    c.innerHTML = [...fuelLog].sort((a, b) => b.date.localeCompare(a.date)).map(f =>
+        `<div class="list-row" style="align-items:center;${f.cashId === editingFuelId ? 'background:var(--subtle-bg-2);border-radius:8px;' : ''}"><span>${esc(f.date)}</span><span style="flex:1;text-align:right;">${(f.liters || 0).toFixed(2)} л × ${(f.price || 0).toFixed(2)} = <b>${(f.amount || 0).toFixed(2)}</b></span><span class="op-actions" style="display:flex;gap:2px;"><button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;" data-id="${esc(f.cashId)}" onclick="startFuelEdit(this.dataset.id)">✏</button><button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;" data-id="${esc(f.cashId)}" onclick="deleteFuelEntry(this.dataset.id)">🗑</button></span></div>`).join("");
+}
+function startFuelEdit(id) {
+    const fe = fuelLog.find(f => f.cashId === id); if (!fe) return;
+    editingFuelId = id;
+    document.getElementById("fuelDate").value = fe.date;
+    document.getElementById("fuelLiters").value = +(fe.liters || 0).toFixed(2);
+    document.getElementById("fuelPricePerL").value = +(fe.price || 0).toFixed(2);
+    document.getElementById("fuelTotalInput").value = "";
+    document.getElementById("fuelSubmitBtn").textContent = "💾 Сохранить изменения";
+    document.getElementById("fuelCancelBtn").style.display = "flex";
+    renderFuelHistory();
+    document.getElementById("fuelLiters").focus();
+    showNotification("✏ Измените данные и сохраните");
+}
+function endFuelEdit(clear) {
+    editingFuelId = null;
+    document.getElementById("fuelSubmitBtn").textContent = "⛽ Добавить заправку";
+    document.getElementById("fuelCancelBtn").style.display = "none";
+    ["fuelLiters", "fuelPricePerL", "fuelTotalInput"].forEach(i => { document.getElementById(i).value = ""; });
+    document.getElementById("fuelDate").value = getLocalDateStr();
+    if (clear) renderFuelHistory();
+}
+function deleteFuelEntry(id) {
+    showConfirmDialog("Удалить заправку?\nСвязанная операция в кассе тоже удалится.", () => {
+        fuelLog = fuelLog.filter(f => f.cashId !== id);
+        cashOperations = cashOperations.filter(o => o.id !== id);
+        if (editingFuelId === id) endFuelEdit();
+        refreshAll();
+        showNotification("🗑 Заправка удалена");
+    });
+}
+
+// ===== ТО / РАСХОДНИКИ =====
+const MAINT_ITEMS = [
+    { key: "oil", icon: "🛢", title: "Масло", kind: "interval", fields: [
+        { k: "type", label: "Тип масла", type: "text", ph: "10W-30" },
+        { k: "date", label: "📅 Дата замены", type: "date" },
+        { k: "mileage", label: "Пробег при замене (км)", type: "number" },
+        { k: "interval", label: "Интервал замены (км)", type: "number" }]},
+    { key: "filter", icon: "💨", title: "Воздушный фильтр", kind: "interval", fields: [
+        { k: "date", label: "📅 Дата замены", type: "date" },
+        { k: "mileage", label: "Пробег при замене (км)", type: "number" },
+        { k: "interval", label: "Интервал замены (км)", type: "number" }]},
+    { key: "other", icon: "⚙", title: "Другие расходники", kind: "plain", fields: [
+        { k: "belt", label: "Ремень — интервал замены (км)", type: "number" },
+        { k: "beltAt", label: "Ремень — заменён на пробеге (км)", type: "number" },
+        { k: "pads", label: "Колодки — интервал замены (км)", type: "number" },
+        { k: "padsAt", label: "Колодки — заменены на пробеге (км)", type: "number" },
+        { k: "candles", label: "Свечи — интервал замены (км)", type: "number" },
+        { k: "candlesAt", label: "Свечи — заменены на пробеге (км)", type: "number" }]}
+];
+let openMaintKey = null;
+const getMaint = key => key === "oil" ? oilData : key === "filter" ? filterData : otherParts;
+function setMaint(key, val) {
+    if (key === "oil") { oilData = val; save("oilData", val); }
+    else if (key === "filter") { filterData = val; save("filterData", val); }
+    else { otherParts = val; save("otherParts", val); }
+}
+function maintSummary(item) {
+    const d = getMaint(item.key);
+    if (item.kind === "plain") {
+        const p = d || {}, cur = mileageData.currentKm || 0; let bad = false;
+        const part = (name, k) => { const iv = p[k] || 0, at = p[k + "At"]; if (!iv || !(at > 0)) return name + " —"; const l = Math.max(iv - (cur - at), 0); if (l === 0) bad = true; return name + " " + +l.toFixed(0) + " км"; };
+        return { text: part("Ремень", "belt") + " · " + part("Колодки", "pads") + " · " + part("Свечи", "candles"), cls: bad ? "text-neg" : "" };
+    }
+    if (!d) return { text: "не задано", cls: "" };
+    const elapsed = (mileageData.currentKm || 0) - (d.mileage || 0);
+    const remaining = Math.max((d.interval || 0) - elapsed, 0);
+    const date = d.date ? d.date.split("-").reverse().join(".") : "—";
+    return { text: `⏳ ${+remaining.toFixed(1)} км · ${date}`, cls: remaining === 0 ? "text-neg" : "" };
+}
+function updateMaintSummaries() {
+    MAINT_ITEMS.forEach(item => {
+        const el = document.getElementById("maintSummary_" + item.key); if (!el) return;
+        const s = maintSummary(item);
+        el.textContent = s.text;
+        el.classList.toggle("text-neg", s.cls === "text-neg");
+    });
+}
+function buildMaintenance() {
+    const box = document.getElementById("maintList"); if (!box) return;
+    box.innerHTML = MAINT_ITEMS.map(item => {
+        const d = getMaint(item.key) || {};
+        const s = maintSummary(item);
+        const fields = item.fields.map(f => {
+            let val = d[f.k];
+            if (f.type === "date" && !val) val = getLocalDateStr();
+            if (f.k === "mileage" && val == null) val = mileageData.currentKm || "";
+            if (f.type === "number" && !val) val = "";
+            return `<div class="form-group"><label>${f.label}</label><input type="${f.type}" ${f.type === "number" ? 'inputmode="decimal" min="0"' : ""} id="mt_${item.key}_${f.k}" class="form-control" placeholder="${esc(f.ph || (f.type === "number" ? "0" : ""))}" value="${esc(val)}"/></div>`;
+        }).join("");
+        return `<div class="maint-row${openMaintKey === item.key ? " open" : ""}" id="maintRow_${item.key}"><div class="maint-head" onclick="toggleMaint('${item.key}')"><span class="maint-title">${item.icon} ${item.title}</span><span class="maint-summary ${s.cls}" id="maintSummary_${item.key}">${esc(s.text)}</span><span class="maint-arrow">▼</span></div><div class="maint-form">${fields}<button onclick="saveMaint('${item.key}')" class="btn btn-primary">💾 Сохранить</button></div></div>`;
+    }).join("");
+}
+function toggleMaint(key) {
+    openMaintKey = openMaintKey === key ? null : key;
+    MAINT_ITEMS.forEach(item => {
+        const row = document.getElementById("maintRow_" + item.key);
+        if (row) row.classList.toggle("open", item.key === openMaintKey);
+    });
+}
+function saveMaint(key) {
+    const item = MAINT_ITEMS.find(i => i.key === key); if (!item) return;
+    const data = {};
+    item.fields.forEach(f => {
+        const raw = document.getElementById(`mt_${key}_${f.k}`).value;
+        data[f.k] = f.type === "number" ? (parseFloat(raw) || 0) : raw.trim();
+    });
+    if (item.kind === "interval" && (!data.date || !data.interval)) { showAlertDialog("Укажите дату и интервал замены."); return; }
+    setMaint(key, data);
+    openMaintKey = null;
+    buildMaintenance();
+    renderExpensesAnalytics();
+    showNotification(`💾 Сохранено: ${item.title}`);
+}
+
+// ===== АНАЛИТИКА =====
+function scooterExpenses() {
+    const out = [];
+    fuelLog.forEach(f => out.push({ date: f.date || "", cat: "⛽ Топливо", amount: f.amount || 0, fuel: true }));
+    cashOperations.forEach(o => {
+        if (!(o.amount < 0) || DEBT_TYPES.includes(o.type) || isFuelOp(o)) return;
+        const n = getCategoryName(o.type);
+        // Баг 6: добавлен "расходник"
+        if (/сервис|мойк|мото|мопед|скутер|масл|запчаст|ремонт|расходник/i.test(n)) out.push({ date: o.date, cat: n, amount: Math.abs(o.amount) });
+    });
+    return out;
+}
+// retina: поднимаем разрешение в 2x и рисуем круглые бары
+function drawBarChart(canvas, labels, series) {
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = Math.max(canvas.parentElement.clientWidth, labels.length * 32);
+    const cssH = 160;
+    canvas.style.width = cssW + "px";
+    canvas.style.height = cssH + "px";
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = { top: 20, right: 8, bottom: 26, left: 32 };
+    const cw = cssW - pad.left - pad.right, ch = cssH - pad.top - pad.bottom;
+    const max = Math.max(1, ...series.flatMap(s => s.values));
+    const cssVar = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    const text = cssVar("--text"), dim = cssVar("--text-dim"), line = cssVar("--divider");
+    ctx.clearRect(0, 0, cssW, cssH);
+    ctx.lineWidth = 1; ctx.font = "9px sans-serif";
+    for (let i = 0; i <= 4; i++) {
+        const y = pad.top + ch - i / 4 * ch;
+        ctx.strokeStyle = line; ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(cssW - pad.right, y); ctx.stroke();
+        ctx.fillStyle = dim; ctx.textAlign = "right"; ctx.fillText(Math.round(max * i / 4), pad.left - 3, y + 3);
+    }
+    if (!labels.length) return;
+    const gap = cw / labels.length, bw = Math.max(3, gap * 0.6);
+    labels.forEach((l, i) => {
+        const cx = pad.left + i * gap + gap / 2;
+        const v = series[0].values[i];
+        const bh = v / max * ch, y = pad.top + ch - bh;
+        const g = ctx.createLinearGradient(0, y, 0, pad.top + ch);
+        g.addColorStop(0, series[0].color); g.addColorStop(1, series[0].color2 || series[0].color);
+        ctx.fillStyle = g;
+        if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(cx - bw / 2, y, bw, bh, 3); ctx.fill(); }
+        else ctx.fillRect(cx - bw / 2, y, bw, bh);
+        if (v > 0) { ctx.fillStyle = text; ctx.textAlign = "center"; ctx.fillText(v, cx, y - 3); }
+        ctx.fillStyle = dim; ctx.textAlign = "center"; ctx.fillText(l, cx, cssH - 4);
+    });
+}
+function renderExpensesAnalytics() {
+    const box = document.getElementById('expensesAnalyticsContent'); if (!box) return;
+    const ex = scooterExpenses(), today = getLocalDateStr(), cm = today.slice(0, 7);
+    const mk = (y, m) => { const d = new Date(y, m, 1); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+    const ty = +today.slice(0, 4), tm = +today.slice(5, 7) - 1, pm = mk(ty, tm - 1);
+    const inM = (m, f) => sumBy(ex.filter(e => (e.date || "").slice(0, 7) === m && (!f || f(e))), e => e.amount);
+    const fuelM = inM(cm, e => e.fuel), otherM = inM(cm, e => !e.fuel), totM = fuelM + otherM, totP = inM(pm), total = sumBy(ex, e => e.amount);
+    const km = Math.max((mileageData.currentKm || 0) - (mileageData.startKm || 0), 0);
+    const liters = sumBy(fuelLog, e => e.liters || 0), fuelAll = sumBy(fuelLog, e => e.amount || 0);
+    const cons = km > 0 ? liters / km * 100 : 0, perKm = km > 0 ? total / km : 0, fuelKm = km > 0 ? fuelAll / km : 0;
+    const cats = {}; ex.forEach(e => { const c = cats[e.cat] = cats[e.cat] || { all: 0, m: 0, n: 0 }; c.all += e.amount; c.n++; if ((e.date || "").slice(0, 7) === cm) c.m += e.amount; });
+    const rows = Object.entries(cats).sort((a, b) => b[1].all - a[1].all);
+    const months = []; for (let i = 5; i >= 0; i--) months.push(mk(ty, tm - i));
+    const mv = months.map(m => ({ m, f: inM(m, e => e.fuel), o: inM(m, e => !e.fuel) })), mx = Math.max(1, ...mv.map(x => x.f + x.o));
+    const bars = mv.map(x => `<div style="display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px"><span style="width:50px;color:var(--text-dim)">${CM[+x.m.slice(5) - 1].slice(0, 3)} ${x.m.slice(2, 4)}</span><div style="flex:1;height:14px;background:var(--subtle-bg-2);border-radius:7px;overflow:hidden;display:flex"><div style="width:${x.f / mx * 100}%;background:#ff9500"></div><div style="width:${x.o / mx * 100}%;background:#af52de"></div></div><b style="width:58px;text-align:right">${(x.f + x.o).toFixed(0)}</b></div>`).join("");
+    const fl = [...fuelLog].filter(f => f.date).sort((a, b) => a.date.localeCompare(b.date));
+    const gap = fl.length > 1 ? (new Date(fl[fl.length - 1].date) - new Date(fl[0].date)) / 864e5 / (fl.length - 1) : 0;
+    const avgFill = fl.length ? fuelAll / fl.length : 0, avgPrice = liters > 0 ? fuelAll / liters : 0;
+    const left = d => d ? Math.max((d.interval || 0) - ((mileageData.currentKm || 0) - (d.mileage || 0)), 0) : null;
+    const oil = left(oilData), filt = left(filterData), diff = totM - totP;
+    const part = k => { const iv = (otherParts || {})[k] || 0, at = (otherParts || {})[k + "At"]; return (iv && at > 0) ? Math.max(iv - ((mileageData.currentKm || 0) - at), 0) : null; };
+    const belt = part("belt"), pads = part("pads"), candles = part("candles");
+    const mini = (l, v, sub, cls = "t-orange") => `<div class="scooter-stat-mini ${cls}"><span class="mini-label">${l}</span><span class="mini-value">${v}</span><span class="sub">${sub}</span></div>`;
+    const partTile = (t, v) => mini(t, v === null ? "нет данных" : +v.toFixed(0) + " км", v === null ? "укажите пробег замены" : (v === 0 ? "пора менять!" : "осталось"), v === 0 ? "t-red" : "t-gray");
+    box.innerHTML = `
+      <div class="block-heading">📅 Этот месяц · ${CM[tm]}</div>
+      <div class="two-col" style="margin-bottom:10px;">
+        ${mini("💰 Всего", totM.toFixed(2) + " лей", (totP > 0 ? (diff >= 0 ? "+" : "") + diff.toFixed(0) + " к прошлому" : "прошлый: 0"))}
+        ${mini("⛽ Топливо", fuelM.toFixed(2) + " лей", totM > 0 ? (fuelM / totM * 100).toFixed(0) + "% расходов" : "—")}
+        ${mini("🔧 Сервис и прочее", otherM.toFixed(2) + " лей", totM > 0 ? (otherM / totM * 100).toFixed(0) + "% расходов" : "—", "t-purple")}
+        ${mini("📆 Прошлый месяц", totP.toFixed(2) + " лей", CM[(tm + 11) % 12])}
+      </div>
+      <div class="block-heading">📈 Эффективность</div>
+      <div class="two-col" style="margin-bottom:10px;">
+        ${mini("⛽ Расход", cons.toFixed(2) + " л/100км", liters.toFixed(1) + " л / " + +km.toFixed(0) + " км")}
+        ${mini("💰 1 км (всё)", perKm.toFixed(2) + " лей", (perKm * 100).toFixed(0) + " лей/100км")}
+        ${mini("⛽ 1 км (топливо)", fuelKm.toFixed(2) + " лей", "средняя цена л: " + avgPrice.toFixed(2))}
+        ${mini("🧾 Заправок", String(fl.length), fl.length ? "ср. чек " + avgFill.toFixed(0) + " лей" + (gap ? " · раз в " + gap.toFixed(1) + " дн." : "") : "нет данных")}
+      </div>
+      <div class="block-heading">📊 По месяцам <span style="font-weight:400;font-size:11px;color:var(--text-dim)">(🟧 топливо · 🟪 сервис и прочее)</span></div>
+      <div class="info-box" style="margin-bottom:10px;">${bars}</div>
+      <div class="block-heading">🗂 По категориям</div>
+      <div class="info-box" style="margin-bottom:10px;">${rows.length ? rows.map(([n, v]) => `<div class="list-row"><span>${esc(n)} <small style="color:var(--text-dim)">${v.n} оп.</small></span><span style="text-align:right"><b>${v.all.toFixed(2)}</b><br><small style="color:var(--text-dim)">мес.: ${v.m.toFixed(2)} · ${total > 0 ? (v.all / total * 100).toFixed(0) : 0}%</small></span></div>`).join("") : '<div class="empty-note">Пока нет расходов</div>'}
+        <div class="list-row" style="font-weight:700"><span>Итого за всё время</span><span>${total.toFixed(2)} лей</span></div></div>
+      <div class="block-heading">🔧 До обслуживания</div>
+      <div class="two-col">
+        ${mini("🛢 Масло", oil === null ? "не задано" : +oil.toFixed(0) + " км", oil === 0 ? "пора менять!" : "осталось", oil === 0 ? "t-red" : "t-gray")}
+        ${mini("💨 Фильтр", filt === null ? "не задано" : +filt.toFixed(0) + " км", filt === 0 ? "пора менять!" : "осталось", filt === 0 ? "t-red" : "t-gray")}
+      </div>
+      <div class="two-col" style="margin-top:8px">
+        ${partTile("⚙ Ремень", belt)}
+        ${partTile("🛑 Колодки", pads)}
+      </div>
+      <div class="two-col" style="margin-top:8px">
+        ${partTile("🔌 Свечи", candles)}
+      </div>
+      <div class="block-heading" style="margin-top:14px;">📊 Расходы по месяцам</div>
+      <div class="chart-wrap" style="overflow-x:auto"><canvas id="chartMonthlyExpenses" height="160"></canvas></div>`;
+
+    // рисуем график после вставки в DOM
+    requestAnimationFrame(() => {
+        const canvas = document.getElementById("chartMonthlyExpenses");
+        if (!canvas) return;
+        const labels = mv.map(x => CM[+x.m.slice(5) - 1].slice(0, 3));
+        const values = mv.map(x => Math.round(x.f + x.o));
+        drawBarChart(canvas, labels, [{ values, color: "#ff9500", color2: "#ffcc80" }]);
+    });
+}
+
+// ===== РЕЗЕРВНАЯ КОПИЯ =====
+function exportData() {
+    const data = { app: "scooter", version: 3, exported: new Date().toISOString() };
+    ALL_KEYS.forEach(k => { data[k] = LS(k, null); });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `scooter-backup-${getLocalDateStr()}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    save("lastFullBackup", Date.now());
+    showNotification("⬇ Полная копия сохранена");
+}
+function importData(input) {
+    const file = input.files && input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const data = JSON.parse(reader.result);
+            if (!data || (data.app !== "scooter" && data.app !== "kassa-scooter" && data.app !== "work-day")) throw new Error("bad");
+            showConfirmDialog("Заменить текущие данные данными из файла?", () => {
+                ALL_KEYS.forEach(k => { if (data[k] !== undefined && data[k] !== null) save(k, data[k]); });
+                location.reload();
+            });
+        } catch (e) { showAlertDialog("Файл не похож на резервную копию этого приложения."); }
+        input.value = "";
+    };
+    reader.readAsText(file);
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+function initApp() {
+    ensureQuickCategories();
+    cashOperations.forEach(op => {
+        if (!op.fuelSynced && isFuelOp(op)) syncFuelFromOp(op, 0, 0);
+    });
+    fuelLog.forEach(f => { if (!f.cashId) f.cashId = newId(); });
+
+    const today = getLocalDateStr();
+    ["cashOpDate", "fuelDate", "dailyKmDate"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.value) el.value = today;
+    });
+    populateCategorySelect();
+    updateCategoryFilters();
+    renderCashList();
+    renderMileageStats();
+    renderFuelStats();
+    renderFuelHistory();
+    buildMaintenance();
+    renderExpensesAnalytics();
+    updateClock();
+    initThemeToggle();
+
+    document.getElementById("quickModal").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.tagName === "INPUT") confirmQuickAdd(); });
+    document.getElementById("newCategoryName").addEventListener("keydown", e => { if (e.key === "Enter") addCategory(); });
+    document.getElementById("quickModal").addEventListener("click", e => { if (e.target.id === "quickModal") closeQuickModal(); });
+    document.getElementById("categoryManagerModal").addEventListener("click", e => { if (e.target.id === "categoryManagerModal") closeCategoryManager(); });
+}
+
+window.addEventListener("storage", e => {
+    if (e.key === "fuelLog" || e.key === "cashOperations" || e.key === "mileageData" || e.key === "theme") {
+        fuelLog = LS("fuelLog", []); cashOperations = LS("cashOperations", []); mileageData = LS("mileageData", mileageData);
+        renderCashList(); renderFuelStats(); renderFuelHistory(); renderMileageStats(); renderExpensesAnalytics();
+    }
+});
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp);
+else initApp();
+</script>
+<script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>

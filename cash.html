@@ -6,9 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#007aff"/>
-<link rel="manifest" href="./manifest.json"/>
-<link rel="apple-touch-icon" href="./icon-192.png"/>
-<meta name="apple-mobile-web-app-title" content="Учёт"/>
 <title>🛵 Скутер</title>
 <script>
 (function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
@@ -24,7 +21,7 @@
 html{-webkit-text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);transition:background .3s;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:12px}
-header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3)}
+header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3);margin-bottom:8px}
 header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
 .header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px}
 .clock-badge{background:rgba(255,255,255,.2);padding:4px 14px;border-radius:20px;font-size:15px;font-weight:500;color:#fff}
@@ -35,46 +32,19 @@ header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
 #theme-toggle:checked+.theme-label .toggle-ball{transform:translateX(26px)}
 #theme-toggle:checked+.theme-label .moon{opacity:1}
 #theme-toggle:not(:checked)+.theme-label .sun{opacity:1}
-.card{background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:16px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--card-border)}
-.card h3{font-size:16px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.card-highlight{border-left:4px solid #ff9500}
 .form-group{margin-bottom:10px}
 .form-group label{display:block;margin-bottom:4px;font-weight:500;font-size:13px}
 .form-control{width:100%;padding:10px 14px;border:1.5px solid var(--input-border);border-radius:12px;font-size:16px;background:var(--input-bg);transition:all .2s;-webkit-appearance:none;appearance:none;color:var(--text);min-height:44px}
 .form-control:focus{outline:none;border-color:var(--accent);background:var(--panel-bg)}
-select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:#007aff;color:#fff}.btn-start{background:#34c759;color:#fff}.btn-clear-day{background:#ff9500;color:#fff}.btn-purple{background:#af52de;color:#fff}.btn-gray{background:var(--subtle-bg-2);color:var(--text)}
-.t-green{background:var(--green-bg);color:var(--green-fg)}.t-orange{background:var(--orange-bg);color:var(--orange-fg)}.t-purple{background:var(--purple-bg);color:var(--purple-fg)}.t-gray{background:var(--gray-bg);color:var(--gray-fg)}.t-brown{background:var(--brown-bg);color:var(--brown-fg)}.t-red{background:var(--red-bg);color:var(--red-fg)}.t-blue{background:var(--blue-bg);color:var(--blue-fg)}
 .stats-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
 .scooter-stat-mini{background:var(--panel-bg);border-radius:10px;padding:8px 4px;text-align:center;min-width:0}
 .scooter-stat-mini .mini-label{display:block;font-size:10px;color:var(--text-dim)}
 .scooter-stat-mini .mini-value{display:block;font-size:14px;font-weight:700;margin-top:2px;overflow-wrap:anywhere}
 .scooter-stat-mini .sub{font-size:10px;color:var(--text-dim)}
-[class*="t-"].scooter-stat-mini .mini-label{color:inherit;opacity:.75}
-[class*="t-"].scooter-stat-mini .mini-value{color:inherit}
-.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.quick-btn{padding:10px 4px;border:none;border-radius:10px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.quick-btn:active{transform:scale(.95)}
-.quick-btn .qb-icon{font-size:18px}.quick-btn .qb-label{font-size:11px}
-.debt-btn{padding:14px 8px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
-.debt-btn:active{transform:scale(.96)}
-.debt-btn .db-icon{font-size:24px}.debt-btn .db-sub{font-size:11px;font-weight:500;opacity:.7}
-.cash-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.cash-filter-bar button{padding:6px 12px;border-radius:20px;border:1.5px solid var(--input-border);background:var(--panel-bg);color:var(--text);font-size:12px;cursor:pointer}
-.cash-filter-bar button.active{background:#007aff;color:#fff;border-color:#007aff}
-.cash-operation-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--divider);font-size:13px;gap:6px;flex-wrap:wrap}
-.cash-operation-row .op-type{font-weight:600;min-width:60px}
-.cash-operation-row .op-amount{font-weight:700;min-width:60px;text-align:right}
-.cash-operation-row .op-comment{flex:1;color:var(--text-dim);font-size:12px;min-width:60px;overflow-wrap:anywhere}
-.cash-operation-row .op-date{font-size:11px;color:var(--text-dim);min-width:70px}
-.cash-operation-row .op-actions{display:flex;gap:4px}
-.cash-operation-row .op-actions button{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:6px}
-.cash-total-row{font-weight:700;padding:8px 12px;background:var(--subtle-bg-2);border-radius:10px;display:flex;justify-content:space-between;margin-top:8px}
-.banner{padding:14px;border-radius:12px;border-left:4px solid;font-size:13px;line-height:1.5}
-.banner.warn{background:var(--blue-bg);color:var(--blue-fg);border-color:#007aff}
-.banner.ok{background:var(--green-bg);color:var(--green-fg);border-color:#34c759}
+.t-green{background:var(--green-bg);color:var(--green-fg)}.t-red{background:var(--red-bg);color:var(--red-fg)}.t-orange{background:var(--orange-bg);color:var(--orange-fg)}.t-purple{background:var(--purple-bg);color:var(--purple-fg)}.t-gray{background:var(--gray-bg);color:var(--gray-fg)}
 .menu-toggle{width:100%;padding:14px;background:var(--panel-bg);color:var(--text);font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--card-border);border-radius:14px}
 .menu-toggle:active{transform:scale(.98)}
 .menu-toggle .icon{margin-right:8px;font-size:18px}
@@ -84,7 +54,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 .menu-content.show{display:block;animation:fadeSlide .25s ease}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 .maint-row{border-bottom:1px solid var(--divider)}.maint-row:last-child{border-bottom:none}
 .maint-head{display:flex;align-items:center;gap:8px;padding:10px 2px;cursor:pointer}
 .maint-title{font-weight:600;font-size:14px;flex:0 0 auto}
@@ -97,24 +66,11 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 .empty-note{text-align:center;color:var(--text-dim);padding:8px;font-size:13px}
 .block-heading{font-size:13px;font-weight:600;margin-bottom:8px}
 .info-box{margin-top:12px;padding:12px;background:var(--subtle-bg-2);border-radius:12px}
-.mini-metric-label{font-size:11px;color:var(--text-dim)}
-.mini-metric-value{font-size:15px;font-weight:700;color:var(--accent)}
-.text-pos,.tone-good{color:var(--tone-good-text)}.text-neg,.tone-bad{color:var(--tone-bad-text)}.tone-warn{color:var(--tone-warn-text)}
-.modal{display:none;position:fixed;z-index:1000;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow-y:auto}
-.modal-content{background:var(--modal-bg);color:var(--text);margin:max(env(safe-area-inset-top,0px),12vh) auto 24px;padding:24px 20px 20px;border-radius:20px;width:88%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-content h3{font-size:18px;font-weight:600;margin-bottom:16px;text-align:center}
-.close{float:right;font-size:28px;cursor:pointer;color:var(--text-dim);line-height:1;padding:0 4px}
-.category-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--divider);gap:6px}
-.category-item .cat-name{font-weight:500}
-.category-item .cat-type{font-size:11px;color:var(--text-dim)}
-.category-item .cat-actions{display:flex;gap:4px}
-.category-item .cat-actions button{padding:4px 10px;border:none;border-radius:6px;cursor:pointer;font-size:12px}
-.cat-edit{background:#007aff;color:#fff}.cat-delete{background:#ff3b30;color:#fff}.cat-system{font-size:11px;color:var(--text-dim)}
+.text-pos,.tone-good{color:var(--tone-good-text)}.text-neg,.tone-bad{color:var(--tone-bad-text)}
 .notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-weight:500;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
 .dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center}
 .dialog-box{background:var(--modal-bg);color:var(--text);border-radius:20px;padding:24px 20px 20px;width:85%;max-width:340px}
 .dialog-box p{font-size:15px;text-align:center;margin-bottom:16px;line-height:1.5;white-space:pre-line}
-.dialog-box input{margin-bottom:16px}
 .dialog-buttons{display:flex;gap:8px}
 .dialog-buttons button{flex:1;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
 .dialog-yes,.dialog-ok{background:#007aff;color:#fff}.dialog-no{background:var(--subtle-bg-2);color:var(--text)}
@@ -141,84 +97,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   </div>
 </header>
 
-<div class="card">
-  <h3>⚡ Быстрые операции</h3>
-  <div class="quick-actions">
-    <button class="quick-btn t-green" onclick="quickAdd('tips')"><span class="qb-icon">💵</span><span class="qb-label">Чаевые</span></button>
-    <button class="quick-btn t-brown" onclick="quickAdd('coffee')"><span class="qb-icon">☕</span><span class="qb-label">Кофе</span></button>
-    <button class="quick-btn t-orange" onclick="quickAdd('lunch_work')"><span class="qb-icon">🍱</span><span class="qb-label">Обед</span></button>
-    <button class="quick-btn t-gray" onclick="quickAdd('fuel_quick')"><span class="qb-icon">⛽</span><span class="qb-label">Топливо</span></button>
-    <button class="quick-btn t-blue" onclick="quickAdd('wash')"><span class="qb-icon">🧼</span><span class="qb-label">Мойка</span></button>
-    <button class="quick-btn t-red" onclick="quickAdd('consumables')"><span class="qb-icon">🛢</span><span class="qb-label">Расходники</span></button>
-    <button class="quick-btn t-purple" onclick="quickAdd('service')"><span class="qb-icon">🔧</span><span class="qb-label">Сервис</span></button>
-  </div>
-</div>
-
-<div class="card">
-  <h3>🤝 Долги</h3>
-  <div class="two-col">
-    <button class="debt-btn t-green" onclick="quickAdd('debt_taken')"><span class="db-icon">📥</span><span>Взял в долг</span><span class="db-sub">мне дали</span></button>
-    <button class="debt-btn t-red" onclick="quickAdd('debt_given')"><span class="db-icon">📤</span><span>Дал в долг</span><span class="db-sub">я дал</span></button>
-  </div>
-  <div class="two-col" style="margin-top:6px;">
-    <button class="debt-btn t-orange" style="padding:12px 8px;" onclick="quickAdd('debt_repaid')"><span class="db-icon" style="font-size:20px;">✅</span><span style="font-size:13px;">Вернул долг</span><span class="db-sub">я отдал</span></button>
-    <button class="debt-btn t-blue" style="padding:12px 8px;" onclick="quickAdd('debt_returned')"><span class="db-icon" style="font-size:20px;">✅</span><span style="font-size:13px;">Мне вернули</span><span class="db-sub">мне отдали</span></button>
-  </div>
-  <div class="two-col" style="margin-top:10px;">
-    <div class="t-green" style="border-radius:10px;padding:8px;text-align:center;">
-      <div style="font-size:10px;">📥 Мне должны</div>
-      <div id="debtOwedToMeCard" style="font-size:16px;font-weight:700;margin-top:2px;">0.00</div>
-    </div>
-    <div class="t-red" style="border-radius:10px;padding:8px;text-align:center;">
-      <div style="font-size:10px;">📤 Я должен</div>
-      <div id="debtIOweCard" style="font-size:16px;font-weight:700;margin-top:2px;">0.00</div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="addOperationCard">
-  <h3 id="opFormTitle">➕ Новая операция</h3>
-  <div class="two-col">
-    <div class="form-group" style="margin-bottom:0;"><label>📅 Дата</label><input type="date" id="cashOpDate" class="form-control"/></div>
-    <div class="form-group" style="margin-bottom:0;"><label>💰 Сумма</label><input type="number" inputmode="decimal" id="cashOpAmount" step="0.01" placeholder="0.00" class="form-control"/></div>
-  </div>
-  <div class="two-col" style="margin-top:10px;">
-    <div class="form-group" style="margin-bottom:0;"><label>📋 Категория</label>
-      <div style="display:flex;gap:4px;align-items:center;">
-        <select id="cashOpType" class="form-control" style="flex:1;min-width:0;"></select>
-        <button onclick="openCategoryManager()" style="padding:8px 10px;background:#007aff;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;min-height:44px;">⚙</button>
-      </div>
-    </div>
-    <div id="cashPersonWrap" class="form-group" style="margin-bottom:6px;display:none;grid-column:1/-1;"><label>👤 Кому / от кого</label><select id="cashOpPerson" class="form-control"></select></div>
-    <div class="form-group" style="margin-bottom:0;"><label>📝 Комментарий</label><input type="text" id="cashOpComment" placeholder="Кому/от кого" class="form-control"/></div>
-  </div>
-  <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">⛽ Для топлива в комментарии можно писать «литры*цена», например 5.8*32.5</p>
-  <div style="display:flex;gap:6px;margin-top:10px;">
-    <button onclick="addCashOperation()" id="opSubmitBtn" class="btn btn-primary" style="flex:2">➕ Добавить</button>
-    <button onclick="resetAllCash()" id="opSecondBtn" class="btn btn-clear-day" style="flex:1">🗑 Сброс</button>
-  </div>
-</div>
-
-<div class="card">
-  <h3 style="justify-content:space-between">
-    <button onclick="shiftCashMonth(-1)" style="background:none;border:none;font-size:20px;color:var(--accent);padding:4px 10px">◀</button>
-    <span id="cashMonthLabel">📋 Операции</span>
-    <button onclick="shiftCashMonth(1)" style="background:none;border:none;font-size:20px;color:var(--accent);padding:4px 10px">▶</button>
-  </h3>
-  <div class="cash-filter-bar" id="cashFilterBar">
-    <button class="active" data-filter="all" onclick="setCashFilter('all',this)">📋 Все</button>
-    <button data-filter="tips" onclick="setCashFilter('tips',this)">💵 Чаевые</button>
-    <button data-filter="debt_taken" onclick="setCashFilter('debt_taken',this)">📥 Взял</button>
-    <button data-filter="debt_given" onclick="setCashFilter('debt_given',this)">📤 Дал</button>
-    <button data-filter="debt_repaid" onclick="setCashFilter('debt_repaid',this)">✅ Вернул</button>
-    <button data-filter="debt_returned" onclick="setCashFilter('debt_returned',this)">✅ Вернули</button>
-  </div>
-  <div id="cashOperationsList" style="max-height:400px;overflow-y:auto;"></div>
-  <div class="cash-total-row"><span>📊 Итого за период</span><span id="cashPeriodTotal">0.00 лей</span></div>
-</div>
-
-</div>
-
 <button class="menu-toggle" onclick="toggleMenu('mileageBox',this)"><span><span class="icon">📟</span> Пробег скутера</span><span class="arrow">▼</span></button>
 <div id="mileageBox" class="menu-content">
   <div class="two-col">
@@ -226,11 +104,13 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     <div class="form-group"><label>Текущий (км)</label><input type="number" inputmode="decimal" id="mCurrentKm" min="0" placeholder="0" class="form-control"/></div>
   </div>
   <button onclick="saveMileage()" class="btn btn-primary">💾 Сохранить пробег</button>
+  
   <div class="stats-row-3" style="margin-top:10px;">
     <div class="scooter-stat-mini"><span class="mini-label">📊 Всего км</span><span class="mini-value" id="mTotalKm">0</span></div>
     <div class="scooter-stat-mini"><span class="mini-label">📊 За сегодня</span><span class="mini-value" id="mTodayKm">0 км</span></div>
     <div class="scooter-stat-mini"><span class="mini-label">⛽ Расход</span><span class="mini-value" id="mConsumption">0 л/100км</span></div>
   </div>
+
   <div class="form-group" style="margin-top:12px;">
     <label>📏 Добавить пройденный км за день</label>
     <div class="two-col">
@@ -240,7 +120,12 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   </div>
   <div style="display:flex;gap:6px;">
     <button onclick="addDailyKm()" class="btn btn-start" style="flex:2">➕ Добавить км</button>
-    <button onclick="resetTodayMileage()" class="btn btn-clear-day" style="flex:1">🗑 Сброс дня</button>
+  </div>
+
+  <!-- История пробега (новая секция) -->
+  <div style="margin-top:12px;">
+    <div class="block-heading">📋 История добавленных км</div>
+    <div class="scroll-list" id="kmHistoryList"></div>
   </div>
 </div>
 
@@ -272,38 +157,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 <button class="menu-toggle" onclick="toggleMenu('analyticsBox',this)"><span><span class="icon">📊</span> Аналитика расходов скутера</span><span class="arrow">▼</span></button>
 <div id="analyticsBox" class="menu-content"><div id="expensesAnalyticsContent"></div></div>
 
-<button class="menu-toggle" onclick="toggleMenu('backupBox',this)"><span><span class="icon">💾</span> Резервная копия</span><span class="arrow">▼</span></button>
-<div id="backupBox" class="menu-content">
-  <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">Данные хранятся только в этом браузере. Если очистить данные сайта, всё пропадёт, поэтому иногда делайте копию.</p>
-  <button onclick="exportData()" class="btn btn-primary">⬇ Скачать копию</button>
-  <button onclick="document.getElementById('importFile').click()" class="btn btn-gray" style="margin-top:6px;">⬆ Восстановить из файла</button>
-  <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)"/>
 </div>
-
-<div id="categoryManagerModal" class="modal"><div class="modal-content">
-  <span class="close" onclick="closeCategoryManager()">&times;</span>
-  <h3>⚙ Управление категориями</h3>
-  <div style="display:flex;gap:6px;margin-bottom:12px;">
-    <input type="text" id="newCategoryName" placeholder="Название" class="form-control" style="flex:1;min-width:0;"/>
-    <select id="newCategoryType" class="form-control" style="flex:.8;min-width:0;"><option value="expense">💰 Расход</option><option value="income">📈 Приход</option></select>
-    <button onclick="addCategory()" class="btn btn-primary" style="width:auto;padding:8px 12px;">➕</button>
-  </div>
-  <div id="categoryList" style="max-height:300px;overflow-y:auto;"></div>
-  <div style="margin-top:12px;font-size:12px;color:var(--text-dim);padding:8px;background:var(--subtle-bg-2);border-radius:8px;">💡 Системные категории не удаляются.</div>
-</div></div>
-
-<div id="quickModal" class="modal"><div class="modal-content">
-  <span class="close" onclick="closeQuickModal()">&times;</span>
-  <h3 id="quickModalTitle">⚡ Быстрая операция</h3>
-  <div class="form-group"><label>💰 Сумма</label><input type="number" inputmode="decimal" id="quickAmount" step="0.01" placeholder="0.00" class="form-control"/></div>
-  <div class="form-group"><label>📅 Дата</label><input type="date" id="quickDate" class="form-control"/></div>
-  <div class="form-group" id="quickLitersWrap" style="display:none;"><label>⛽ Литров (необязательно)</label><input type="number" inputmode="decimal" id="quickLiters" step="0.01" placeholder="5.84" class="form-control"/></div>
-  <div class="form-group"><label>📝 Комментарий</label><input type="text" id="quickComment" placeholder="Например: Иван" class="form-control"/></div>
-  <div style="display:flex;gap:8px;margin-top:12px;">
-    <button onclick="confirmQuickAdd()" class="btn btn-primary" style="flex:1">✅ Добавить</button>
-    <button onclick="closeQuickModal()" class="btn btn-clear-day" style="flex:1">❌ Отмена</button>
-  </div>
-</div></div>
 
 <nav class="tabbar"><div class="in">
 <a href="index.html"><span>📦</span>Учёт</a>
@@ -315,41 +169,27 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 </div></nav>
 
 <script>
-// ===== ХРАНИЛИЩЕ (только локально) =====
+// ===== ХРАНИЛИЩЕ =====
 const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
 let storageWarned = false;
 const save = (k, v) => {
     try { localStorage.setItem(k, JSON.stringify(v)); }
-    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные (память браузера недоступна или заполнена)."); } }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные."); } }
 };
-// Полный набор ключей — для «единой копии»
-const ALL_KEYS = [
-    "courierData","ordersLog","shiftConfig","helpConfig","rosterConfig","customTariff","tariffHistory","ordersLogBF",
-    "cashOperations","cashCategories","cashCategoriesMigrated","fuelLog","mileageData","oilData","filterData","otherParts","dailyKmLog",
-    "fin","monthPlan"
-];
 
 let cashOperations = LS("cashOperations", []);
-let cashFilter = "all";
-let cashMonth = getLocalDateStr().slice(0, 7);
-const CM = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-function cashMonthLabel() { const p = cashMonth.split("-"); return CM[+p[1] - 1] + " " + p[0]; }
-function shiftCashMonth(d) { const p = cashMonth.split("-").map(Number), dt = new Date(p[0], p[1] - 1 + d, 1); cashMonth = dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0"); refreshAll(); }
-const SYSTEM_CATEGORIES = ['tips', 'debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
-const DEBT_TYPES = ['debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
-let pendingQuickType = null;
-let editingId = null;
 let mileageData = LS("mileageData", { startKm: 0, currentKm: 0, lastDate: "", history: [], initialized: false });
 let fuelLog = LS("fuelLog", []);
 let oilData = LS("oilData", null);
 let filterData = LS("filterData", null);
 let otherParts = LS("otherParts", { belt: 0, pads: 0, candles: 0 });
 let dailyKmLog = LS("dailyKmLog", []);
+const CM = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+const DEBT_TYPES = ['debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
 
 // ===== УТИЛИТЫ =====
 const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const newId = () => Date.now() + "_" + Math.random().toString(36).slice(2, 8);
-const opTs = op => op.ts || parseInt(op.id, 10) || 0;
 const sumBy = (arr, f) => arr.reduce((s, o) => s + f(o), 0);
 function getLocalDateStr(d) {
     const date = d ? new Date(d) : new Date();
@@ -388,24 +228,9 @@ function showConfirmDialog(message, onConfirm) {
     n.onclick = () => o.remove();
     row.append(y, n); b.append(m, row); o.appendChild(b); document.body.appendChild(o);
 }
-function showPromptDialog(message, value, onOk) {
-    const o = document.createElement("div"); o.className = "dialog-overlay";
-    const b = document.createElement("div"); b.className = "dialog-box";
-    const m = document.createElement("p"); m.innerText = message;
-    const inp = document.createElement("input"); inp.type = "text"; inp.className = "form-control"; inp.value = value || "";
-    const row = document.createElement("div"); row.className = "dialog-buttons";
-    const y = document.createElement("button"); y.className = "dialog-yes"; y.innerText = "💾 OK";
-    const n = document.createElement("button"); n.className = "dialog-no"; n.innerText = "Отмена";
-    const done = () => { const v = inp.value; o.remove(); onOk(v); };
-    y.onclick = done; n.onclick = () => o.remove();
-    inp.addEventListener("keydown", e => { if (e.key === "Enter") done(); });
-    row.append(y, n); b.append(m, inp, row); o.appendChild(b); document.body.appendChild(o);
-    setTimeout(() => inp.focus(), 50);
-}
 
 // ===== КАТЕГОРИИ =====
 const loadCustomCategories = () => LS('cashCategories', []);
-const saveCategories = c => save('cashCategories', c);
 function getAllCategories() {
     const system = [
         { id: 'tips', name: '💵 Чаевые', type: 'income' },
@@ -417,50 +242,7 @@ function getAllCategories() {
     loadCustomCategories().forEach(c => { if (!system.find(s => s.id === c.id)) system.push(c); });
     return system;
 }
-const getCategory = id => getAllCategories().find(c => c.id === id);
-const getCategoryName = id => { const c = getCategory(id); return c ? c.name : "❔ Удалённая категория"; };
-const getCategoryType = id => { const c = getCategory(id); return c ? c.type : 'expense'; };
-
-// Баг 5: дефолтные «быстрые» категории создаём ТОЛЬКО один раз
-function ensureQuickCategories() {
-    if (LS("cashCategoriesMigrated", false)) return;
-    const custom = loadCustomCategories();
-    const wanted = [
-        { id: 'food', name: '🍔 Еда', type: 'expense' },
-        { id: 'service', name: '🔧 Сервис', type: 'expense' },
-        { id: 'fuel_quick', name: '⛽ Топливо', type: 'expense' },
-        { id: 'coffee', name: '☕ Кофе', type: 'expense' },
-        { id: 'lunch_work', name: '🍱 Обед на работе', type: 'expense' },
-        { id: 'wash', name: '🧼 Мойка мопеда', type: 'expense' },
-        { id: 'consumables', name: '🛢 Расходники', type: 'expense' }
-    ];
-    let changed = false;
-    wanted.forEach(w => { if (!getAllCategories().find(c => c.id === w.id)) { custom.push(w); changed = true; } });
-    if (changed) saveCategories(custom);
-    save("cashCategoriesMigrated", true);
-}
-const isRealExpense = op => op.amount < 0 && !DEBT_TYPES.includes(op.type);
-
-// ===== ДОЛГИ =====
-function calcDebts() {
-    const given = sumBy(cashOperations.filter(o => o.type === 'debt_given'), o => Math.abs(o.amount));
-    const returned = sumBy(cashOperations.filter(o => o.type === 'debt_returned'), o => Math.abs(o.amount));
-    const taken = sumBy(cashOperations.filter(o => o.type === 'debt_taken'), o => Math.abs(o.amount));
-    const repaid = sumBy(cashOperations.filter(o => o.type === 'debt_repaid'), o => Math.abs(o.amount));
-    return { owedToMe: Math.max(given - returned, 0), iOwe: Math.max(taken - repaid, 0) };
-}
-function checkDebtLimits(op) {
-    const amount = Math.abs(op.amount);
-    if (op.type === 'debt_repaid') {
-        const owed = calcDebts().iOwe;
-        if (amount > owed + 0.001) { showAlertDialog(`Нельзя вернуть больше, чем должен.\nТекущий долг: ${owed.toFixed(2)} лей`); return false; }
-    }
-    if (op.type === 'debt_returned') {
-        const owedMe = calcDebts().owedToMe;
-        if (amount > owedMe + 0.001) { showAlertDialog(`Вам должны только ${owedMe.toFixed(2)} лей.\nНельзя вернуть больше.`); return false; }
-    }
-    return true;
-}
+const getCategoryName = id => { const c = getAllCategories().find(x => x.id === id); return c ? c.name : "❔ Удалённая категория"; };
 
 // ===== ЧАСЫ И ТЕМА =====
 function updateClock() {
@@ -475,7 +257,6 @@ function initThemeToggle() {
         const v = this.checked ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", v);
         try { localStorage.setItem("theme", v); } catch (e) {}
-        // перерисовываем канвасы — они запекают цвета из CSS
         renderExpensesAnalytics();
     });
 }
@@ -487,85 +268,6 @@ function toggleMenu(id, btn) {
     const show = box.classList.toggle("show");
     if (arrow) arrow.classList.toggle("rotated", show);
     if (id === 'analyticsBox' && show) renderExpensesAnalytics();
-}
-
-// ===== КАТЕГОРИИ UI =====
-function openCategoryManager() { document.getElementById('categoryManagerModal').style.display = 'block'; renderCategoryList(); }
-function closeCategoryManager() { document.getElementById('categoryManagerModal').style.display = 'none'; }
-function refreshCategoryUI() { renderCategoryList(); populateCategorySelect(); updateCategoryFilters(); renderCashList(); renderExpensesAnalytics(); }
-function addCategory() {
-    const ni = document.getElementById('newCategoryName');
-    const name = ni.value.trim().replace(/\s+/g, ' '), type = document.getElementById('newCategoryType').value;
-    if (!name) { showAlertDialog('Введите название категории'); return; }
-    if (getAllCategories().find(c => c.name.trim().toLowerCase() === name.toLowerCase())) { showAlertDialog('Категория с таким названием уже существует'); return; }
-    const custom = loadCustomCategories();
-    custom.push({ id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name, type });
-    saveCategories(custom);
-    ni.value = '';
-    refreshCategoryUI();
-    showNotification('✅ Категория добавлена: ' + name);
-}
-function editCategory(id) {
-    const custom = loadCustomCategories();
-    const i = custom.findIndex(c => c.id === id);
-    if (i === -1) { showAlertDialog('Категория не найдена'); return; }
-    showPromptDialog('Новое название:', custom[i].name, nn => {
-        const t = nn.trim();
-        if (!t) { showAlertDialog('Название не может быть пустым'); return; }
-        if (getAllCategories().find(c => c.name.trim().toLowerCase() === t.toLowerCase() && c.id !== id)) { showAlertDialog('Категория с таким названием уже существует'); return; }
-        custom[i].name = t;
-        saveCategories(custom);
-        refreshCategoryUI();
-        showNotification('✅ Категория переименована');
-    });
-}
-function deleteCategory(id) {
-    if (SYSTEM_CATEGORIES.includes(id)) { showAlertDialog('Системную категорию нельзя удалить'); return; }
-    const has = cashOperations.some(op => op.type === id);
-    showConfirmDialog(has ? '⚠ Есть операции с этой категорией — они останутся без названия. Удалить?' : `Удалить категорию "${getCategoryName(id)}"?`, () => {
-        saveCategories(loadCustomCategories().filter(c => c.id !== id));
-        if (cashFilter === id) cashFilter = 'all';
-        refreshCategoryUI();
-        showNotification('🗑 Категория удалена');
-    });
-}
-function renderCategoryList() {
-    const c = document.getElementById('categoryList'); if (!c) return;
-    const custom = loadCustomCategories();
-    c.innerHTML = getAllCategories().map(cat => {
-        const isC = custom.some(x => x.id === cat.id);
-        const tl = cat.type === 'income' ? '📈 Приход' : '💰 Расход';
-        return `<div class="category-item"><div><span class="cat-name">${esc(cat.name)}</span> <span class="cat-type">(${tl})</span></div><div class="cat-actions">${isC ? `<button class="cat-edit" data-id="${esc(cat.id)}" onclick="editCategory(this.dataset.id)">✏</button><button class="cat-delete" data-id="${esc(cat.id)}" onclick="deleteCategory(this.dataset.id)">🗑</button>` : `<span class="cat-system">🔒 система</span>`}</div></div>`;
-    }).join('');
-}
-(function () {
-    const t = document.getElementById('cashOpType');
-    if (t) t.addEventListener('change', () => refreshPerson());
-})();
-function populateCategorySelect() {
-    const s = document.getElementById('cashOpType'); if (!s) return;
-    const cats = getAllCategories(), cur = s.value;
-    s.innerHTML = '';
-    [['📈 Приход', 'income'], ['💰 Расход', 'expense']].forEach(([label, type]) => {
-        const list = cats.filter(c => c.type === type);
-        if (!list.length) return;
-        const og = document.createElement('optgroup'); og.label = label;
-        list.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; og.appendChild(o); });
-        s.appendChild(og);
-    });
-    if (cur && s.querySelector(`option[value="${cur}"]`)) s.value = cur;
-}
-(function () { const o = populateCategorySelect; populateCategorySelect = function () { o.apply(this, arguments); refreshPerson(); }; })();
-function updateCategoryFilters() {
-    const bar = document.getElementById('cashFilterBar'); if (!bar) return;
-    document.querySelectorAll('.cash-filter-custom').forEach(el => el.remove());
-    getAllCategories().filter(c => !SYSTEM_CATEGORIES.includes(c.id)).forEach(c => {
-        const b = document.createElement('button');
-        b.className = 'cash-filter-custom'; b.dataset.filter = c.id; b.textContent = c.name;
-        b.onclick = () => setCashFilter(c.id, b);
-        bar.appendChild(b);
-    });
-    bar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.filter === cashFilter));
 }
 
 // ===== ТОПЛИВО =====
@@ -585,190 +287,8 @@ function syncFuelFromOp(op, liters, price) {
     op.fuelSynced = true;
 }
 function refreshAll() {
-    save('cashOperations', cashOperations);
     save('fuelLog', fuelLog);
-    renderCashList(); renderFuelStats(); renderMileageStats(); renderFuelHistory(); renderExpensesAnalytics();
-}
-
-// ===== ОПЕРАЦИИ КАССЫ =====
-const NEW_PERSON = '➕ Новое имя…';
-function knownPeople() {
-    const m = new Map();
-    cashOperations.filter(o => DEBT_TYPES.includes(o.type) && o.comment && o.comment !== getCategoryName(o.type)).forEach(o => {
-        const n = o.comment.trim().replace(/\s+/g, ' '), k = n.toLowerCase();
-        if (n && !m.has(k)) m.set(k, n);
-    });
-    return [...m.values()].sort((a, b) => a.localeCompare(b, 'ru'));
-}
-function refreshPerson(prefill) {
-    const t = document.getElementById('cashOpType'), w = document.getElementById('cashPersonWrap'),
-          sel = document.getElementById('cashOpPerson'), inp = document.getElementById('cashOpComment');
-    if (!t || !w || !sel || !inp) return;
-    const isDebt = DEBT_TYPES.includes(t.value);
-    w.style.display = isDebt ? 'block' : 'none';
-    if (!isDebt) { inp.style.display = ''; return; }
-    const people = knownPeople();
-    const keep = prefill !== undefined ? prefill : (sel.value || '');
-    sel.innerHTML = '';
-    const add = (v, label) => { const o = document.createElement('option'); o.value = v; o.textContent = label; sel.appendChild(o); };
-    add('', '— выбери человека —');
-    people.forEach(p => add(p, p));
-    add(NEW_PERSON, NEW_PERSON);
-    const hit = people.find(p => p.toLowerCase() === String(keep).trim().toLowerCase());
-    if (hit) { sel.value = hit; if (prefill !== undefined) inp.value = ''; }
-    else if (keep === NEW_PERSON || String(keep).trim()) sel.value = NEW_PERSON;
-    else sel.value = '';
-    inp.style.display = sel.value === NEW_PERSON ? '' : 'none';
-    sel.onchange = () => { inp.style.display = sel.value === NEW_PERSON ? '' : 'none'; if (sel.value === NEW_PERSON) inp.focus(); };
-}
-function addCashOperation() {
-    if (!guardAction('addCashOp')) return;
-    const date = document.getElementById("cashOpDate").value || getLocalDateStr();
-    let amount = parseFloat(document.getElementById("cashOpAmount").value) || 0;
-    const type = document.getElementById("cashOpType").value;
-    let comment = document.getElementById("cashOpComment").value.trim();
-    if (DEBT_TYPES.includes(type)) {
-        const ps = document.getElementById('cashOpPerson');
-        if (ps && ps.value === '') { showAlertDialog('Выбери человека из списка (или «➕ Новое имя…»)'); return; }
-        if (ps && ps.value !== NEW_PERSON) comment = ps.value;
-        else {
-            comment = comment.replace(/\s+/g, ' ');
-            if (!comment) { showAlertDialog('Введи имя'); return; }
-            const ex = knownPeople().find(p => p.toLowerCase() === comment.toLowerCase());
-            if (ex) comment = ex;
-        }
-    }
-    if (amount === 0) { showAlertDialog("Введите сумму."); return; }
-    amount = Math.abs(amount);
-    if (getCategoryType(type) === 'expense') amount = -amount;
-    const prev = editingId ? cashOperations.find(o => o.id === editingId) : null;
-    const op = { id: prev ? prev.id : newId(), ts: prev ? opTs(prev) : Date.now(), date, type, amount, comment: comment || getCategoryName(type), timestamp: prev ? prev.timestamp : new Date().toLocaleString() };
-    const backup = cashOperations;
-    if (prev) cashOperations = cashOperations.filter(o => o.id !== prev.id);
-    if (!checkDebtLimits(op)) { cashOperations = backup; return; }
-    cashOperations.push(op);
-    fuelLog = fuelLog.filter(f => f.cashId !== op.id);
-    if (isFuelOp(op)) syncFuelFromOp(op, 0, 0);
-    const wasEdit = !!prev;
-    endEdit();
-    document.getElementById("cashOpAmount").value = "";
-    document.getElementById("cashOpComment").value = "";
-    refreshPerson('');
-    refreshAll();
-    showNotification(`${wasEdit ? '💾 Изменено' : '✅ Добавлено'}: ${amount.toFixed(2)} лей`);
-}
-function startEdit(id) {
-    const op = cashOperations.find(o => o.id === id); if (!op) return;
-    editingId = id;
-    document.getElementById("cashOpDate").value = op.date;
-    document.getElementById("cashOpAmount").value = Math.abs(op.amount);
-    document.getElementById("cashOpType").value = op.type;
-    let comment = op.comment || "";
-    const fe = fuelLog.find(f => f.cashId === id);
-    if (fe && fe.liters && !parseFuel(comment).liters) comment = `${fe.liters}*${+(fe.price || 0).toFixed(2)}`;
-    document.getElementById("cashOpComment").value = comment;
-    refreshPerson(comment);
-    document.getElementById("opFormTitle").textContent = "✏ Редактирование";
-    document.getElementById("opSubmitBtn").textContent = "💾 Сохранить";
-    const sb = document.getElementById("opSecondBtn");
-    sb.textContent = "❌ Отмена"; sb.onclick = () => { endEdit(); document.getElementById("cashOpAmount").value = ""; document.getElementById("cashOpComment").value = ""; refreshPerson(''); };
-    scrollToForm();
-}
-function endEdit() {
-    editingId = null;
-    document.getElementById("opFormTitle").textContent = "➕ Новая операция";
-    document.getElementById("opSubmitBtn").textContent = "➕ Добавить";
-    const sb = document.getElementById("opSecondBtn");
-    sb.textContent = "🗑 Сброс"; sb.onclick = resetAllCash;
-}
-function deleteCashOp(id) {
-    showConfirmDialog("Удалить операцию?", () => {
-        cashOperations = cashOperations.filter(op => op.id !== id);
-        fuelLog = fuelLog.filter(f => f.cashId !== id);
-        if (editingId === id) endEdit();
-        refreshAll();
-        showNotification("🗑 Операция удалена");
-    });
-}
-function resetAllCash() {
-    showConfirmDialog("Сбросить ВСЕ операции по кассе?\n(записи топлива, связанные с кассой, тоже удалятся)", () => {
-        cashOperations = [];
-        fuelLog = fuelLog.filter(f => !f.cashId);
-        endEdit();
-        refreshAll();
-        showNotification("🗑 Все операции удалены");
-    });
-}
-function setCashFilter(type, btn) {
-    cashFilter = type;
-    document.querySelectorAll(".cash-filter-bar button").forEach(b => b.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-    renderCashList();
-}
-function renderCashList() {
-    const container = document.getElementById("cashOperationsList"); if (!container) return;
-    const inM = op => (op.date || "").slice(0, 7) === cashMonth;
-    const filtered = (cashFilter === "all" ? [...cashOperations] : cashOperations.filter(op => op.type === cashFilter)).filter(inM);
-    filtered.sort((a, b) => b.date.localeCompare(a.date) || opTs(b) - opTs(a));
-    container.innerHTML = filtered.length ? filtered.map(op => {
-        const sign = op.amount >= 0 ? "+" : "";
-        const cls = op.amount >= 0 ? "text-pos" : "text-neg";
-        return `<div class="cash-operation-row"><span class="op-date">${esc(op.date)}</span><span class="op-type">${esc(getCategoryName(op.type))}</span><span class="op-amount ${cls}">${sign}${op.amount.toFixed(2)}</span><span class="op-comment">${esc(op.comment || "")}</span><div class="op-actions"><button data-id="${esc(op.id)}" onclick="startEdit(this.dataset.id)">✏</button><button data-id="${esc(op.id)}" onclick="deleteCashOp(this.dataset.id)">🗑</button></div></div>`;
-    }).join("") : `<p class="empty-note">Нет операций</p>`;
-
-    const total = sumBy(filtered, op => op.amount);
-    const te = document.getElementById("cashPeriodTotal");
-    if (te) { te.textContent = total.toFixed(2) + " лей"; te.className = total >= 0 ? "text-pos" : "text-neg"; }
-
-    const debts = calcDebts();
-    const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-    set("debtOwedToMeCard", debts.owedToMe.toFixed(2));
-    set("debtIOweCard", debts.iOwe.toFixed(2));
-    set("cashMonthLabel", "📋 " + cashMonthLabel());
-}
-
-// ===== БЫСТРЫЕ ОПЕРАЦИИ =====
-const QK = {
-    coffee: '☕ Кофе', lunch_work: '🍱 Обед на работе', wash: '🧼 Мойка мопеда',
-    consumables: '🛢 Расходники (масло, фильтр)', service: '🔧 Сервис', fuel_quick: '⛽ Топливо',
-    tips: '💵 Чаевые', debt_taken: '📥 Взял в долг', debt_given: '📤 Дал в долг',
-    debt_repaid: '✅ Вернул долг (я отдал)', debt_returned: '✅ Мне вернули долг'
-};
-function quickAdd(type) {
-    pendingQuickType = type;
-    document.getElementById("quickModalTitle").textContent = QK[type] || '⚡ Быстрая операция';
-    document.getElementById("quickAmount").value = "";
-    document.getElementById("quickComment").value = "";
-    document.getElementById("quickLiters").value = "";
-    document.getElementById("quickLitersWrap").style.display = type === 'fuel_quick' ? 'block' : 'none';
-    document.getElementById("quickComment").placeholder =
-        (type === 'debt_taken')    ? 'У кого взял? (Иван)' :
-        (type === 'debt_given')    ? 'Кому дал? (Пётр)' :
-        (type === 'debt_repaid')   ? 'Кому вернул? (Иван)' :
-        (type === 'debt_returned') ? 'Кто вернул? (Пётр)' : 'Описание';
-    document.getElementById("quickModal").style.display = "block";
-    setTimeout(() => document.getElementById("quickAmount").focus(), 100);
-}
-function closeQuickModal() { document.getElementById("quickModal").style.display = "none"; pendingQuickType = null; }
-function confirmQuickAdd() {
-    if (!pendingQuickType || !guardAction('quickAdd')) return;
-    const amount = parseFloat(document.getElementById("quickAmount").value) || 0;
-    const liters = parseFloat(document.getElementById("quickLiters").value) || 0;
-    const comment = document.getElementById("quickComment").value.trim();
-    if (amount <= 0) { showAlertDialog("Введите сумму больше нуля."); return; }
-    const type = pendingQuickType;
-    const signed = getCategoryType(type) === 'expense' ? -Math.abs(amount) : Math.abs(amount);
-    const op = { id: newId(), ts: Date.now(), date: getLocalDateStr(), type, amount: signed, comment: comment || getCategoryName(type), timestamp: new Date().toLocaleString() };
-    if (!checkDebtLimits(op)) return;
-    cashOperations.push(op);
-    if (type === 'fuel_quick') syncFuelFromOp(op, liters, 0);
-    closeQuickModal();
-    refreshAll();
-    showNotification(`✅ ${getCategoryName(type)}: ${signed.toFixed(2)} лей`);
-}
-function scrollToForm() {
-    const el = document.getElementById("addOperationCard");
-    if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => document.getElementById("cashOpAmount").focus(), 300); }
+    renderFuelStats(); renderMileageStats(); renderFuelHistory(); renderKmHistory(); renderExpensesAnalytics();
 }
 
 // ===== ПРОБЕГ =====
@@ -784,9 +304,8 @@ function saveMileage() {
     if (mileageData.initialized) mileageData.history.push({ date: today, km: currentKm });
     Object.assign(mileageData, { startKm, currentKm, lastDate: today, initialized: true });
     save("mileageData", mileageData);
-    // также пишем дельту в dailyKmLog, чтобы stats считал правильно
     if (delta > 0) {
-        dailyKmLog.push({ date: today, km: delta, time: new Date().toLocaleString(), source: 'saveMileage' });
+        dailyKmLog.push({ id: newId(), date: today, km: delta, time: new Date().toLocaleString(), source: 'saveMileage' });
         save("dailyKmLog", dailyKmLog);
     }
     renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
@@ -797,7 +316,7 @@ function addDailyKm() {
     const date = document.getElementById("dailyKmDate").value || getLocalDateStr();
     const km = parseFloat(document.getElementById("dailyKmValue").value) || 0;
     if (km <= 0) { showAlertDialog("Введите пройденный километраж."); return; }
-    dailyKmLog.push({ date, km, time: new Date().toLocaleString() });
+    dailyKmLog.push({ id: newId(), date, km, time: new Date().toLocaleString() });
     save("dailyKmLog", dailyKmLog);
     mileageData.currentKm = (mileageData.currentKm || 0) + km;
     mileageData.lastDate = date;
@@ -806,22 +325,45 @@ function addDailyKm() {
     mileageData.history.push({ date, km: mileageData.currentKm });
     save("mileageData", mileageData);
     document.getElementById("dailyKmValue").value = "";
-    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
+    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics(); renderKmHistory();
     showNotification(`✅ Добавлено ${km} км за ${date}`);
 }
-function resetTodayMileage() {
-    const today = getLocalDateStr();
-    showConfirmDialog("Сбросить километраж за сегодня?", () => {
-        const sumToday = sumBy(dailyKmLog.filter(e => e.date === today), e => e.km || 0);
-        dailyKmLog = dailyKmLog.filter(e => e.date !== today);
-        save("dailyKmLog", dailyKmLog);
-        if (sumToday > 0) mileageData.currentKm = Math.max((mileageData.currentKm || 0) - sumToday, mileageData.startKm || 0);
-        if (mileageData.history) mileageData.history = mileageData.history.filter(h => h.date !== today);
-        save("mileageData", mileageData);
-        renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
-        showNotification("🗑 Километраж за сегодня сброшен");
+
+// ===== ИСТОРИЯ ПРОБЕГА =====
+function renderKmHistory() {
+    const c = document.getElementById("kmHistoryList"); if (!c) return;
+    if (!dailyKmLog.length) { c.innerHTML = `<p class="empty-note">Нет записей</p>`; return; }
+    const sorted = [...dailyKmLog].sort((a, b) => b.date.localeCompare(a.date));
+    c.innerHTML = sorted.map(e => 
+        `<div class="list-row" style="align-items:center;">
+            <span>${esc(e.date)}</span>
+            <span style="flex:1;text-align:right;font-weight:600;">+ ${e.km} км</span>
+            <button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;color:var(--text-dim);" data-id="${esc(e.id)}" onclick="deleteKmEntry(this.dataset.id)">🗑</button>
+        </div>`
+    ).join("");
+}
+
+function deleteKmEntry(id) {
+    showConfirmDialog("Удалить эту запись? Километраж вычтется из текущего.", () => {
+        const entry = dailyKmLog.find(e => e.id === id);
+        if (entry) {
+            dailyKmLog = dailyKmLog.filter(e => e.id !== id);
+            save("dailyKmLog", dailyKmLog);
+            
+            mileageData.currentKm = Math.max((mileageData.currentKm || 0) - entry.km, mileageData.startKm || 0);
+            if (mileageData.history) {
+                // Удаляем последнее совпадение по дате и км из истории
+                const idx = mileageData.history.findIndex(h => h.date === entry.date && h.km === mileageData.currentKm + entry.km);
+                if (idx !== -1) mileageData.history.splice(idx, 1);
+            }
+            save("mileageData", mileageData);
+            
+            renderMileageStats(); renderFuelStats(); renderExpensesAnalytics(); renderKmHistory();
+            showNotification("🗑 Запись удалена");
+        }
     });
 }
+
 function renderMileageStats() {
     const totalKm = Math.max((mileageData.currentKm || 0) - (mileageData.startKm || 0), 0);
     const el = id => document.getElementById(id);
@@ -867,7 +409,6 @@ function addFuel() {
     refreshAll();
     showNotification(`⛽ Заправка: ${amount.toFixed(2)} лей`);
 }
-// Сброс ТОЛЬКО журнала топлива; касса не трогается
 function resetFuelLog() {
     showConfirmDialog("Сбросить журнал топлива?\nОперации в кассе останутся, статистика топлива обнулится.", () => {
         fuelLog = [];
@@ -927,6 +468,7 @@ function deleteFuelEntry(id) {
     showConfirmDialog("Удалить заправку?\nСвязанная операция в кассе тоже удалится.", () => {
         fuelLog = fuelLog.filter(f => f.cashId !== id);
         cashOperations = cashOperations.filter(o => o.id !== id);
+        save("cashOperations", cashOperations);
         if (editingFuelId === id) endFuelEdit();
         refreshAll();
         showNotification("🗑 Заправка удалена");
@@ -1024,12 +566,10 @@ function scooterExpenses() {
     cashOperations.forEach(o => {
         if (!(o.amount < 0) || DEBT_TYPES.includes(o.type) || isFuelOp(o)) return;
         const n = getCategoryName(o.type);
-        // Баг 6: добавлен "расходник"
         if (/сервис|мойк|мото|мопед|скутер|масл|запчаст|ремонт|расходник/i.test(n)) out.push({ date: o.date, cat: n, amount: Math.abs(o.amount) });
     });
     return out;
 }
-// retina: поднимаем разрешение в 2x и рисуем круглые бары
 function drawBarChart(canvas, labels, series) {
     if (!canvas) return;
     const dpr = window.devicePixelRatio || 1;
@@ -1127,7 +667,6 @@ function renderExpensesAnalytics() {
       <div class="block-heading" style="margin-top:14px;">📊 Расходы по месяцам</div>
       <div class="chart-wrap" style="overflow-x:auto"><canvas id="chartMonthlyExpenses" height="160"></canvas></div>`;
 
-    // рисуем график после вставки в DOM
     requestAnimationFrame(() => {
         const canvas = document.getElementById("chartMonthlyExpenses");
         if (!canvas) return;
@@ -1137,70 +676,37 @@ function renderExpensesAnalytics() {
     });
 }
 
-// ===== РЕЗЕРВНАЯ КОПИЯ =====
-function exportData() {
-    const data = { app: "scooter", version: 3, exported: new Date().toISOString() };
-    ALL_KEYS.forEach(k => { data[k] = LS(k, null); });
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `scooter-backup-${getLocalDateStr()}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    save("lastFullBackup", Date.now());
-    showNotification("⬇ Полная копия сохранена");
-}
-function importData(input) {
-    const file = input.files && input.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        try {
-            const data = JSON.parse(reader.result);
-            if (!data || (data.app !== "scooter" && data.app !== "kassa-scooter" && data.app !== "work-day")) throw new Error("bad");
-            showConfirmDialog("Заменить текущие данные данными из файла?", () => {
-                ALL_KEYS.forEach(k => { if (data[k] !== undefined && data[k] !== null) save(k, data[k]); });
-                location.reload();
-            });
-        } catch (e) { showAlertDialog("Файл не похож на резервную копию этого приложения."); }
-        input.value = "";
-    };
-    reader.readAsText(file);
-}
-
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 function initApp() {
-    ensureQuickCategories();
     cashOperations.forEach(op => {
         if (!op.fuelSynced && isFuelOp(op)) syncFuelFromOp(op, 0, 0);
     });
     fuelLog.forEach(f => { if (!f.cashId) f.cashId = newId(); });
+    
+    // старым записям без ID присваиваем ID
+    dailyKmLog.forEach(e => { if (!e.id) e.id = newId(); });
+    save("dailyKmLog", dailyKmLog);
 
     const today = getLocalDateStr();
-    ["cashOpDate", "fuelDate", "dailyKmDate"].forEach(id => {
+    ["fuelDate", "dailyKmDate"].forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.value) el.value = today;
     });
-    populateCategorySelect();
-    updateCategoryFilters();
-    renderCashList();
+    
     renderMileageStats();
+    renderKmHistory();
     renderFuelStats();
     renderFuelHistory();
     buildMaintenance();
     renderExpensesAnalytics();
     updateClock();
     initThemeToggle();
-
-    document.getElementById("quickModal").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.tagName === "INPUT") confirmQuickAdd(); });
-    document.getElementById("newCategoryName").addEventListener("keydown", e => { if (e.key === "Enter") addCategory(); });
-    document.getElementById("quickModal").addEventListener("click", e => { if (e.target.id === "quickModal") closeQuickModal(); });
-    document.getElementById("categoryManagerModal").addEventListener("click", e => { if (e.target.id === "categoryManagerModal") closeCategoryManager(); });
 }
 
 window.addEventListener("storage", e => {
     if (e.key === "fuelLog" || e.key === "cashOperations" || e.key === "mileageData" || e.key === "theme") {
-        fuelLog = LS("fuelLog", []); cashOperations = LS("cashOperations", []); mileageData = LS("mileageData", mileageData);
-        renderCashList(); renderFuelStats(); renderFuelHistory(); renderMileageStats(); renderExpensesAnalytics();
+        fuelLog = LS("fuelLog", []); cashOperations = LS("cashOperations", []); mileageData = LS("mileageData", mileageData); dailyKmLog = LS("dailyKmLog", []);
+        renderFuelStats(); renderFuelHistory(); renderMileageStats(); renderKmHistory(); renderExpensesAnalytics();
     }
 });
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp);

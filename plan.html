@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#007aff"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="apple-mobile-web-app-title" content="Учёт"/>
+<title>📋 План и факт</title>
+<script>
+(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
+</script>
+<style>
+:root{--bg:#f4f7f6;--text:#333;--text-dim:#7f8c8d;--card:#fff;--card-border:#eee;--line:#eee;--panel:#fff;--input-bg:#f8f8fc;--input-border:#e3e5ec;--accent:#3498db;--accent2:#2980b9;--good:#27ae60;--bad:#c0392b;--warn-bg:#fff3cd;--warn-bd:#ffc107;--btn:#007aff;--modal-bg:#fff;--modal-ov:rgba(0,0,0,.4)}
+:root[data-theme="dark"]{--bg:#0a0a0f;--text:#e8e9ee;--text-dim:#8a90a2;--card:#1c1e26;--card-border:#2a2d3a;--line:#2a2d3a;--panel:#1c1e26;--input-bg:#16171d;--input-border:#3a3a3c;--accent:#4da3ff;--accent2:#66b3ff;--good:#66bb6a;--bad:#ef6b6b;--warn-bg:#2a1f0a;--warn-bd:#ffa726;--btn:#2f6fed;--modal-bg:#1c1e26;--modal-ov:rgba(0,0,0,.6)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(90px + env(safe-area-inset-bottom,0px));max-width:800px;margin:0 auto}
+h1{color:var(--accent2);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:10px;font-size:1.4em}
+h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margin-top:2px}
+.goal-banner{background:var(--warn-bg);border-left:5px solid var(--warn-bd);padding:14px 16px;margin-bottom:16px;border-radius:0 8px 8px 0;font-size:.93em;white-space:pre-line}
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.tot{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;text-align:center;min-width:0}
+.tot small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase}
+.tot b{display:block;font-size:18px;margin-top:4px;overflow-wrap:anywhere}
+.tot.plan b{color:var(--accent2)}
+.tot.fact b{color:var(--good)}
+.tot.diff b{color:var(--bad)}
+.tot.diff.plus b{color:var(--good)}
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:14px 16px;margin-bottom:14px;box-shadow:0 4px 6px rgba(0,0,0,.05)}
+.section h2{color:var(--accent2);font-size:1.05em;margin-top:0;border-bottom:1px solid var(--line);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.section h2 small{font-size:11px;color:var(--text-dim);font-weight:600}
+.task{padding:10px 6px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.task:last-child{border-bottom:0}
+.task-row1{display:flex;align-items:flex-start;gap:10px}
+.task-row1 input[type="checkbox"]{width:20px;height:20px;flex:0 0 auto;margin-top:3px;accent-color:var(--accent);cursor:pointer}
+.task-title{flex:1;min-width:0;font-weight:600}
+.task-title.done{text-decoration:line-through;color:var(--text-dim)}
+.task-note{font-size:12px;color:var(--text-dim);font-weight:400;margin-top:3px}
+.task-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:4px;margin-left:30px}
+.task-num{background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:5px 8px;font-size:12px;min-width:0}
+.task-num small{display:block;font-size:10px;color:var(--text-dim);font-weight:600;text-transform:uppercase}
+.task-num input{width:100%;border:none;background:transparent;color:var(--text);font-size:15px;font-weight:700;font-family:inherit;padding:0;margin-top:1px;outline:none;min-height:0}
+.task-num.fact input{color:var(--good)}
+.task-num.diff{background:transparent;border:none;padding:0}
+.task-num.diff small{margin-top:4px}
+.task-num.diff b{display:block;font-size:15px;margin-top:1px}
+.diff-neg{color:var(--bad)}
+.diff-pos{color:var(--good)}
+.task-actions{display:flex;gap:4px;margin-left:auto;flex:0 0 auto}
+.task-actions button{background:none;border:none;font-size:15px;cursor:pointer;padding:2px 6px;border-radius:6px;color:var(--text-dim)}
+.task-actions button:hover{background:rgba(127,127,127,.15);color:var(--text)}
+.amount{font-weight:bold;color:var(--bad)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar button{flex:1;min-width:120px;padding:10px 12px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--panel);color:var(--text);border:1px solid var(--card-border)}
+.toolbar button.pri{background:var(--btn);color:#fff;border-color:var(--btn)}
+.toolbar button:active{transform:scale(.97)}
+.modal{display:none;position:fixed;inset:0;background:var(--modal-ov);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;overflow-y:auto}
+.modal.on{display:block}
+.modal-box{background:var(--modal-bg);color:var(--text);margin:max(env(safe-area-inset-top,0px),10vh) auto 24px;padding:22px 18px 18px;border-radius:20px;width:88%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box h3{font-size:17px;margin-bottom:12px;text-align:center;color:var(--accent2)}
+.modal-box label{display:block;font-size:12px;color:var(--text-dim);margin-top:10px}
+.modal-box input,.modal-box textarea,.modal-box select{width:100%;padding:10px 12px;border:1.5px solid var(--input-border);border-radius:10px;font-size:15px;background:var(--input-bg);color:var(--text);font-family:inherit;margin-top:4px}
+.modal-box textarea{min-height:70px;resize:vertical}
+.modal-box .row{display:flex;gap:8px;margin-top:14px}
+.modal-box .row button{flex:1;padding:11px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+.modal-box .row .ok{background:var(--btn);color:#fff}
+.modal-box .row .no{background:rgba(127,127,127,.15);color:var(--text)}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:6px}
+.notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 22px;border-radius:30px;font-weight:500;font-size:13px;z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:100}
+.tabbar .in{display:flex;width:100%;max-width:800px}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
+.tabbar span{font-size:19px;line-height:1}
+.tabbar .active{color:var(--accent)}
+.footer{text-align:center;margin-top:20px;font-size:.9em;color:var(--text-dim);white-space:pre-line}
+@media(max-width:480px){body{padding:12px;padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}h1{font-size:1.2em}.toolbar button{min-width:0;font-size:13px;padding:9px 10px}.task-nums{grid-template-columns:1fr 1fr 1fr;margin-left:0}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
+</style>
+</head>
+<body>
+
+<h1 id="planTitle">📋 План и факт<span class="mo" id="planMonth">—</span></h1>
+
+<div class="goal-banner" id="goalBanner"></div>
+
+<div class="totals">
+  <div class="tot plan"><small>План</small><b id="totPlan">0</b></div>
+  <div class="tot fact"><small>Факт</small><b id="totFact">0</b></div>
+  <div class="tot diff" id="totDiffWrap"><small>Разница</small><b id="totDiff">0</b></div>
+</div>
+
+<div class="toolbar">
+  <button class="pri" onclick="openTaskModal(null)">➕ Задача</button>
+  <button onclick="pullFacts()">🔄 Подтянуть факт</button>
+  <button onclick="newMonth()">🆕 Новый месяц</button>
+  <button onclick="toggleEdit()" id="editBtn">✏ Редактировать</button>
+  <button onclick="openSettings()">⚙</button>
+</div>
+
+<div id="sections"></div>
+
+<div class="footer" id="checkpoint"></div>
+
+<nav class="tabbar"><div class="in">
+<a href="index.html"><span>📦</span>Учёт</a>
+<a href="cash.html"><span>🛵</span>Скутер</a>
+<a href="stats.html"><span>📊</span>Статистика</a>
+<a href="fin.html"><span>💼</span>Финансы</a>
+<a href="plan.html" class="active"><span>📋</span>План</a>
+<a href="settings.html"><span>⚙</span>Настройки</a>
+</div></nav>
+
+<div id="taskModal" class="modal">
+  <div class="modal-box">
+    <h3 id="taskModalTitle">Новая задача</h3>
+    <label>Заголовок</label>
+    <input id="tTitle" placeholder="Например: Ломбард"/>
+    <label>Описание</label>
+    <textarea id="tNote" placeholder="Строго до конца месяца!"></textarea>
+    <label>План (сколько надо внести)</label>
+    <input id="tPlan" inputmode="decimal" placeholder="4620"/>
+    <label>Факт (можно оставить 0 и подтянуть)</label>
+    <input id="tFact" inputmode="decimal" placeholder="0"/>
+    <label>Источник для «🔄 Подтянуть факт» (необязательно)</label>
+    <select id="tAuto">
+      <option value="">— не подтягивать —</option>
+      <option value="fin:lombard">Ломбард (fin.istorija, napr:"платёж")</option>
+      <option value="fin:debt">Долги «Я вернул» (fin.istorija)</option>
+      <option value="fin:kredit">Кредиты (fin.istorija)</option>
+      <option value="fin:kartka">Кредитка (fin.istorija)</option>
+      <option value="cash:expense">Расходы кассы за месяц (cashOperations)</option>
+      <option value="cash:fuel">Топливо кассы за месяц</option>
+      <option value="cash:debt">Долги кассы (debt_*)</option>
+      <option value="fuel:month">Топливо скутера за месяц (fuelLog)</option>
+    </select>
+    <label>Раздел</label>
+    <select id="tSection"></select>
+    <div class="err" id="tErr"></div>
+    <div class="row">
+      <button class="ok" onclick="saveTask()">💾 Сохранить</button>
+      <button class="no" onclick="closeTaskModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div id="setModal" class="modal">
+  <div class="modal-box">
+    <h3>Настройки плана</h3>
+    <label>Месяц (заголовок)</label>
+    <input id="sMonth" placeholder="Ноябрь 2026"/>
+    <label>Цель (баннер)</label>
+    <textarea id="sGoal"></textarea>
+    <label>Футер</label>
+    <textarea id="sCheck"></textarea>
+    <label>Период подтягивания (ГГГГ-ММ)</label>
+    <input id="sPeriod" placeholder="2026-11"/>
+    <div class="err" id="sErr"></div>
+    <div class="row">
+      <button class="ok" onclick="saveSettings()">💾 Сохранить</button>
+      <button class="no" onclick="closeSettings()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div id="dialogModal" class="modal">
+  <div class="modal-box">
+    <p id="dlgText" style="text-align:center;font-size:15px;white-space:pre-line;line-height:1.5;margin-bottom:16px"></p>
+    <div class="row">
+      <button class="ok" id="dlgYes">Да</button>
+      <button class="no" id="dlgNo">Нет</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  «ПЛАН И ФАКТ» — только localStorage: monthPlan (+ theme).
+//  Чтение источников: fin, cashOperations, fuelLog — только при «Подтянуть факт».
+// ============================================================
+const $ = id => document.getElementById(id);
+const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+let storageWarned = false;
+const save = (k, v) => {
+    try { localStorage.setItem(k, JSON.stringify(v)); }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlert("⚠ Не удалось сохранить (память браузера недоступна)."); } }
+};
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const newId = () => "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const fmt = x => (+x || 0).toLocaleString("ru-RU", { maximumFractionDigits: 0 });
+
+// ---------- ПЛАН ПО УМОЛЧАНИЮ (используется только при первой миграции) ----------
+const DEFAULT_PLAN = {
+    month: "Ноябрь 2026",
+    goal: "Доходы: Зарплата ~18 015 (после налогов) + Стас 2 000 = 20 015 лей.\nГлавная цель: Оплатить двойной ломбард, обслужить технику и выйти из минуса по кредитке.",
+    checkpoint: "Ломбард оплачен (2 мес) ✅ | Мопед и Scenic с маслом ✅ | Кредитка вне минуса ✅",
+    period: "2026-11",
+    sections: [
+        { key: "debts", title: "💰 Блок 1: Обязательные долги и кредиты", tasks: [
+            { id: "t_lomb", title: "Ломбард (долг за 2 месяца)", note: "Строго до конца месяца!", plan: 4620, fact: 0, done: false, auto: "fin:lombard" },
+            { id: "t_cons", title: "Кредит Consum (ваш)", note: "", plan: 1201, fact: 0, done: false, auto: "fin:kredit" },
+            { id: "t_vik",  title: "Кредитка Viktoriabanc (ВСЕГО)", note: "Из них 2 250 — обязательный минимум, а 1 000 — сверху.", plan: 3250, fact: 0, done: false, auto: "fin:kartka" }
+        ]},
+        { key: "moto", title: "🔧 Блок 2: Техника и Топливо", tasks: [
+            { id: "t_moped", title: "Мопед", note: "Замена масла и фильтров.", plan: 1500, fact: 0, done: false, auto: "" },
+            { id: "t_scenic", title: "Scenic (машина жены)", note: "Замена масла и масляного фильтра.", plan: 2500, fact: 0, done: false, auto: "" },
+            { id: "t_fuel", title: "Бензин Scenic", note: "Заправить по мере необходимости.", plan: 2170, fact: 0, done: false, auto: "fuel:month" }
+        ]},
+        { key: "home", title: "🏠 Блок 3: Коммуналка и Связь", tasks: [
+            { id: "t_util", title: "Коммуналка (ваша доля)", note: "Собрать с детей их часть и оплатить текущие счета.", plan: 1500, fact: 0, done: false, auto: "" },
+            { id: "t_orange", title: "Orange (только ВАША доля)", note: "Рассрочка 2 500 + 1/5 от абонементов.", plan: 2704, fact: 0, done: false, auto: "" },
+            { id: "t_wood", title: "Дрова", note: "Топить печь старыми дровами. Газ не включать.", plan: 0, fact: 0, done: false, auto: "" }
+        ]},
+        { key: "safety", title: "🛡️ Блок 4: Подушка безопасности", tasks: [
+            { id: "t_cash", title: "Отложить наличными", note: "В конверт. Не тратить!", plan: 570, fact: 0, done: false, auto: "" }
+        ]}
+    ]
+};
+
+const CURRENT_SCHEMA = 2;
+let P = loadPlan();
+let editingTaskId = null;
+let editMode = false;
+
+// ---------- ЗАГРУЗКА + МИГРАЦИЯ (баг 4) ----------
+function loadPlan() {
+    const saved = LS("monthPlan", null);
+
+    // нет ничего — создаём дефолт и сразу помечаем схемой
+    if (!saved || !Array.isArray(saved.sections)) {
+        const def = JSON.parse(JSON.stringify(DEFAULT_PLAN));
+        def.schema = CURRENT_SCHEMA;
+        save("monthPlan", def);
+        return def;
+    }
+
+    // уже актуальная схема — просто возвращаем как есть, ничего не доливаем
+    if (saved.schema === CURRENT_SCHEMA) return saved;
+
+    // миграция v1 -> v2 (один раз)
+    const migrated = JSON.parse(JSON.stringify(saved));
+    // старый формат { amount } и { checked:{id:true} } -> plan/fact/done
+    if (migrated.checked && typeof migrated.checked === "object") {
+        migrated.sections.forEach(s => s.tasks.forEach(t => {
+            if (t.done === undefined) t.done = !!migrated.checked[t.id];
+            if (t.plan === undefined) t.plan = t.amount || 0;
+            if (t.fact === undefined) t.fact = 0;
+            delete t.amount;
+        }));
+        delete migrated.checked;
+    }
+    // гарантируем обязательные поля
+    migrated.sections.forEach(s => {
+        if (!Array.isArray(s.tasks)) s.tasks = [];
+        s.tasks.forEach(t => { if (t.done === undefined) t.done = false; if (t.fact === undefined) t.fact = 0; if (t.plan === undefined) t.plan = 0; });
+    });
+    // доливаем недостающие дефолтные задачи ТОЛЬКО сейчас
+    const byId = new Set();
+    migrated.sections.forEach(s => s.tasks.forEach(t => byId.add(t.id)));
+    DEFAULT_PLAN.sections.forEach(ds => ds.tasks.forEach(dt => {
+        if (!byId.has(dt.id)) {
+            let target = migrated.sections.find(s => s.key === ds.key);
+            if (!target) { target = { key: ds.key, title: ds.title, tasks: [] }; migrated.sections.push(target); }
+            target.tasks.push(JSON.parse(JSON.stringify(dt)));
+        }
+    }));
+    if (!migrated.period) migrated.period = DEFAULT_PLAN.period;
+    migrated.schema = CURRENT_SCHEMA;
+    save("monthPlan", migrated);
+    return migrated;
+}
+function persist() { save("monthPlan", P); }
+
+// ---------- ДИАЛОГИ (замена alert/confirm) ----------
+function showDialog(message, onYes, onNo) {
+    $("dlgText").textContent = message;
+    $("dialogModal").classList.add("on");
+    $("dlgYes").onclick = () => { $("dialogModal").classList.remove("on"); if (onYes) onYes(); };
+    $("dlgNo").onclick  = () => { $("dialogModal").classList.remove("on"); if (onNo) onNo(); };
+}
+function showAlert(msg) { showDialog(msg, null, null); $("dlgNo").style.display = "none"; setTimeout(() => { $("dlgNo").style.display = ""; }, 100); }
+function showConfirm(msg, onYes) { showDialog(msg, onYes, null); }
+function notify(msg) {
+    const ex = document.querySelector(".notification"); if (ex) ex.remove();
+    const n = document.createElement("div"); n.className = "notification"; n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => { n.style.opacity = "0"; setTimeout(() => n.remove(), 300); }, 2200);
+}
+
+// ---------- ИСТОЧНИКИ ФАКТА (только чтение) ----------
+function num(v) { const n = parseFloat(String(v == null ? "" : v).replace(/\s/g, "").replace(",", ".")); return isFinite(n) ? n : 0; }
+function period() { return P.period || (new Date().toISOString().slice(0, 7)); }
+function inPeriod(d) { return String(d || "").slice(0, 7) === period(); }
+function fin() { return LS("fin", null); }
+
+function computeAuto(src) {
+    if (!src) return null;
+    const finS = fin();
+    if (src === "fin:lombard") {
+        if (!finS) return 0;
+        return (finS.istorija || []).reduce((s, z) => {
+            if (z && z.tip === "Ломбард" && z.napr === "платёж" && inPeriod(z.data)) return s + num(z.summa);
+            return s;
+        }, 0);
+    }
+    if (src === "fin:debt") {
+        if (!finS) return 0;
+        // Баг 7: учитываем только «вернул я», а не «вернули мне»
+        return (finS.istorija || []).reduce((s, z) => {
+            if (z && z.tip === "Долг" && z.napr === "вернул я" && inPeriod(z.data)) return s + num(z.summa);
+            return s;
+        }, 0);
+    }
+    if (src === "fin:kredit") {
+        if (!finS) return 0;
+        return (finS.istorija || []).reduce((s, z) => {
+            if (z && z.tip === "Кредит" && z.napr === "платёж" && inPeriod(z.data)) return s + num(z.summa);
+            return s;
+        }, 0);
+    }
+    if (src === "fin:kartka") {
+        if (!finS) return 0;
+        return (finS.istorija || []).reduce((s, z) => {
+            if (z && z.tip === "Кредитка" && z.napr === "платёж" && inPeriod(z.data)) return s + num(z.summa);
+            return s;
+        }, 0);
+    }
+    if (src === "cash:expense" || src === "cash:fuel") {
+        const ops = LS("cashOperations", []);
+        const cats = LS("cashCategories", []) || [];
+        const isFuel = op => op.type === "fuel_quick" || /топлив/i.test((cats.find(c => c.id === op.type) || {}).name || "");
+        return ops.reduce((s, op) => {
+            if (!inPeriod(op.date)) return s;
+            if (op.amount >= 0) return s;
+            if (src === "cash:expense" && isFuel(op)) return s;
+            if (src === "cash:fuel" && !isFuel(op)) return s;
+            return s + Math.abs(num(op.amount));
+        }, 0);
+    }
+    if (src === "cash:debt") {
+        const ops = LS("cashOperations", []);
+        return ops.reduce((s, op) => {
+            if (!inPeriod(op.date)) return s;
+            if (!["debt_repaid", "debt_returned"].includes(op.type)) return s;
+            return s + Math.abs(num(op.amount));
+        }, 0);
+    }
+    if (src === "fuel:month") {
+        const fl = LS("fuelLog", []);
+        return fl.reduce((s, f) => inPeriod(f.date) ? s + num(f.amount) : s, 0);
+    }
+    return null;
+}
+
+function pullFacts() {
+    let changed = 0;
+    P.sections.forEach(s => s.tasks.forEach(t => {
+        if (!t.auto) return;
+        const v = computeAuto(t.auto);
+        if (v != null) { t.fact = Math.round(v); changed++; }
+    }));
+    persist(); render();
+    notify(changed ? `Факт подтянут из источников (${changed})` : "Нет задач с источником");
+}
+
+// ---------- РЕНДЕР ----------
+function render() {
+    const first = (P.month || "").split(" ")[0] || "Месяц";
+    $("planTitle").firstChild.nodeValue = "📋 План и факт · " + first + " ";
+    $("planMonth").textContent = P.month || "";
+    $("goalBanner").textContent = P.goal || "";
+    $("checkpoint").textContent = P.checkpoint || "";
+
+    const all = P.sections.flatMap(s => s.tasks);
+    const sumPlan = all.reduce((a, t) => a + num(t.plan), 0);
+    const sumFact = all.reduce((a, t) => a + num(t.fact), 0);
+    const diff = sumFact - sumPlan;
+    $("totPlan").textContent = fmt(sumPlan) + " лей";
+    $("totFact").textContent = fmt(sumFact) + " лей";
+    const dEl = $("totDiff"), dWrap = $("totDiffWrap");
+    dEl.textContent = (diff > 0 ? "+" : "") + fmt(diff) + " лей";
+    dWrap.classList.toggle("plus", diff >= 0);
+
+    $("sections").innerHTML = P.sections.map(sec => {
+        const sPlan = sec.tasks.reduce((a, t) => a + num(t.plan), 0);
+        const sFact = sec.tasks.reduce((a, t) => a + num(t.fact), 0);
+        return `<div class="section">
+            <h2><span>${esc(sec.title)}</span><small>План ${fmt(sPlan)} · Факт ${fmt(sFact)}</small></h2>
+            ${sec.tasks.map(t => {
+                const tDiff = num(t.fact) - num(t.plan);
+                const dCls = tDiff < 0 ? "diff-neg" : tDiff > 0 ? "diff-pos" : "";
+                const sourceLabel = t.auto ? ` <span style="color:var(--text-dim);font-weight:400">· ${esc(autoLabel(t.auto))}</span>` : "";
+                return `<div class="task">
+                    <div class="task-row1">
+                        <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleDone('${esc(t.id)}', this.checked)"/>
+                        <div class="task-title ${t.done ? "done" : ""}">
+                            ${esc(t.title)}${sourceLabel}
+                            ${t.note ? `<div class="task-note">${esc(t.note)}</div>` : ""}
+                        </div>
+                        ${editMode ? `<div class="task-actions">
+                            <button title="Изменить" onclick="openTaskModal('${esc(t.id)}')">✏</button>
+                            <button title="Удалить" onclick="removeTask('${esc(t.id)}')">🗑</button>
+                        </div>` : ""}
+                    </div>
+                    <div class="task-nums">
+                        <div class="task-num"><small>План</small><input type="number" inputmode="decimal" min="0" step="1" value="${t.plan || ""}" onchange="setNum('${esc(t.id)}','plan',this.value)"/></div>
+                        <div class="task-num fact"><small>Факт</small><input type="number" inputmode="decimal" min="0" step="1" value="${t.fact || ""}" onchange="setNum('${esc(t.id)}','fact',this.value)"/></div>
+                        <div class="task-num diff"><small>Разница</small><b class="${dCls}">${(tDiff > 0 ? "+" : "") + fmt(tDiff)}</b></div>
+                    </div>
+                </div>`;
+            }).join("") || `<div style="color:var(--text-dim);font-size:13px;padding:6px 0">Задач нет</div>`}
+        </div>`;
+    }).join("");
+
+    $("tSection").innerHTML = P.sections.map(s => `<option value="${esc(s.key)}">${esc(s.title)}</option>`).join("");
+    $("editBtn").textContent = editMode ? "✅ Готово" : "✏ Редактировать";
+}
+
+function autoLabel(src) {
+    return {
+        "fin:lombard": "факт из fin (ломбард)",
+        "fin:debt": "факт из fin (вернул я)",
+        "fin:kredit": "факт из fin (кредит)",
+        "fin:kartka": "факт из fin (кредитка)",
+        "cash:expense": "факт из кассы (расходы)",
+        "cash:fuel": "факт из кассы (топливо)",
+        "cash:debt": "факт из кассы (долги)",
+        "fuel:month": "факт из fuelLog"
+    }[src] || src;
+}
+
+function findTask(id) {
+    for (const s of P.sections) {
+        const i = s.tasks.findIndex(t => t.id === id);
+        if (i >= 0) return { sec: s, task: s.tasks[i], idx: i };
+    }
+    return null;
+}
+
+// ---------- ДЕЙСТВИЯ ----------
+function toggleDone(id, val) { const f = findTask(id); if (!f) return; f.task.done = !!val; persist(); render(); }
+function setNum(id, field, val) {
+    const f = findTask(id); if (!f) return;
+    const n = Math.max(0, Math.round(num(val)));
+    f.task[field] = n;
+    persist(); render();
+}
+function toggleEdit() { editMode = !editMode; render(); }
+
+function removeTask(id) {
+    const f = findTask(id); if (!f) return;
+    showConfirm("Удалить задачу «" + f.task.title + "»?\nОна больше не появится при следующей загрузке.", () => {
+        f.sec.tasks.splice(f.idx, 1); persist(); render(); notify("🗑 Задача удалена");
+    });
+}
+
+// ---------- МОДАЛКА ЗАДАЧИ ----------
+function openTaskModal(id) {
+    editingTaskId = id;
+    const f = id ? findTask(id) : null;
+    $("taskModalTitle").textContent = id ? "Изменить задачу" : "Новая задача";
+    $("tTitle").value = f ? f.task.title : "";
+    $("tNote").value = f ? (f.task.note || "") : "";
+    $("tPlan").value = f ? (f.task.plan || "") : "";
+    $("tFact").value = f ? (f.task.fact || "") : "";
+    $("tAuto").value = f ? (f.task.auto || "") : "";
+    $("tSection").value = f ? f.sec.key : (P.sections[0] && P.sections[0].key);
+    $("tErr").textContent = "";
+    $("taskModal").classList.add("on");
+    setTimeout(() => $("tTitle").focus(), 60);
+}
+function closeTaskModal() { $("taskModal").classList.remove("on"); editingTaskId = null; }
+function saveTask() {
+    const title = $("tTitle").value.trim();
+    if (!title) { $("tErr").textContent = "Введите заголовок"; return; }
+    const note = $("tNote").value.trim();
+    const plan = Math.max(0, Math.round(num($("tPlan").value)));
+    const fact = Math.max(0, Math.round(num($("tFact").value)));
+    const auto = $("tAuto").value;
+    const secKey = $("tSection").value;
+    const sec = P.sections.find(s => s.key === secKey);
+    if (!sec) { $("tErr").textContent = "Раздел не найден"; return; }
+
+    if (editingTaskId) {
+        const f = findTask(editingTaskId); if (!f) return;
+        if (f.sec !== sec) { f.sec.tasks.splice(f.idx, 1); sec.tasks.push({ ...f.task, title, note, plan, fact, auto }); }
+        else Object.assign(f.task, { title, note, plan, fact, auto });
+    } else {
+        sec.tasks.push({ id: newId(), title, note, plan, fact, auto, done: false });
+    }
+    persist(); closeTaskModal(); render();
+}
+
+// ---------- НОВЫЙ МЕСЯЦ ----------
+function newMonth() {
+    showConfirm(
+        "Начать новый месяц?\n\n• Все задачи и разделы сохранятся\n• Поле «Факт» обнулится\n• Отметки «выполнено» сбросятся\n• План (суммы) останется",
+        () => {
+            P.sections.forEach(s => s.tasks.forEach(t => { t.fact = 0; t.done = false; }));
+            const d = new Date();
+            const months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+            P.month = months[d.getMonth()] + " " + d.getFullYear();
+            P.period = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+            persist(); render();
+            notify("🆕 Новый месяц: " + P.month);
+        }
+    );
+}
+
+// ---------- НАСТРОЙКИ ----------
+function openSettings() {
+    $("sMonth").value = P.month || "";
+    $("sGoal").value = P.goal || "";
+    $("sCheck").value = P.checkpoint || "";
+    $("sPeriod").value = P.period || "";
+    $("sErr").textContent = "";
+    $("setModal").classList.add("on");
+}
+function closeSettings() { $("setModal").classList.remove("on"); }
+function saveSettings() {
+    const m = $("sMonth").value.trim();
+    if (!m) { $("sErr").textContent = "Укажите месяц"; return; }
+    const per = $("sPeriod").value.trim();
+    if (per && !/^\d{4}-\d{2}$/.test(per)) { $("sErr").textContent = "Период в формате 2026-11"; return; }
+    P.month = m; P.goal = $("sGoal").value; P.checkpoint = $("sCheck").value; P.period = per;
+    persist(); closeSettings(); render();
+}
+
+// ---------- ЗАКРЫТИЕ МОДАЛОК ----------
+$("taskModal").addEventListener("click", e => { if (e.target.id === "taskModal") closeTaskModal(); });
+$("setModal").addEventListener("click", e => { if (e.target.id === "setModal") closeSettings(); });
+
+// ---------- СИНХРОНИЗАЦИЯ ТЕМЫ ----------
+window.addEventListener("storage", e => { if (e.key === "theme" && e.newValue) document.documentElement.setAttribute("data-theme", e.newValue); });
+
+// ---------- ЗАПУСК ----------
+render();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>

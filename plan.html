@@ -118,18 +118,25 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
     <input id="tPlan" inputmode="decimal" placeholder="4620"/>
     <label>Факт (можно оставить 0 и подтянуть)</label>
     <input id="tFact" inputmode="decimal" placeholder="0"/>
+    
     <label>Источник для «🔄 Подтянуть» (необязательно)</label>
     <select id="tAuto">
       <option value="">— не подтягивать —</option>
-      <option value="fin:lombard">Ломбард (fin.istorija, napr:"платёж")</option>
+      <option value="fin:lombard">Ломбард (fin.istorija)</option>
       <option value="fin:debt">Долги «Я вернул» (fin.istorija)</option>
       <option value="fin:kredit">Кредиты (fin.istorija)</option>
       <option value="fin:kartka">Кредитка (fin.istorija)</option>
-      <option value="cash:expense">Расходы кассы за месяц (cashOperations)</option>
-      <option value="cash:fuel">Топливо кассы за месяц</option>
+      <option value="cash:expense">Все расходы кассы за месяц</option>
+      <option value="cash:fuel">Топливо кассы за месяц (fuel_quick)</option>
       <option value="cash:debt">Долги кассы (debt_*)</option>
-      <option value="fuel:month">Топливо скутера за месяц (fuelLog)</option>
+      <!-- Новый пункт -->
+      <option value="fin:category">Траты из fin по категории (выбрать ниже)</option>
     </select>
+
+    <!-- Выбор категории для fin -->
+    <label id="tFinCatLabel" style="display:none">Категория из Финансов</label>
+    <select id="tFinCat" style="display:none"></select>
+
     <label>Раздел</label>
     <select id="tSection"></select>
     <div class="err" id="tErr"></div>
@@ -175,7 +182,7 @@ const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); retu
 let storageWarned = false;
 const save = (k, v) => {
     try { localStorage.setItem(k, JSON.stringify(v)); }
-    catch (e) { if (!storageWarned) { storageWarned = true; showAlert("⚠ Не удалось сохранить (память браузера недоступна)."); } }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlert("⚠ Не удалось сохранить."); } }
 };
 const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const newId = () => "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -195,7 +202,8 @@ const DEFAULT_PLAN = {
         { key: "moto", title: "🔧 Блок 2: Техника и Топливо", tasks: [
             { id: "t_moped", title: "Мопед", note: "Замена масла и фильтров.", plan: 1500, fact: 0, done: false, auto: "" },
             { id: "t_scenic", title: "Scenic (машина жены)", note: "Замена масла и масляного фильтра.", plan: 2500, fact: 0, done: false, auto: "" },
-            { id: "t_fuel", title: "Бензин Scenic", note: "Заправить по мере необходимости.", plan: 2170, fact: 0, done: false, auto: "fuel:month" }
+            { id: "t_fuel", title: "Бензин Scenic", note: "Заправить по мере необходимости.", plan: 2170, fact: 0, done: false, auto: "fin:category", cat: "Топливо Мопед" } 
+            // ВНИМАНИЕ: в старом коде стояло "fuel:month", теперь это будет категория из Финансов. Но в дефолте я поставил заглушку.
         ]},
         { key: "home", title: "🏠 Блок 3: Коммуналка и Связь", tasks: [
             { id: "t_util", title: "Коммуналка (ваша доля)", note: "Собрать с детей их часть и оплатить текущие счета.", plan: 1500, fact: 0, done: false, auto: "" },
@@ -212,7 +220,6 @@ const CURRENT_SCHEMA = 2;
 let P = loadPlan();
 let editingTaskId = null;
 let editMode = false;
-let editingSectionKey = null;
 
 function loadPlan() {
     const saved = LS("monthPlan", null);
@@ -273,9 +280,19 @@ function period() { return P.period || (new Date().toISOString().slice(0, 7)); }
 function inPeriod(d) { return String(d || "").slice(0, 7) === period(); }
 function fin() { return LS("fin", null); }
 
-function computeAuto(src) {
+function computeAuto(src, catName) {
     if (!src) return null;
     const finS = fin();
+    
+    // Новая логика: подтягиваем траты по конкретной категории из fin.html
+    if (src === "fin:category") {
+        if (!finS || !catName) return 0;
+        return (finS.istorija || []).reduce((s, z) => {
+            if (z && z.tip === "Трата" && z.kat === catName && inPeriod(z.data)) return s + num(z.summa);
+            return s;
+        }, 0);
+    }
+
     if (src === "fin:lombard") {
         if (!finS) return 0;
         return (finS.istorija || []).reduce((s, z) => {
@@ -324,10 +341,6 @@ function computeAuto(src) {
             return s + Math.abs(num(op.amount));
         }, 0);
     }
-    if (src === "fuel:month") {
-        const fl = LS("fuelLog", []);
-        return fl.reduce((s, f) => inPeriod(f.date) ? s + num(f.amount) : s, 0);
-    }
     return null;
 }
 
@@ -335,11 +348,11 @@ function pullFacts() {
     let changed = 0;
     P.sections.forEach(s => s.tasks.forEach(t => {
         if (!t.auto) return;
-        const v = computeAuto(t.auto);
+        const v = computeAuto(t.auto, t.cat);
         if (v != null) { t.fact = Math.round(v); changed++; }
     }));
     persist(); render();
-    notify(changed ? `Факт подтянут из источников (${changed})` : "Нет задач с источником");
+    notify(changed ? `Факт подтянут (${changed} задач)` : "Нет задач с источником");
 }
 
 // ---------------- РЕНДЕР ----------------
@@ -368,7 +381,7 @@ function render() {
             ${sec.tasks.map(t => {
                 const tDiff = num(t.fact) - num(t.plan);
                 const dCls = tDiff < 0 ? "diff-neg" : tDiff > 0 ? "diff-pos" : "";
-                const sourceLabel = t.auto ? ` <span style="color:var(--text-dim);font-weight:400">· ${esc(autoLabel(t.auto))}</span>` : "";
+                const sourceLabel = t.auto ? ` <span style="color:var(--text-dim);font-weight:400">· ${esc(autoLabel(t.auto, t.cat))}</span>` : "";
                 return `<div class="task">
                     <div class="task-row1">
                         <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleDone('${esc(t.id)}', this.checked)"/>
@@ -394,12 +407,13 @@ function render() {
     $("editBtn").textContent = editMode ? "✅ Готово" : "✏ Режим";
 }
 
-function autoLabel(src) {
+function autoLabel(src, cat) {
+    if (src === "fin:category") return `fin:категория (${esc(cat || '?')})`;
     return {
         "fin:lombard": "fin:ломбард", "fin:debt": "fin:вернул я",
         "fin:kredit": "fin:кредит", "fin:kartka": "fin:кредитка",
         "cash:expense": "касса:расходы", "cash:fuel": "касса:топливо",
-        "cash:debt": "касса:долги", "fuel:month": "fuelLog"
+        "cash:debt": "касса:долги"
     }[src] || src;
 }
 
@@ -436,12 +450,12 @@ function addSection() {
 }
 function editSection(key) {
     const sec = P.sections.find(s => s.key === key); if (!sec) return;
-    if (!editMode) return; // переименование только в режиме редактирования
+    if (!editMode) return;
     showPrompt("Переименовать блок:", sec.title, (newTitle) => {
         if (!newTitle.trim()) return;
         sec.title = newTitle.trim(); persist(); render();
     }, () => {
-        showConfirm("Удалить весь блок «" + sec.title + "» со всеми задачами?", () => {
+        showConfirm("Удалить весь блок «" + sec.title + "»?", () => {
             P.sections = P.sections.filter(s => s.key !== key);
             persist(); render(); notify("🗑 Блок удалён");
         });
@@ -459,15 +473,10 @@ function showPrompt(msg, val, onOk, onDelete) {
         ${onDelete ? `<button class="no" style="margin-top:10px;background:#ff3b30;color:#fff" id="promptDel">Удалить</button>` : ""}`;
     $("ov").classList.add("on");
     setTimeout(() => $("promptInput").focus(), 100);
-    
-    $("promptOk").onclick = () => {
-        const v = $("promptInput").value;
-        closeModal(); onOk(v);
-    };
+    $("promptOk").onclick = () => { const v = $("promptInput").value; closeModal(); onOk(v); };
     if (onDelete) $("promptDel").onclick = () => { closeModal(); onDelete(); };
 }
 function closeModal() { $("ov").classList.remove("on"); }
-// (добавим оверлей для промптов в HTML внизу)
 
 // ---------------- ЗАДАЧИ ----------------
 function openTaskModal(id) {
@@ -481,9 +490,24 @@ function openTaskModal(id) {
     $("tAuto").value = f ? (f.task.auto || "") : "";
     $("tSection").value = f ? f.sec.key : (P.sections[0] && P.sections[0].key);
     $("tErr").textContent = "";
+    
+    // Заполняем список категорий для fin:category
+    const finS = fin();
+    const cats = finS ? (finS.kat_trat || []) : [];
+    $("tFinCat").innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+    if (f && f.task.cat) $("tFinCat").value = f.task.cat;
+
+    updateAutoFields();
     $("taskModal").classList.add("on");
     setTimeout(() => $("tTitle").focus(), 60);
 }
+function updateAutoFields() {
+    const isCat = $("tAuto").value === "fin:category";
+    $("tFinCat").style.display = isCat ? "block" : "none";
+    $("tFinCatLabel").style.display = isCat ? "block" : "none";
+}
+$("tAuto").addEventListener("change", updateAutoFields);
+
 function closeTaskModal() { $("taskModal").classList.remove("on"); editingTaskId = null; }
 function saveTask() {
     const title = $("tTitle").value.trim();
@@ -492,16 +516,17 @@ function saveTask() {
     const plan = Math.max(0, Math.round(num($("tPlan").value)));
     const fact = Math.max(0, Math.round(num($("tFact").value)));
     const auto = $("tAuto").value;
+    const cat = (auto === "fin:category") ? $("tFinCat").value : "";
     const secKey = $("tSection").value;
     const sec = P.sections.find(s => s.key === secKey);
     if (!sec) { $("tErr").textContent = "Раздел не найден"; return; }
 
     if (editingTaskId) {
         const f = findTask(editingTaskId); if (!f) return;
-        if (f.sec !== sec) { f.sec.tasks.splice(f.idx, 1); sec.tasks.push({ ...f.task, title, note, plan, fact, auto }); }
-        else Object.assign(f.task, { title, note, plan, fact, auto });
+        if (f.sec !== sec) { f.sec.tasks.splice(f.idx, 1); sec.tasks.push({ ...f.task, title, note, plan, fact, auto, cat }); }
+        else Object.assign(f.task, { title, note, plan, fact, auto, cat });
     } else {
-        sec.tasks.push({ id: newId(), title, note, plan, fact, auto, done: false });
+        sec.tasks.push({ id: newId(), title, note, plan, fact, auto, cat, done: false });
     }
     persist(); closeTaskModal(); render();
 }

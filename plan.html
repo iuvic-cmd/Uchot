@@ -17,7 +17,7 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(90px + env(safe-area-inset-bottom,0px));max-width:800px;margin:0 auto}
 h1{color:var(--accent2);text-align:center;border-bottom:2px solid var(--accent);padding-bottom:10px;font-size:1.4em;cursor:pointer}
 h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margin-top:2px;cursor:pointer}
-.goal-banner{background:var(--warn-bg);border-left:5px solid var(--warn-bd);padding:14px 16px;margin-bottom:16px;border-radius:0 8px 8px 0;font-size:.93em;white-space:pre-line;cursor:pointer}
+.goal-banner{background:var(--warn-bg);border-left:5px solid var(--warn-bd);padding:14px 16px;margin-bottom:16px;border-radius:0 8px 8px 0;font-size:.93em;white-space:pre-line;cursor:pointer;min-height:20px}
 .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .tot{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;text-align:center;min-width:0}
 .tot small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase}
@@ -71,7 +71,7 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
 .tabbar span{font-size:19px;line-height:1}
 .tabbar .active{color:var(--accent)}
-.footer{text-align:center;margin-top:20px;font-size:.9em;color:var(--text-dim);white-space:pre-line;cursor:pointer}
+.footer{text-align:center;margin-top:20px;font-size:.9em;color:var(--text-dim);white-space:pre-line;cursor:pointer;min-height:20px}
 @media(max-width:480px){body{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}h1{font-size:1.2em}.toolbar button{min-width:0;font-size:13px;padding:9px 10px}.task-nums{grid-template-columns:1fr 1fr 1fr;margin-left:0}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
 </style>
 </head>
@@ -111,11 +111,11 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
   <div class="modal-box">
     <h3 id="taskModalTitle">Новая задача</h3>
     <label>Заголовок</label>
-    <input id="tTitle" placeholder="Например: Ломбард"/>
-    <label>Описание</label>
-    <textarea id="tNote" placeholder="Строго до конца месяца!"></textarea>
-    <label>План (сколько надо внести)</label>
-    <input id="tPlan" inputmode="decimal" placeholder="4620"/>
+    <input id="tTitle" placeholder="Например: Оплатить интернет"/>
+    <label>Описание (необязательно)</label>
+    <textarea id="tNote" placeholder="Детали..."></textarea>
+    <label>План (сколько надо)</label>
+    <input id="tPlan" inputmode="decimal" placeholder="0"/>
     <label>Факт (можно оставить 0 и подтянуть)</label>
     <input id="tFact" inputmode="decimal" placeholder="0"/>
     
@@ -129,11 +129,9 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
       <option value="cash:expense">Все расходы кассы за месяц</option>
       <option value="cash:fuel">Топливо кассы за месяц (fuel_quick)</option>
       <option value="cash:debt">Долги кассы (debt_*)</option>
-      <!-- Новый пункт -->
       <option value="fin:category">Траты из fin по категории (выбрать ниже)</option>
     </select>
 
-    <!-- Выбор категории для fin -->
     <label id="tFinCatLabel" style="display:none">Категория из Финансов</label>
     <select id="tFinCat" style="display:none"></select>
 
@@ -151,13 +149,13 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
   <div class="modal-box">
     <h3>Настройки плана</h3>
     <label>Месяц (заголовок)</label>
-    <input id="sMonth" placeholder="Ноябрь 2026"/>
+    <input id="sMonth" placeholder="Например: Декабрь 2026"/>
     <label>Цель (жёлтый баннер)</label>
-    <textarea id="sGoal"></textarea>
+    <textarea id="sGoal" placeholder="Главная цель на этот месяц..."></textarea>
     <label>Футер (мотивация внизу)</label>
-    <textarea id="sCheck"></textarea>
+    <textarea id="sCheck" placeholder="Что должно быть сделано..."></textarea>
     <label>Период подтягивания (ГГГГ-ММ)</label>
-    <input id="sPeriod" placeholder="2026-11"/>
+    <input id="sPeriod" placeholder="2026-12"/>
     <div class="err" id="sErr"></div>
     <div class="row">
       <button class="ok" onclick="saveSettings()">💾 Сохранить</button>
@@ -188,75 +186,33 @@ const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g,
 const newId = () => "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const fmt = x => (+x || 0).toLocaleString("ru-RU", { maximumFractionDigits: 0 });
 
+const CURRENT_SCHEMA = 3; // Повысили схему, чтобы применить чистый шаблон
+
+// Пустой шаблон
 const DEFAULT_PLAN = {
-    month: "Ноябрь 2026",
-    goal: "Доходы: Зарплата ~18 015 (после налогов) + Стас 2 000 = 20 015 лей.\nГлавная цель: Оплатить двойной ломбард, обслужить технику и выйти из минуса по кредитке.",
-    checkpoint: "Ломбард оплачен (2 мес) ✅ | Мопед и Scenic с маслом ✅ | Кредитка вне минуса ✅",
-    period: "2026-11",
+    month: "Новый месяц",
+    goal: "",
+    checkpoint: "",
+    period: new Date().toISOString().slice(0, 7),
+    schema: CURRENT_SCHEMA,
     sections: [
-        { key: "debts", title: "💰 Блок 1: Обязательные долги и кредиты", tasks: [
-            { id: "t_lomb", title: "Ломбард (долг за 2 месяца)", note: "Строго до конца месяца!", plan: 4620, fact: 0, done: false, auto: "fin:lombard" },
-            { id: "t_cons", title: "Кредит Consum (ваш)", note: "", plan: 1201, fact: 0, done: false, auto: "fin:kredit" },
-            { id: "t_vik",  title: "Кредитка Viktoriabanc (ВСЕГО)", note: "Из них 2 250 — обязательный минимум, а 1 000 — сверху.", plan: 3250, fact: 0, done: false, auto: "fin:kartka" }
-        ]},
-        { key: "moto", title: "🔧 Блок 2: Техника и Топливо", tasks: [
-            { id: "t_moped", title: "Мопед", note: "Замена масла и фильтров.", plan: 1500, fact: 0, done: false, auto: "" },
-            { id: "t_scenic", title: "Scenic (машина жены)", note: "Замена масла и масляного фильтра.", plan: 2500, fact: 0, done: false, auto: "" },
-            { id: "t_fuel", title: "Бензин Scenic", note: "Заправить по мере необходимости.", plan: 2170, fact: 0, done: false, auto: "fin:category", cat: "Топливо Мопед" } 
-            // ВНИМАНИЕ: в старом коде стояло "fuel:month", теперь это будет категория из Финансов. Но в дефолте я поставил заглушку.
-        ]},
-        { key: "home", title: "🏠 Блок 3: Коммуналка и Связь", tasks: [
-            { id: "t_util", title: "Коммуналка (ваша доля)", note: "Собрать с детей их часть и оплатить текущие счета.", plan: 1500, fact: 0, done: false, auto: "" },
-            { id: "t_orange", title: "Orange (только ВАША доля)", note: "Рассрочка 2 500 + 1/5 от абонементов.", plan: 2704, fact: 0, done: false, auto: "" },
-            { id: "t_wood", title: "Дрова", note: "Топить печь старыми дровами. Газ не включать.", plan: 0, fact: 0, done: false, auto: "" }
-        ]},
-        { key: "safety", title: "🛡️ Блок 4: Подушка безопасности", tasks: [
-            { id: "t_cash", title: "Отложить наличными", note: "В конверт. Не тратить!", plan: 570, fact: 0, done: false, auto: "" }
-        ]}
+        { key: "main", title: "📋 Мой план на месяц", tasks: [] }
     ]
 };
 
-const CURRENT_SCHEMA = 2;
 let P = loadPlan();
 let editingTaskId = null;
 let editMode = false;
 
 function loadPlan() {
     const saved = LS("monthPlan", null);
-    if (!saved || !Array.isArray(saved.sections)) {
+    // Если данных нет или схема старая (2), создаём чистый лист
+    if (!saved || !Array.isArray(saved.sections) || saved.schema !== CURRENT_SCHEMA) {
         const def = JSON.parse(JSON.stringify(DEFAULT_PLAN));
-        def.schema = CURRENT_SCHEMA;
         save("monthPlan", def);
         return def;
     }
-    if (saved.schema === CURRENT_SCHEMA) return saved;
-    const migrated = JSON.parse(JSON.stringify(saved));
-    if (migrated.checked && typeof migrated.checked === "object") {
-        migrated.sections.forEach(s => s.tasks.forEach(t => {
-            if (t.done === undefined) t.done = !!migrated.checked[t.id];
-            if (t.plan === undefined) t.plan = t.amount || 0;
-            if (t.fact === undefined) t.fact = 0;
-            delete t.amount;
-        }));
-        delete migrated.checked;
-    }
-    migrated.sections.forEach(s => {
-        if (!Array.isArray(s.tasks)) s.tasks = [];
-        s.tasks.forEach(t => { if (t.done === undefined) t.done = false; if (t.fact === undefined) t.fact = 0; if (t.plan === undefined) t.plan = 0; });
-    });
-    const byId = new Set();
-    migrated.sections.forEach(s => s.tasks.forEach(t => byId.add(t.id)));
-    DEFAULT_PLAN.sections.forEach(ds => ds.tasks.forEach(dt => {
-        if (!byId.has(dt.id)) {
-            let target = migrated.sections.find(s => s.key === ds.key);
-            if (!target) { target = { key: ds.key, title: ds.title, tasks: [] }; migrated.sections.push(target); }
-            target.tasks.push(JSON.parse(JSON.stringify(dt)));
-        }
-    }));
-    if (!migrated.period) migrated.period = DEFAULT_PLAN.period;
-    migrated.schema = CURRENT_SCHEMA;
-    save("monthPlan", migrated);
-    return migrated;
+    return saved;
 }
 function persist() { save("monthPlan", P); }
 
@@ -284,7 +240,6 @@ function computeAuto(src, catName) {
     if (!src) return null;
     const finS = fin();
     
-    // Новая логика: подтягиваем траты по конкретной категории из fin.html
     if (src === "fin:category") {
         if (!finS || !catName) return 0;
         return (finS.istorija || []).reduce((s, z) => {
@@ -360,8 +315,8 @@ function render() {
     const first = (P.month || "").split(" ")[0] || "Месяц";
     $("planTitle").firstChild.nodeValue = "📋 План и факт · " + first + " ";
     $("planMonth").textContent = P.month || "";
-    $("goalBanner").textContent = P.goal || "";
-    $("checkpoint").textContent = P.checkpoint || "";
+    $("goalBanner").textContent = P.goal || "Нажмите здесь, чтобы добавить цель...";
+    $("checkpoint").textContent = P.checkpoint || "Нажмите здесь, чтобы добавить итоги...";
 
     const all = P.sections.flatMap(s => s.tasks);
     const sumPlan = all.reduce((a, t) => a + num(t.plan), 0);
@@ -399,7 +354,7 @@ function render() {
                         <div class="task-num diff"><small>Разница</small><b class="${dCls}">${(tDiff > 0 ? "+" : "") + fmt(tDiff)}</b></div>
                     </div>
                 </div>`;
-            }).join("") || `<div style="color:var(--text-dim);font-size:13px;padding:6px 0">Задач нет</div>`}
+            }).join("") || `<div style="color:var(--text-dim);font-size:13px;padding:6px 0">Задач нет. Нажмите "➕ Задача", чтобы добавить.</div>`}
         </div>`;
     }).join("");
 
@@ -491,7 +446,6 @@ function openTaskModal(id) {
     $("tSection").value = f ? f.sec.key : (P.sections[0] && P.sections[0].key);
     $("tErr").textContent = "";
     
-    // Заполняем список категорий для fin:category
     const finS = fin();
     const cats = finS ? (finS.kat_trat || []) : [];
     $("tFinCat").innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");

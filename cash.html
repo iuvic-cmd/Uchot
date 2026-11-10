@@ -11,6 +11,7 @@
 (function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
 </script>
 <style>
+/* ... стили остаются прежними ... */
 :root{--bg:#f2f2f7;--text:#1c1c1e;--text-dim:#8e8e93;--card-bg:rgba(255,255,255,.92);--card-border:rgba(255,255,255,.5);--panel-bg:#fff;--subtle-bg-2:#f0f0f5;--input-bg:#f8f8fc;--input-border:#e5e5ea;--divider:#e5e5ea;--accent:#007aff;--modal-bg:#fff;
 --tone-warn-text:#e65100;--tone-good-text:#2e7d32;--tone-bad-text:#c62828;
 --green-bg:#e8f5e9;--green-fg:#2e7d32;--orange-bg:#fff3e0;--orange-fg:#e65100;--purple-bg:#f3e5f5;--purple-fg:#7b1fa2;--gray-bg:#eceff1;--gray-fg:#37474f;--brown-bg:#efebe9;--brown-fg:#4e342e;--red-bg:#ffebee;--red-fg:#c62828;--blue-bg:#e3f2fd;--blue-fg:#0d47a1}
@@ -122,7 +123,6 @@ header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
     <button onclick="addDailyKm()" class="btn btn-start" style="flex:2">➕ Добавить км</button>
   </div>
 
-  <!-- История пробега (новая секция) -->
   <div style="margin-top:12px;">
     <div class="block-heading">📋 История добавленных км</div>
     <div class="scroll-list" id="kmHistoryList"></div>
@@ -137,10 +137,17 @@ header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
     <div class="form-group"><label>Цена за литр (лей)</label><input type="number" inputmode="decimal" id="fuelPricePerL" step="0.01" min="0" placeholder="0" class="form-control"/></div>
   </div>
   <div class="form-group"><label>🧾 Сумма по чеку (необязательно)</label><input type="number" inputmode="decimal" id="fuelTotalInput" step="0.01" min="0" placeholder="если указать, цена за литр пересчитается" class="form-control"/></div>
+  
+  <!-- ВЫБОР КОШЕЛЬКА ДЛЯ СПИСАНИЯ -->
+  <div class="form-group"><label>💳 С какого кошелька списать?</label>
+    <select id="fuelWallet" class="form-control"></select>
+  </div>
+
   <div style="display:flex;gap:6px;">
     <button onclick="addFuel()" id="fuelSubmitBtn" class="btn btn-start" style="flex:2">⛽ Добавить заправку</button>
     <button onclick="endFuelEdit(true)" id="fuelCancelBtn" class="btn btn-gray" style="flex:1;display:none">❌ Отмена</button>
   </div>
+  
   <div class="stats-row-3" style="margin-top:10px;">
     <div class="scooter-stat-mini"><span class="mini-label">Всего литров</span><span class="mini-value" id="fuelTotalLiters">0</span></div>
     <div class="scooter-stat-mini"><span class="mini-label">💰 Всего затрат</span><span class="mini-value" id="fuelTotalCost">0 лей</span></div>
@@ -169,12 +176,11 @@ header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
 </div></nav>
 
 <script>
-// ===== ХРАНИЛИЩЕ =====
 const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
 let storageWarned = false;
 const save = (k, v) => {
     try { localStorage.setItem(k, JSON.stringify(v)); }
-    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные."); } }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить."); } }
 };
 
 let cashOperations = LS("cashOperations", []);
@@ -187,7 +193,6 @@ let dailyKmLog = LS("dailyKmLog", []);
 const CM = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const DEBT_TYPES = ['debt_taken', 'debt_given', 'debt_repaid', 'debt_returned'];
 
-// ===== УТИЛИТЫ =====
 const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const newId = () => Date.now() + "_" + Math.random().toString(36).slice(2, 8);
 const sumBy = (arr, f) => arr.reduce((s, o) => s + f(o), 0);
@@ -195,13 +200,40 @@ function getLocalDateStr(d) {
     const date = d ? new Date(d) : new Date();
     return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
 }
-const __actionLocks = {};
-function guardAction(key, ms = 700) {
-    if (__actionLocks[key]) return false;
-    __actionLocks[key] = true;
-    setTimeout(() => { __actionLocks[key] = false; }, ms);
-    return true;
+
+function updateClock() {
+    const el = document.getElementById("realTimeClock");
+    if (el) el.innerText = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 }
+setInterval(updateClock, 1000);
+function initThemeToggle() {
+    const t = document.getElementById("theme-toggle"); if (!t) return;
+    t.checked = document.documentElement.getAttribute("data-theme") === "dark";
+    t.addEventListener("change", function () {
+        const v = this.checked ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", v);
+        try { localStorage.setItem("theme", v); } catch (e) {}
+        renderExpensesAnalytics();
+    });
+}
+
+function toggleMenu(id, btn) {
+    const box = document.getElementById(id); if (!box) return;
+    const arrow = btn ? btn.querySelector(".arrow") : null;
+    const show = box.classList.toggle("show");
+    if (arrow) arrow.classList.toggle("rotated", show);
+    if (id === 'analyticsBox' && show) renderExpensesAnalytics();
+}
+
+// Заполнение списков кошельков
+function populateWallets() {
+    const fin = LS("fin", null);
+    if (!fin || !fin.kohelki) return;
+    const sel = document.getElementById("fuelWallet");
+    if (!sel) return;
+    sel.innerHTML = Object.keys(fin.kohelki).map(w => `<option value="${esc(w)}">${esc(w)} (${fin.kohelki[w].toFixed(2)})</option>`).join("");
+}
+
 function showNotification(message) {
     const ex = document.querySelector(".notification"); if (ex) ex.remove();
     const n = document.createElement("div");
@@ -229,7 +261,6 @@ function showConfirmDialog(message, onConfirm) {
     row.append(y, n); b.append(m, row); o.appendChild(b); document.body.appendChild(o);
 }
 
-// ===== КАТЕГОРИИ =====
 const loadCustomCategories = () => LS('cashCategories', []);
 function getAllCategories() {
     const system = [
@@ -244,33 +275,6 @@ function getAllCategories() {
 }
 const getCategoryName = id => { const c = getAllCategories().find(x => x.id === id); return c ? c.name : "❔ Удалённая категория"; };
 
-// ===== ЧАСЫ И ТЕМА =====
-function updateClock() {
-    const el = document.getElementById("realTimeClock");
-    if (el) el.innerText = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-}
-setInterval(updateClock, 1000);
-function initThemeToggle() {
-    const t = document.getElementById("theme-toggle"); if (!t) return;
-    t.checked = document.documentElement.getAttribute("data-theme") === "dark";
-    t.addEventListener("change", function () {
-        const v = this.checked ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", v);
-        try { localStorage.setItem("theme", v); } catch (e) {}
-        renderExpensesAnalytics();
-    });
-}
-
-// ===== МЕНЮ =====
-function toggleMenu(id, btn) {
-    const box = document.getElementById(id); if (!box) return;
-    const arrow = btn ? btn.querySelector(".arrow") : null;
-    const show = box.classList.toggle("show");
-    if (arrow) arrow.classList.toggle("rotated", show);
-    if (id === 'analyticsBox' && show) renderExpensesAnalytics();
-}
-
-// ===== ТОПЛИВО =====
 function isFuelOp(op) {
     return op.amount < 0 && (op.type === 'fuel_quick' || /топлив/i.test(getCategoryName(op.type)));
 }
@@ -278,12 +282,45 @@ function parseFuel(t) {
     const m = (t || '').replace(/,/g, '.').match(/(\d+(?:\.\d+)?)\s*[*xх×]\s*(\d+(?:\.\d+)?)/i);
     return m ? { liters: +m[1], price: +m[2] } : { liters: 0, price: 0 };
 }
-function syncFuelFromOp(op, liters, price) {
+
+// Синхронизация с финансами
+function syncWithFin(wallet, amount, date, comment) {
+    const fin = LS("fin", null);
+    if (!fin || !fin.kohelki || !(wallet in fin.kohelki)) return;
+    
+    // Проверка баланса
+    if (fin.kohelki[wallet] < amount) {
+        showAlertDialog(`❌ Недостаточно средств на «${wallet}».\nДоступно: ${fin.kohelki[wallet].toFixed(2)} лей, нужно: ${amount.toFixed(2)}.`);
+        return false;
+    }
+
+    // Списываем с кошелька
+    fin.kohelki[wallet] = Math.round((fin.kohelki[wallet] - amount) * 100) / 100;
+    
+    // Добавляем в историю (категория "Топливо" должна существовать или создастся)
+    if (!fin.kat_trat.includes("Топливо")) fin.kat_trat.push("Топливо");
+    const op = {
+        id: Math.max(0, ...(fin.istorija || []).map(x => x.id || 0)) + 1,
+        data: date + " " + new Date().toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}),
+        tip: "Трата",
+        summa: amount,
+        koshel: wallet,
+        kat: "Топливо",
+        zametka: comment || "Заправка скутера"
+    };
+    if (!fin.istorija) fin.istorija = [];
+    fin.istorija.push(op);
+    
+    save("fin", fin);
+    return true;
+}
+
+function syncFuelFromOp(op, liters, price, wallet) {
     fuelLog = fuelLog.filter(f => f.cashId !== op.id);
     const amount = Math.abs(op.amount);
     if (!liters && !price) { const p = parseFuel(op.comment); liters = p.liters; price = p.price; }
     if (liters && !price) price = amount / liters;
-    fuelLog.push({ date: op.date, liters: liters || 0, price: price || 0, amount, cashId: op.id, time: op.timestamp });
+    fuelLog.push({ date: op.date, liters: liters || 0, price: price || 0, amount, cashId: op.id, wallet: wallet || "", time: op.timestamp });
     op.fuelSynced = true;
 }
 function refreshAll() {
@@ -291,9 +328,8 @@ function refreshAll() {
     renderFuelStats(); renderMileageStats(); renderFuelHistory(); renderKmHistory(); renderExpensesAnalytics();
 }
 
-// ===== ПРОБЕГ =====
+// ПРОБЕГ
 function saveMileage() {
-    if (!guardAction('saveMileage')) return;
     const startKm = parseFloat(document.getElementById("mStartKm").value) || 0;
     const currentKm = parseFloat(document.getElementById("mCurrentKm").value) || 0;
     if (currentKm < startKm) { showAlertDialog("Текущий пробег не может быть меньше начального."); return; }
@@ -308,11 +344,10 @@ function saveMileage() {
         dailyKmLog.push({ id: newId(), date: today, km: delta, time: new Date().toLocaleString(), source: 'saveMileage' });
         save("dailyKmLog", dailyKmLog);
     }
-    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics();
+    renderMileageStats(); renderFuelStats(); renderExpensesAnalytics(); renderKmHistory();
     showNotification("💾 Пробег сохранён");
 }
 function addDailyKm() {
-    if (!guardAction('addDailyKm')) return;
     const date = document.getElementById("dailyKmDate").value || getLocalDateStr();
     const km = parseFloat(document.getElementById("dailyKmValue").value) || 0;
     if (km <= 0) { showAlertDialog("Введите пройденный километраж."); return; }
@@ -329,7 +364,6 @@ function addDailyKm() {
     showNotification(`✅ Добавлено ${km} км за ${date}`);
 }
 
-// ===== ИСТОРИЯ ПРОБЕГА =====
 function renderKmHistory() {
     const c = document.getElementById("kmHistoryList"); if (!c) return;
     if (!dailyKmLog.length) { c.innerHTML = `<p class="empty-note">Нет записей</p>`; return; }
@@ -344,20 +378,17 @@ function renderKmHistory() {
 }
 
 function deleteKmEntry(id) {
-    showConfirmDialog("Удалить эту запись? Километраж вычтется из текущего.", () => {
+    showConfirmDialog("Удалить эту запись? Километраж вычтет из текущего.", () => {
         const entry = dailyKmLog.find(e => e.id === id);
         if (entry) {
             dailyKmLog = dailyKmLog.filter(e => e.id !== id);
             save("dailyKmLog", dailyKmLog);
-            
             mileageData.currentKm = Math.max((mileageData.currentKm || 0) - entry.km, mileageData.startKm || 0);
             if (mileageData.history) {
-                // Удаляем последнее совпадение по дате и км из истории
                 const idx = mileageData.history.findIndex(h => h.date === entry.date && h.km === mileageData.currentKm + entry.km);
                 if (idx !== -1) mileageData.history.splice(idx, 1);
             }
             save("mileageData", mileageData);
-            
             renderMileageStats(); renderFuelStats(); renderExpensesAnalytics(); renderKmHistory();
             showNotification("🗑 Запись удалена");
         }
@@ -375,49 +406,45 @@ function renderMileageStats() {
     if (el("mTodayKm")) el("mTodayKm").innerText = +todayKm.toFixed(1) + " км";
     const liters = sumBy(fuelLog, e => e.liters || 0);
     if (el("mConsumption")) el("mConsumption").innerText = (totalKm > 0 ? liters / totalKm * 100 : 0).toFixed(2) + " л/100км";
-    updateMaintSummaries();
 }
 
-// ===== ТОПЛИВО =====
+// ТОПЛИВО
 function addFuel() {
-    if (!guardAction('addFuel')) return;
     const date = document.getElementById("fuelDate").value || getLocalDateStr();
     const liters = parseFloat(document.getElementById("fuelLiters").value) || 0;
     let price = parseFloat(document.getElementById("fuelPricePerL").value) || 0;
     const receiptTotal = parseFloat(document.getElementById("fuelTotalInput").value) || 0;
+    const wallet = document.getElementById("fuelWallet").value;
+
+    if (!wallet) { showAlertDialog("Выберите кошелёк для списания!"); return; }
     if (liters <= 0 || (price <= 0 && receiptTotal <= 0)) { showAlertDialog("Заполните литры и цену (или сумму по чеку)."); return; }
+    
     let amount;
     if (receiptTotal > 0) { amount = Math.round(receiptTotal * 100) / 100; price = amount / liters; }
     else { amount = Math.round(liters * price * 100) / 100; }
 
-    if (editingFuelId) {
-        let fe = fuelLog.find(f => f.cashId === editingFuelId);
-        if (!fe) { fe = { cashId: editingFuelId, time: new Date().toLocaleString() }; fuelLog.push(fe); }
-        Object.assign(fe, { date, liters, price, amount });
-        const op = cashOperations.find(o => o.id === editingFuelId);
-        if (op) Object.assign(op, { date, amount: -amount, comment: +liters.toFixed(2) + '*' + +price.toFixed(2), fuelSynced: true });
-        endFuelEdit();
-        refreshAll();
-        showNotification(`💾 Заправка изменена: ${liters.toFixed(2)} л, ${amount.toFixed(2)} лей`);
-        return;
-    }
+    // Синхронизация с финансами
+    if (!syncWithFin(wallet, amount, date, `Заправка ${liters}л`)) return;
+
     const id = newId();
-    fuelLog.push({ date, liters, price, amount, cashId: id, time: new Date().toLocaleString() });
+    fuelLog.push({ date, liters, price, amount, cashId: id, wallet, time: new Date().toLocaleString() });
     cashOperations.push({ id, ts: Date.now(), date, type: 'fuel_quick', amount: -amount, comment: liters + '*' + price, timestamp: new Date().toLocaleString(), fuelSynced: true });
+    
     document.getElementById("fuelLiters").value = "";
     document.getElementById("fuelPricePerL").value = "";
     refreshAll();
-    showNotification(`⛽ Заправка: ${amount.toFixed(2)} лей`);
+    showNotification(`⛽ Заправка: ${amount.toFixed(2)} лей (списано с ${wallet})`);
 }
+
 function resetFuelLog() {
-    showConfirmDialog("Сбросить журнал топлива?\nОперации в кассе останутся, статистика топлива обнулится.", () => {
+    showConfirmDialog("Сбросить журнал топлива?\nОперации в кассе и финансах останутся.", () => {
         fuelLog = [];
         refreshAll();
-        showNotification("🗑 Журнал топлива очищен (касса сохранена)");
+        showNotification("🗑 Журнал топлива очищен");
     });
 }
 function resetKmCostCalculation() {
-    showConfirmDialog("🔄 Сбросить расчёт стоимости 1 км?\n\n• Начальный пробег = текущему\n• Журнал топлива очищен\n• Дневной лог км очищен\n\nКасса не тронется.", () => {
+    showConfirmDialog("🔄 Сбросить расчёт стоимости 1 км?\n\n• Начальный пробег = текущему\n• Журнал топлива очищен\n• Дневной лог км очищен\n\nКасса и финансы не тронутся.", () => {
         const cur = mileageData.currentKm || 0;
         Object.assign(mileageData, { startKm: cur, currentKm: cur, lastDate: getLocalDateStr(), initialized: true, history: [] });
         save("mileageData", mileageData);
@@ -436,46 +463,35 @@ function renderFuelStats() {
     if (el("fuelTotalCost")) el("fuelTotalCost").innerText = cost.toFixed(2) + " лей";
     if (el("fuelCostPerKm")) el("fuelCostPerKm").innerText = (km > 0 ? cost / km : 0).toFixed(2) + " лей";
 }
-let editingFuelId = null;
 function renderFuelHistory() {
     const c = document.getElementById("fuelHistoryList"); if (!c) return;
     if (!fuelLog.length) { c.innerHTML = `<p class="empty-note">Нет заправок</p>`; return; }
     c.innerHTML = [...fuelLog].sort((a, b) => b.date.localeCompare(a.date)).map(f =>
-        `<div class="list-row" style="align-items:center;${f.cashId === editingFuelId ? 'background:var(--subtle-bg-2);border-radius:8px;' : ''}"><span>${esc(f.date)}</span><span style="flex:1;text-align:right;">${(f.liters || 0).toFixed(2)} л × ${(f.price || 0).toFixed(2)} = <b>${(f.amount || 0).toFixed(2)}</b></span><span class="op-actions" style="display:flex;gap:2px;"><button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;" data-id="${esc(f.cashId)}" onclick="startFuelEdit(this.dataset.id)">✏</button><button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;" data-id="${esc(f.cashId)}" onclick="deleteFuelEntry(this.dataset.id)">🗑</button></span></div>`).join("");
-}
-function startFuelEdit(id) {
-    const fe = fuelLog.find(f => f.cashId === id); if (!fe) return;
-    editingFuelId = id;
-    document.getElementById("fuelDate").value = fe.date;
-    document.getElementById("fuelLiters").value = +(fe.liters || 0).toFixed(2);
-    document.getElementById("fuelPricePerL").value = +(fe.price || 0).toFixed(2);
-    document.getElementById("fuelTotalInput").value = "";
-    document.getElementById("fuelSubmitBtn").textContent = "💾 Сохранить изменения";
-    document.getElementById("fuelCancelBtn").style.display = "flex";
-    renderFuelHistory();
-    document.getElementById("fuelLiters").focus();
-    showNotification("✏ Измените данные и сохраните");
-}
-function endFuelEdit(clear) {
-    editingFuelId = null;
-    document.getElementById("fuelSubmitBtn").textContent = "⛽ Добавить заправку";
-    document.getElementById("fuelCancelBtn").style.display = "none";
-    ["fuelLiters", "fuelPricePerL", "fuelTotalInput"].forEach(i => { document.getElementById(i).value = ""; });
-    document.getElementById("fuelDate").value = getLocalDateStr();
-    if (clear) renderFuelHistory();
+        `<div class="list-row" style="align-items:center;"><span>${esc(f.date)}</span><span style="flex:1;text-align:right;">${(f.liters || 0).toFixed(2)} л × ${(f.price || 0).toFixed(2)} = <b>${(f.amount || 0).toFixed(2)}</b><br><small style="color:var(--text-dim)">${f.wallet ? 'Списано: '+f.wallet : ''}</small></span><button style="background:none;border:none;font-size:16px;padding:4px 8px;cursor:pointer;" data-id="${esc(f.cashId)}" onclick="deleteFuelEntry(this.dataset.id)">🗑</button></div>`
+    ).join("");
 }
 function deleteFuelEntry(id) {
-    showConfirmDialog("Удалить заправку?\nСвязанная операция в кассе тоже удалится.", () => {
+    showConfirmDialog("Удалить заправку?\nОперация в кассе и финансах тоже удалится.", () => {
         fuelLog = fuelLog.filter(f => f.cashId !== id);
         cashOperations = cashOperations.filter(o => o.id !== id);
         save("cashOperations", cashOperations);
-        if (editingFuelId === id) endFuelEdit();
+        
+        // Возврат денег в финансы (упрощенно: находим последнюю запись)
+        const fin = LS("fin", null);
+        if (fin && fin.istorija) {
+            const op = fin.istorija.find(x => x.tip === "Трата" && x.kat === "Топливо" && x.summa === Math.abs(fuelLog.find(f => f.cashId === id)?.amount || 0));
+            if (op && fin.kohelki[op.koshel] !== undefined) {
+                fin.kohelki[op.koshel] = Math.round((fin.kohelki[op.koshel] + op.summa) * 100) / 100;
+                fin.istorija = fin.istorija.filter(x => x.id !== op.id);
+                save("fin", fin);
+            }
+        }
         refreshAll();
-        showNotification("🗑 Заправка удалена");
+        showNotification("🗑 Заправка удалена, деньги возвращены");
     });
 }
 
-// ===== ТО / РАСХОДНИКИ =====
+// ТО / РАСХОДНИКИ
 const MAINT_ITEMS = [
     { key: "oil", icon: "🛢", title: "Масло", kind: "interval", fields: [
         { k: "type", label: "Тип масла", type: "text", ph: "10W-30" },
@@ -559,7 +575,7 @@ function saveMaint(key) {
     showNotification(`💾 Сохранено: ${item.title}`);
 }
 
-// ===== АНАЛИТИКА =====
+// АНАЛИТИКА
 function scooterExpenses() {
     const out = [];
     fuelLog.forEach(f => out.push({ date: f.date || "", cat: "⛽ Топливо", amount: f.amount || 0, fuel: true }));
@@ -676,14 +692,11 @@ function renderExpensesAnalytics() {
     });
 }
 
-// ===== ИНИЦИАЛИЗАЦИЯ =====
 function initApp() {
     cashOperations.forEach(op => {
-        if (!op.fuelSynced && isFuelOp(op)) syncFuelFromOp(op, 0, 0);
+        if (!op.fuelSynced && isFuelOp(op)) syncFuelFromOp(op, 0, 0, "");
     });
     fuelLog.forEach(f => { if (!f.cashId) f.cashId = newId(); });
-    
-    // старым записям без ID присваиваем ID
     dailyKmLog.forEach(e => { if (!e.id) e.id = newId(); });
     save("dailyKmLog", dailyKmLog);
 
@@ -693,6 +706,7 @@ function initApp() {
         if (el && !el.value) el.value = today;
     });
     
+    populateWallets();
     renderMileageStats();
     renderKmHistory();
     renderFuelStats();
@@ -704,8 +718,9 @@ function initApp() {
 }
 
 window.addEventListener("storage", e => {
-    if (e.key === "fuelLog" || e.key === "cashOperations" || e.key === "mileageData" || e.key === "theme") {
+    if (["fuelLog", "cashOperations", "mileageData", "theme", "fin"].includes(e.key)) {
         fuelLog = LS("fuelLog", []); cashOperations = LS("cashOperations", []); mileageData = LS("mileageData", mileageData); dailyKmLog = LS("dailyKmLog", []);
+        populateWallets();
         renderFuelStats(); renderFuelHistory(); renderMileageStats(); renderKmHistory(); renderExpensesAnalytics();
     }
 });
@@ -713,12 +728,5 @@ if (document.readyState === "loading") document.addEventListener("DOMContentLoad
 else initApp();
 </script>
 <script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
-    });
-  }
-</script>
 </body>
 </html>

@@ -6,9 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#007aff"/>
-<link rel="manifest" href="./manifest.json"/>
-<link rel="apple-touch-icon" href="./icon-192.png"/>
-<meta name="apple-mobile-web-app-title" content="Учёт"/>
 <title>⚙ Настройки учёта</title>
 <script>
 (function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");}catch(e){}})();
@@ -19,7 +16,7 @@
 :root[data-theme="dark"]{--bg:#0a0a0f;--text:#f2f2f7;--card-bg:rgba(28,28,30,.95);--card-border:rgba(255,255,255,.06);--panel-bg:rgba(28,28,30,.95);--subtle-bg:#1c1c1e;--subtle-bg-2:#2c2c2e;--input-bg:#1c1c1e;--input-border:#3a3a3c;--divider:#2c2c2e;--modal-bg:#1c1c1e;--good:#66bb6a;
 --work-bg:#1a2a1a;--work-border:#2e7d32;--work-text:#66bb6a;--help-bg:#1a2a3a;--help-border:#1565c0;--help-text:#42a5f5;--short-bg:#2a1a0a;--short-border:#e65100;--short-text:#ffa726;--replace-bg:#2a1a2a;--replace-border:#7b1fa2;--replace-text:#ab47bc;--short_replace-bg:#2a2a0a;--short_replace-border:#f9a825;--short_replace-text:#ffca28;--weekend-bg:#1c1c1e;--weekend-border:#3a3a3c;--weekend-text:#8e8e93}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));transition:background .3s}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));transition:background .3s}
 .container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:8px}
 header{background:linear-gradient(135deg,#007aff,#0055b3);border-radius:16px;padding:16px 20px;box-shadow:0 4px 16px rgba(0,122,255,.3);margin-bottom:4px}
 header h1{color:#fff;font-size:22px;font-weight:600;letter-spacing:-.3px}
@@ -64,14 +61,13 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 .row{display:flex;gap:8px}
 .btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:#fff}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:#007aff}.btn-green{background:#34c759}.btn-orange{background:#ff9500}.btn-red{background:#ff3b30}
+.btn-primary{background:#007aff}.btn-green{background:#34c759}.btn-orange{background:#ff9500}.btn-red{background:#ff3b30}.btn-purple{background:#af52de}
 .plan-card{background:var(--subtle-bg);padding:14px;border-radius:12px;margin-bottom:10px}
 .plan-card:last-child{margin-bottom:0}
 .plan-card h3{font-size:15px;font-weight:600;margin-bottom:10px}
 .hint{font-size:12px;color:var(--text-dim);margin-bottom:8px}
 .box{padding:10px 12px;border-radius:10px;background:var(--subtle-bg-2);font-size:13px;line-height:1.6}
 .box.warn{border-left:3px solid #ff9500}
-.box.danger{border-left:3px solid #ff3b30;background:var(--short-bg);color:var(--short-text)}
 .preview-item{display:inline-block;padding:3px 8px;margin:2px;background:var(--work-bg);color:var(--work-text);border-radius:6px;font-size:12px}
 .mass-preview{margin-top:12px;padding:10px;border:1px dashed #007aff;border-radius:10px;font-size:13px;min-height:40px}
 .partner-btn{padding:8px 14px;border-radius:10px;border:1.5px solid var(--input-border);background:var(--panel-bg);color:var(--text);font-weight:600;font-size:13px;cursor:pointer}
@@ -82,8 +78,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 .shift-preview{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--work-bg);color:var(--work-text);font-size:13px;display:none}
 .shift-preview.visible{display:block}
 .sect-title{padding:6px 8px 4px;font-size:12px;font-weight:700}
-.backup-banner{margin-top:4px;padding:12px 14px;border-radius:14px;background:var(--short-bg);color:var(--short-text);border-left:4px solid #ff9500;font-size:13px;line-height:1.5;display:none}
-.backup-banner.visible{display:block}
 .notification{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:30px;font-weight:500;font-size:14px;z-index:5000;max-width:90%;text-align:center;transition:opacity .3s}
 .dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center}
 .dialog-box{background:var(--modal-bg);color:var(--text);border-radius:20px;padding:24px 20px 20px;width:85%;max-width:340px}
@@ -113,8 +107,6 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
     </div>
   </div>
 </header>
-
-<div class="backup-banner" id="backupBanner"></div>
 
 <details class="acc" id="shiftSetup"><summary><span>⚡ Короткие дни и подмога</span></summary>
   <div class="acc-body">
@@ -230,6 +222,7 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
       <button onclick="saveTariffSettings()" class="btn btn-primary">✅ Сохранить</button>
       <button onclick="resetTariffSettings()" class="btn btn-orange">🔄 Сбросить</button>
     </div>
+    <button onclick="recalcHistory()" class="btn btn-purple" style="margin-top:8px;">🔁 Пересчитать всю историю</button>
     <div id="tariffHistoryBox" class="box" style="margin-top:10px;font-size:12px"></div>
   </div>
 </details>
@@ -244,22 +237,17 @@ select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
 <a href="cash.html"><span>🛵</span>Скутер</a>
 <a href="stats.html"><span>📊</span>Статистика</a>
 <a href="fin.html"><span>💼</span>Финансы</a>
+<a href="plan.html"><span>📋</span>План</a>
 <a href="settings.html" class="active"><span>⚙</span>Настройки</a>
 </div></nav>
 
 <script>
-// ============================================================
-//  «НАСТРОЙКИ» — только localStorage, без облака.
-//  Единый список ключей для полного бэкапа включает все разделы.
-// ============================================================
-
 // Учёт
 const OWN_KEYS = ["courierData", "ordersLog", "shiftConfig", "helpConfig", "rosterConfig", "customTariff", "tariffHistory", "ordersLogBF"];
 // Скутер / Касса
 const SCOOTER_KEYS = ["cashOperations", "cashCategories", "cashCategoriesMigrated", "fuelLog", "mileageData", "oilData", "filterData", "otherParts", "dailyKmLog"];
 // Финансы и план
 const FIN_KEYS = ["fin", "monthPlan"];
-// Все ключи для «полной копии» (без theme — тема не критична)
 const ALL_KEYS = [...OWN_KEYS, ...SCOOTER_KEYS, ...FIN_KEYS];
 
 const $ = id => document.getElementById(id);
@@ -267,7 +255,7 @@ const LS = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); retu
 let storageWarned = false;
 const save = (k, v) => {
     try { localStorage.setItem(k, JSON.stringify(v)); }
-    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные (память браузера заполнена или недоступна)."); } }
+    catch (e) { if (!storageWarned) { storageWarned = true; showAlertDialog("⚠ Не удалось сохранить данные."); } }
 };
 const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const pad = n => String(n).padStart(2, "0");
@@ -296,7 +284,7 @@ let shiftConfig = LS("shiftConfig", null);
 let helpConfig = LS("helpConfig", null);
 let rosterConfig = LS("rosterConfig", { A: {}, B: {} });
 
-// ---- тарифы: история ----
+// ---- тарифы ----
 const PRICE_CUTOFF = "2026-05-05";
 const OLD_NIGHT_PRICE = 65, OLD_AP_PRICE = 50, NEW_NIGHT_PRICE = 74, NEW_AP_PRICE = 54;
 function getPricesForDate(ds) {
@@ -363,6 +351,7 @@ function updateBackupBanner() {
     const last = LS("lastFullBackup", 0);
     const days = Math.floor((Date.now() - last) / 86400000);
     const b = $("backupBanner");
+    if (!b) return;
     if (!last || days >= 7) {
         b.classList.add("visible");
         b.innerHTML = `💾 <b>Резервная копия.</b> ${last ? "Последняя " + days + " дн. назад." : "Ещё не делали."} Данные хранятся только в этом браузере. ` +
@@ -372,9 +361,7 @@ function updateBackupBanner() {
     }
 }
 
-// ============================================================
-//  СМЕНЫ
-// ============================================================
+// ---- смены ----
 const SHIFT_KEY = { "А": "A", "Б": "B", A: "A", B: "B" };
 const personName = (shift, n) => { const r = rosterConfig && rosterConfig[SHIFT_KEY[shift]]; return r && r[n] ? String(r[n]).trim() : ""; };
 const getRotatingPairs = () => [[1,2],[3,4],[5,6],[7,1],[2,3],[4,5],[6,7]];
@@ -428,9 +415,7 @@ function markAutoSchedule() {
     setHistory(h); refreshAll();
 }
 
-// ============================================================
-//  СПИСОК ПО СМЕНАМ
-// ============================================================
+// ---- список по сменам ----
 function renderRosterInputs() {
     [["A", "А", "#34c759"], ["B", "Б", "#007aff"]].forEach(([key, cyr, color]) => {
         let html = "";
@@ -476,14 +461,12 @@ function applyShiftSchedule() {
     $("shiftPreview").innerHTML = `✅ Настроено!<br>Номер: <b>${myNum}</b>, offset: <b>${offset}</b>`; $("shiftPreview").classList.add("visible");
     markAutoSchedule(); showNotification("✅ Короткие дни применены!");
 }
-// Баг 8: сброс коротких дней → чистим сгенерированные дни
 function clearShiftConfig() {
     showConfirmDialog("Сбросить настройки коротких дней?\nСгенерированные «Короткий» и «Подмога» пропадут из календаря (заказы сохранятся).", () => {
         shiftConfig = null; localStorage.removeItem("shiftConfig");
         ["shiftFirstDay", "myNumber", "refShortDate"].forEach(i => { $(i).value = ""; });
         $("myPairsInfo").style.display = "none"; $("shiftPreview").classList.remove("visible");
         selectedRefPartner = null; renderAllPairsList();
-        // чистка сгенерированных дней
         const h = getHistory().filter(d => !(d.generated && ["help", "short", "work", "weekend"].includes(d.dayType) && !d.nightOrders && !d.apOrders && !d.total && !d.note));
         setHistory(h);
         refreshAll(); showNotification("🗑 Настройки и сгенерированные дни удалены");
@@ -505,9 +488,7 @@ function applyHelpSchedule() {
     save("helpConfig", helpConfig); markAutoSchedule(); showNotification("✅ Подмога применена!");
 }
 
-// ============================================================
-//  ПЛАНИРОВАНИЕ
-// ============================================================
+// ---- планирование ----
 function upsertDays(items, resetOrders = false) {
     const h = getHistory(), idx = new Map(h.map((d, i) => [d.date, i]));
     items.forEach(({ date, dayType }) => {
@@ -607,9 +588,7 @@ function populateMonthSelect(id) {
     $(id).innerHTML = html;
 }
 
-// ============================================================
-//  ИМПОРТ / ЭКСПОРТ
-// ============================================================
+// ---- экспорт ----
 function csvEscape(v) {
     const s = String(v == null ? "" : v);
     return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
@@ -623,12 +602,12 @@ function exportData(format) {
         copyToClipboard(s); downloadFile(`backup-${getLocalDateStr()}.json`, s, "application/json");
         save("lastFullBackup", Date.now());
         updateBackupBanner();
-        showNotification("📄 Полная копия скачана и скопирована");
+        showNotification("📄 Полная копия скачана");
     } else if (format === "csv") {
         const csv = "date,dayType,nightOrders,apOrders,total,note\n" +
             h.map(d => [d.date, d.dayType, d.nightOrders || 0, d.apOrders || 0, d.total || 0, d.note || ""].map(csvEscape).join(",")).join("\n") + "\n";
         copyToClipboard(csv); downloadFile("courier_data.csv", csv, "text/csv");
-        showNotification("📊 CSV скачан и скопирован");
+        showNotification("📊 CSV скачан");
     } else {
         const rows = h.map(d => `<tr><td>${esc(d.date)}</td><td>${esc(d.dayType)}</td><td>${d.nightOrders || 0}</td><td>${d.apOrders || 0}</td><td>${d.total || 0}</td><td>${esc(d.note || "")}</td></tr>`).join("");
         downloadFile("courier_data.xls", `<html><head><meta charset="UTF-8"/></head><body><table><tr><th>Дата</th><th>Тип</th><th>Ночной</th><th>Единый</th><th>Сумма</th><th>Заметка</th></tr>${rows}</table></body></html>`, "application/vnd.ms-excel");
@@ -640,7 +619,6 @@ function mergeHistory(list) {
     list.forEach(d => {
         const i = idx.get(d.date);
         if (i !== undefined) {
-            // сохраняем старую заметку, если в новой нет
             if (h[i].note && !d.note) d.note = h[i].note;
             h[i] = d;
         } else { idx.set(d.date, h.length); h.push(d); }
@@ -701,9 +679,7 @@ function importFromFile(input) {
     r.readAsText(f);
 }
 
-// ============================================================
-//  ТАРИФЫ (история)
-// ============================================================
+// ---- тарифы ----
 function saveTariffSettings() {
     const night = parseInt($("tariffNight").value), ap = parseInt($("tariffAp").value);
     if (!(night > 0) || !(ap > 0)) { showAlertDialog("❌ Введите корректные значения тарифов!"); return; }
@@ -714,7 +690,7 @@ function saveTariffSettings() {
     else hist.push({ from: today, night, ap });
     hist.sort((a, b) => a.from.localeCompare(b.from));
     save("tariffHistory", hist);
-    save("customTariff", { night, ap }); // совместимость
+    save("customTariff", { night, ap });
     $("tariffNight").value = ""; $("tariffAp").value = "";
     updateTariffDisplay(); renderTariffHistoryBox();
     showNotification(`✅ Тариф с ${today}: 🌙${night} / 📦${ap}`);
@@ -724,6 +700,18 @@ function resetTariffSettings() {
         localStorage.removeItem("customTariff"); localStorage.removeItem("tariffHistory");
         updateTariffDisplay(); renderTariffHistoryBox();
         showNotification("🔄 Тарифы сброшены");
+    });
+}
+function recalcHistory() {
+    showConfirmDialog("⚠ Пересчитать ВСЮ историю дней по текущему тарифу?\n\nВнимание: это перезапишет все сохранённые суммы (total) для всех прошедших дней! Старые данные будут утеряны. Сделать это?", () => {
+        const h = getHistory();
+        h.forEach(d => {
+            const p = getPricesForDate(d.date);
+            d.total = (d.nightOrders || 0) * p.night + (d.apOrders || 0) * p.ap;
+        });
+        setHistory(h);
+        refreshAll();
+        showNotification("✅ История пересчитана по текущему тарифу");
     });
 }
 function updateTariffDisplay() {
@@ -739,9 +727,7 @@ function renderTariffHistoryBox() {
         .map(t => `с ${t.from}: 🌙${t.night} / 📦${t.ap}`).join("<br>");
 }
 
-// ============================================================
-//  СБРОС
-// ============================================================
+// ---- сброс ----
 function resetCalendar() {
     showConfirmDialog("⚠ Удалить все данные учёта дней, смен и тарифов?\n\nКасса, скутер, финансы, план НЕ пострадают.", () => {
         OWN_KEYS.forEach(k => localStorage.removeItem(k));
@@ -768,9 +754,7 @@ function initShiftUI() {
     renderAllPairsList(); renderRosterInputs();
 }
 
-// ============================================================
-//  ЗАПУСК
-// ============================================================
+// ---- запуск ----
 let massEditDate = new Date(), selectedDays = new Set(), massTargetType = "work", selectedRefPartner = null;
 
 function initApp() {
@@ -785,12 +769,5 @@ function initApp() {
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initApp); else initApp();
 </script>
 <script>window.addEventListener("storage",function(e){if(e.key==="theme"&&e.newValue){document.documentElement.setAttribute("data-theme",e.newValue);var t=document.getElementById("theme-toggle");if(t)t.checked=e.newValue==="dark";}});</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW:', err));
-    });
-  }
-</script>
 </body>
 </html>

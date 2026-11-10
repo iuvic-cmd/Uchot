@@ -53,6 +53,7 @@ h1 .mo{font-weight:400;color:var(--text-dim);font-size:.75em;display:block;margi
 .task-actions{display:flex;gap:4px;margin-left:auto;flex:0 0 auto}
 .task-actions button{background:none;border:none;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:6px;color:var(--text-dim)}
 .task-actions button:hover{background:rgba(127,127,127,.15);color:var(--text)}
+.addhere{width:100%;margin-top:10px;padding:9px;border:1px dashed var(--input-border);border-radius:10px;background:transparent;color:var(--accent2);font-size:13px;font-weight:600;cursor:pointer}
 .empty{color:var(--text-dim);font-size:13px;padding:6px 0}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .toolbar button{flex:1;min-width:120px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--panel);color:var(--text);border:1px solid var(--card-border)}
@@ -400,7 +401,7 @@ function render() {
 
     $("sections").innerHTML = P.sections.map(sec => {
         return `<div class="section">
-            <h2 class="${editMode ? "editable" : ""}" onclick="editSection('${esc(sec.key)}')"><span>${esc(sec.title)}</span><small data-sec="${esc(sec.key)}"></small></h2>
+            <h2 class="editable" onclick="editSection('${esc(sec.key)}')"><span>${esc(sec.title)}</span><small data-sec="${esc(sec.key)}"></small></h2>
             ${sec.tasks.map(t => {
                 const sourceLabel = t.auto ? ` <span style="color:var(--text-dim);font-weight:400">· ${esc(autoLabel(t.auto, t.cat))}</span>` : "";
                 return `<div class="task">
@@ -420,7 +421,8 @@ function render() {
                         <div class="task-num diff"><small>Разница</small><b data-diff="${esc(t.id)}"></b></div>
                     </div>
                 </div>`;
-            }).join("") || `<div class="empty">Задач нет. Нажмите «➕ Задача», чтобы добавить.</div>`}
+            }).join("") || `<div class="empty">Задач в этом блоке нет.</div>`}
+            <button class="addhere" onclick="openTaskModal(null,'${esc(sec.key)}')">➕ Задача в этот блок</button>
         </div>`;
     }).join("");
 
@@ -468,7 +470,6 @@ function addSection() {
     });
 }
 function editSection(key) {
-    if (!editMode) return;
     const sec = P.sections.find(s => s.key === key); if (!sec) return;
     showPrompt("Переименовать блок:", sec.title, (newTitle) => {
         if (!newTitle.trim()) return;
@@ -484,7 +485,7 @@ function editSection(key) {
 }
 
 // ---------------- ЗАДАЧИ ----------------
-function openTaskModal(id) {
+function openTaskModal(id, secKey) {
     editingTaskId = id;
     const f = id ? findTask(id) : null;
     if (id && !f) return;
@@ -494,7 +495,7 @@ function openTaskModal(id) {
     $("tPlan").value = f ? (f.task.plan || "") : "";
     $("tFact").value = f ? (f.task.fact || "") : "";
     $("tAuto").value = f ? (f.task.auto || "") : "";
-    $("tSection").value = f ? f.sec.key : (P.sections[0] && P.sections[0].key);
+    $("tSection").value = f ? f.sec.key : (secKey || (P.sections[0] && P.sections[0].key));
     $("tErr").textContent = "";
 
     const finS = fin();

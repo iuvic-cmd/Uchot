@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-uchot-v2';
+const CACHE_NAME = 'my-uchot-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   './plan.html',
   './settings.html',
   './core.js',
+  './scooter.js',
   './manifest.json'
 ];
 

@@ -16,9 +16,9 @@
 </script>
 <style>
 :root{--bg:#f2f2f7;--text:#1c1c1e;--text-dim:#8e8e93;--card-bg:rgba(255,255,255,.92);--card-border:rgba(255,255,255,.5);--panel-bg:#fff;--subtle-bg:#f8f8fc;--subtle-bg-2:#f0f0f5;--divider:#e5e5ea;--accent:#007aff;--good:#2e7d32;--bad:#c62828;
---work-bg:#e8f5e9;--work-text:#2e7d32;--short-bg:#fff3e0;--short-text:#e65100;--bad-bg:#ffebee}
+--work-bg:#e8f5e9;--work-text:#2e7d32;--short-bg:#fff3e0;--short-text:#e65100;--bad-bg:#ffebee;--work-border:#43a047;--help-bg:#e3f2fd;--help-border:#1e88e5;--short-border:#fb8c00;--replace-bg:#f3e5f5;--replace-border:#8e24aa;--short_replace-bg:#fff8e1;--short_replace-border:#f9a825;--weekend-bg:#f5f5f5;--weekend-border:#bdbdbd}
 :root[data-theme="dark"]{--bg:#0a0a0f;--text:#f2f2f7;--card-bg:rgba(28,28,30,.95);--card-border:rgba(255,255,255,.06);--panel-bg:rgba(28,28,30,.95);--subtle-bg:#1c1c1e;--subtle-bg-2:#2c2c2e;--divider:#2c2c2e;--good:#66bb6a;--bad:#ff6b6b;
---work-bg:#1a2a1a;--work-text:#66bb6a;--short-bg:#2a1a0a;--short-text:#ffa726;--bad-bg:#2a1212}
+--work-bg:#1a2a1a;--work-text:#66bb6a;--short-bg:#2a1a0a;--short-text:#ffa726;--bad-bg:#2a1212;--work-border:#2e7d32;--help-bg:#1a2a3a;--help-border:#1565c0;--short-border:#e65100;--replace-bg:#2a1a2a;--replace-border:#7b1fa2;--short_replace-bg:#2a2a0a;--short_replace-border:#f9a825;--weekend-bg:#1c1c1e;--weekend-border:#3a3a3c}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;color:var(--text);padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(70px + env(safe-area-inset-bottom,0px));transition:background .3s}
 .container{max-width:480px;margin:0 auto;padding:12px 16px 30px;display:flex;flex-direction:column;gap:12px}
@@ -86,6 +86,28 @@ details.sub>summary{padding:10px 12px;background:var(--subtle-bg);border-radius:
 .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 1px;color:var(--text-dim);font-size:10px;font-weight:600;text-decoration:none;text-align:center;min-width:0}
 .tabbar span{font-size:19px;line-height:1}
 .tabbar .active{color:var(--accent)}
+
+.nav-btn{background:none;border:none;font-size:20px;color:var(--accent);cursor:pointer;padding:4px 10px;border-radius:8px}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:17px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dn{padding:4px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text-dim)}
+.cd{background:var(--subtle-bg);padding:3px 1px;text-align:center;border-radius:9px;cursor:pointer;min-height:66px;display:flex;flex-direction:column;justify-content:space-between;font-size:11px;border:2px solid transparent;min-width:0;overflow:hidden}
+.cd:active{transform:scale(.94)}
+.cd.empty{background:transparent;cursor:default;min-height:20px}
+.cd.today{border-color:var(--accent)!important;box-shadow:0 0 0 2px #007aff}
+.cd b{font-size:13px;line-height:1.2}
+.cd .l{font-size:7px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd .o{font-size:8px;opacity:.85;white-space:nowrap}
+.cd .t{font-size:10px;font-weight:700;color:var(--accent)}
+.cd .n{font-size:9px;font-weight:700}
+.cd.work{background:var(--work-bg);border-color:var(--work-border)}.cd.help{background:var(--help-bg);border-color:var(--help-border)}.cd.short{background:var(--short-bg);border-color:var(--short-border)}.cd.replace{background:var(--replace-bg);border-color:var(--replace-border)}.cd.short_replace{background:var(--short_replace-bg);border-color:var(--short_replace-border);border-style:dashed}.cd.weekend{background:var(--weekend-bg);border-color:var(--weekend-border)}
+.day-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.day-ov.on{display:flex}
+.day-sheet{background:var(--bg);width:100%;max-width:480px;max-height:92%;overflow-y:auto;border-radius:20px 20px 0 0;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
+.day-sheet h3{font-size:18px;margin-bottom:2px}
+.day-close{float:right;background:var(--subtle-bg-2);border:none;border-radius:50%;width:34px;height:34px;font-size:18px;color:var(--text);cursor:pointer}
+.day-sheet .analytics-card{margin-bottom:10px}
+.tag{font-size:10px;padding:1px 6px;border-radius:6px;background:var(--subtle-bg-2);color:var(--text-dim);margin-left:4px;white-space:nowrap}
 @media(max-width:400px){.container{padding:8px 10px 20px}header h1{font-size:18px}.stats-grid,.forecast-grid{grid-template-columns:1fr}.tabbar a{font-size:9px}.tabbar span{font-size:17px}}
 </style>
 </head>
@@ -119,6 +141,10 @@ details.sub>summary{padding:10px 12px;background:var(--subtle-bg);border-radius:
   </div>
 </div>
 
+<details class="acc" id="calSection" open><summary><span>📆 Календарь по дням</span></summary>
+  <div class="acc-body"><div class="hint">Нажмите на число — откроется вся статистика за этот день.</div><div id="calContent"></div></div>
+</details>
+
 <details class="acc" id="statsSection" open><summary><span>📊 Статистика</span></summary>
   <div class="acc-body">
     <div id="statsBlocks"></div>
@@ -145,6 +171,8 @@ details.sub>summary{padding:10px 12px;background:var(--subtle-bg);border-radius:
 <a href="plan.html"><span>📋</span>План</a>
 <a href="settings.html"><span>⚙</span>Настройки</a>
 </div></nav>
+
+<div class="day-ov" id="dayOv" onclick="if(event.target===this)closeDay()"><div class="day-sheet" id="daySheet"></div></div>
 
 <script src="./core.js"></script>
 <script>
@@ -277,7 +305,7 @@ function quickRange(q) {
 function refreshAll() {
     _cats = null; Core.reset();
     buildRangeSelects();
-    updateTotals(); renderForecast();
+    updateTotals(); renderForecast(); renderCalendar();
     if ($("cashSection").open) renderCash();
     if ($("analytics").open) renderAnalytics();
 }
@@ -650,6 +678,135 @@ function renderCash() {
     const fuelByMonth = keys.map(k => Math.round(fuelForPeriod(d => (d || "").slice(0, 7) === k).sum));
     drawBars("chartFuelMonthly", { labels: lbl, series: [{ values: fuelByMonth, color: "#ff9500", color2: "#ffb84d" }] });
 }
+
+
+// ============================================================
+//  КАЛЕНДАРЬ ПО ДНЯМ + статистика дня
+// ============================================================
+let calDate = new Date();
+const sgn = v => (v > 0 ? "+" : "") + Math.round(v);
+const scard = (label, val, sub = "", color = "#007aff", cls = "") => `<div class="stat-card" style="border-left-color:${color}"><span class="stat-label">${label}</span><span class="stat-value ${cls}">${val}</span>${sub ? `<span class="stat-sub">${sub}</span>` : ""}</div>`;
+const lrow = (l, r) => `<div class="top-row"><span>${l}</span><span>${r}</span></div>`;
+const money = v => (+v).toFixed(2);
+function calMove(dir) { calDate = new Date(calDate.getFullYear(), calDate.getMonth() + dir, 1); renderCalendar(); }
+function groupOps() { const g = {}; cashOps().forEach(o => { (g[o.date] = g[o.date] || []).push(o); }); return g; }
+function dayFig(rec, ops) {
+    const tips = sum(ops.filter(o => o.kind === "tips"), o => o.amount);
+    const other = sum(ops.filter(isOtherIncome), o => o.amount);
+    const exp = sum(ops.filter(isRealExpense), o => Math.abs(o.amount));
+    const total = rec ? rec.total : 0;
+    return { tips, other, exp, total, net: netIncome(total, tips, other, exp) };
+}
+function renderCalendar() {
+    const c = $("calContent"); if (!c) return;
+    const y = calDate.getFullYear(), m = calDate.getMonth();
+    const first = (new Date(y, m, 1).getDay() + 6) % 7, last = new Date(y, m + 1, 0).getDate();
+    const hist = new Map(getHistory().map(d => [d.date, d])), G = groupOps(), today = getLocalDateStr();
+    let html = `<div class="cal-head"><button class="nav-btn" onclick="calMove(-1)">◀</button><b>${MONTHS[m]} ${y}</b><button class="nav-btn" onclick="calMove(1)">▶</button></div><div class="cal">` +
+        ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(n => `<div class="cal-dn">${n}</div>`).join("") + '<div class="cd empty"></div>'.repeat(first);
+    let tSal = 0, tNet = 0, tExp = 0, tTips = 0, tOrd = 0, tDays = 0;
+    for (let d = 1; d <= last; d++) {
+        const ds = `${y}-${pad(m + 1)}-${pad(d)}`, rec = hist.get(ds), ops = G[ds] || [], f = dayFig(rec, ops);
+        const t = rec ? (DAY_TYPES[rec.dayType] ? rec.dayType : "work") : "";
+        const orders = rec ? rec.nightOrders + rec.apOrders : 0;
+        tSal += f.total; tNet += f.net; tExp += f.exp; tTips += f.tips; tOrd += orders; if (orders > 0) tDays++;
+        const has = orders > 0 || f.exp || f.tips || f.other;
+        html += `<div class="cd${t ? " " + t : ""}${ds === today ? " today" : ""}" data-date="${ds}" onclick="openDay(this.dataset.date)"><b>${d}</b>` +
+            (t ? `<div class="l">${DAY_TYPES[t].short}</div>` : "<div class=\"l\">&nbsp;</div>") +
+            `<div class="o">${orders ? `🌙${rec.nightOrders} 📦${rec.apOrders}` : "—"}</div>` +
+            `<div class="t">${f.total > 0 ? f.total : "&nbsp;"}</div>` +
+            `<div class="n ${f.net >= 0 ? "pos" : "neg"}">${has ? sgn(f.net) : "&nbsp;"}</div></div>`;
+    }
+    html += `</div><div class="box" style="margin-top:10px;font-size:12px">За месяц: заказов <b>${tOrd}</b> · раб. дней <b>${tDays}</b> · зарплата <b>${tSal}</b> · чаевые <b>${Math.round(tTips)}</b> · расходы <b>${Math.round(tExp)}</b> · чистый <b class="${tNet >= 0 ? "pos" : "neg"}">${sgn(tNet)}</b><br><span style="color:var(--text-dim)">В ячейке: синее — зарплата за день, зелёное/красное — чистый доход дня.</span></div>`;
+    c.innerHTML = html;
+}
+function closeDay() { $("dayOv").classList.remove("on"); document.body.style.overflow = ""; }
+function openDay(ds) {
+    const DOWN = ["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
+    const hist = getHistory(), rec = hist.find(d => d.date === ds) || null;
+    const all = cashOps(), ops = all.filter(o => o.date === ds);
+    const night = rec ? rec.nightOrders : 0, ap = rec ? rec.apOrders : 0, orders = night + ap, income = rec ? rec.total : 0;
+    const tips = sum(ops.filter(o => o.kind === "tips"), o => o.amount);
+    const other = sum(ops.filter(isOtherIncome), o => o.amount);
+    const real = ops.filter(isRealExpense);
+    const exp = sum(real, o => Math.abs(o.amount));
+    const fuelM = sum(real.filter(o => o.kind === "fuel"), o => Math.abs(o.amount));
+    const svcM = sum(real.filter(o => o.kind === "scooter"), o => Math.abs(o.amount));
+    const otherExp = sum(real.filter(o => o.kind === "expense"), o => Math.abs(o.amount));
+    const exclM = sum(ops.filter(o => Core.isExpenseRaw(o) && Core.isExcluded(o.cat)), o => Math.abs(o.amount));
+    const net = netIncome(income, tips, other, exp);
+    const per = (v, n) => n > 0 ? v / n : 0;
+    const eff = income > 0 ? (income - exp) / income * 100 : 0;
+    const fl = fuelEntries().filter(e => e.date === ds), liters = sum(fl, e => e.liters);
+    const km = sum(kmLog().filter(e => e.date === ds), e => e.km);
+    const odo = ((LS("mileageData", {}) || {}).history || []).filter(h => h && normDate(h.date) === ds).map(h => h.km);
+    const log = arr("ordersLog").filter(e => normDate(e.date) === ds);
+    const fin = LS("fin", null), known = new Set(ops.map(o => String(o.id)));
+    const finOther = fin && Array.isArray(fin.istorija) ? fin.istorija.filter(z => z && normDate(z.data) === ds && !known.has("fin" + z.id)) : [];
+
+    // контекст месяца
+    const mk = ds.slice(0, 7), md = hist.filter(d => d.date.slice(0, 7) === mk && d.nightOrders + d.apOrders > 0);
+    const avgInc = md.length ? sum(md, d => d.total) / md.length : 0, avgOrd = md.length ? sum(md, d => d.nightOrders + d.apOrders) / md.length : 0;
+    const rank = orders > 0 ? md.slice().sort((a, b) => b.total - a.total).findIndex(d => d.date === ds) + 1 : 0;
+    const G = groupOps(); let cumSal = 0, cumNet = 0;
+    hist.filter(d => d.date.slice(0, 7) === mk && d.date <= ds).forEach(d => { const f = dayFig(d, G[d.date] || []); cumSal += f.total; cumNet += f.net; });
+    Object.keys(G).filter(k => k.slice(0, 7) === mk && k <= ds && !hist.some(d => d.date === k)).forEach(k => { cumNet += dayFig(null, G[k]).net; });
+
+    const t = rec ? (DAY_TYPES[rec.dayType] ? rec.dayType : "work") : "";
+    const wd = DOWN[new Date(ds + "T12:00:00").getDay()];
+    const opRow = o => {
+        const tag = o.kind === "tips" ? "💵" : o.kind === "fuel" ? "⛽" : o.kind === "scooter" ? "🛵" : o.kind === "income" ? "➕" : o.kind === "transfer" ? "🔁 не доход" : o.kind === "debt" ? "🤝 долг" : "";
+        const ex = isRealExpenseRaw(o) && Core.isExcluded(o.cat) ? '<span class="tag">⛔ исключено</span>' : "";
+        const colour = o.amount < 0 ? "neg" : "pos";
+        return lrow(`${esc(o.cat)}${o.comment ? ` <small style="color:var(--text-dim)">${esc(o.comment)}</small>` : ""} ${tag && o.kind !== "expense" ? `<span class="tag">${tag}</span>` : ""}${ex}`, `<b class="${colour}">${o.amount < 0 ? "−" : "+"}${money(Math.abs(o.amount))}</b>`);
+    };
+    const sec = (title, body) => `<div class="analytics-card"><h4>${title}</h4>${body}</div>`;
+    const grid = cards => `<div class="stats-grid" style="padding:0">${cards.join("")}</div>`;
+    let h = `<button class="day-close" onclick="closeDay()">✕</button><h3>${ds.split("-").reverse().join(".")}</h3><div class="hint">${wd}${t ? " · " + DAY_TYPES[t].icon + " " + DAY_TYPES[t].short : " · нет записи в учёте"}${rec && rec.generated ? " (авто)" : ""}${rec && rec.note ? "<br>📝 " + esc(rec.note) : ""}</div>`;
+
+    h += sec("🏁 Итог дня", grid([
+        scard("💰 Чистый доход", money(net) + " лей", "зарплата + чаевые + прочий приход − расходы", "#007aff", net >= 0 ? "pos" : "neg"),
+        scard("💼 Зарплата", income + " лей", `${orders} заказов`, "#34c759"),
+        scard("💵 Чаевые", money(tips) + " лей", `${ops.filter(o => o.kind === "tips").length} операций`, "#34c759"),
+        scard("➕ Прочий приход", money(other) + " лей", "без переводов и долгов", "#34c759"),
+        scard("💸 Расходы", money(exp) + " лей", `${real.length} операций`, "#ff3b30", exp ? "neg" : ""),
+        scard("📊 КПД", eff.toFixed(1) + "%", "(зарплата − расходы) / зарплата", eff >= 60 ? "#34c759" : eff >= 40 ? "#ff9500" : "#ff3b30")
+    ]));
+    h += sec("📦 Заказы", grid([
+        scard("🌙 Ночные", night, orders ? (night / orders * 100).toFixed(0) + "%" : "—", "#007aff"),
+        scard("📦 Единые", ap, orders ? (ap / orders * 100).toFixed(0) + "%" : "—", "#ff9500"),
+        scard("Ходок всего", orders, "", "#8e8e93"),
+        scard("💼 Доход на заказ", money(per(income, orders)) + " лей", "", "#34c759"),
+        scard("💎 Чистый на заказ", money(per(net, orders)) + " лей", "", "#007aff", per(net, orders) >= 0 ? "pos" : "neg"),
+        scard("💸 Расход на заказ", money(per(exp, orders)) + " лей", `ROI ${exp > 0 ? (income / exp).toFixed(2) : 0}x`, "#ff3b30")
+    ]));
+    h += sec("🛵 Скутер", grid([
+        scard("🛵 Всего на скутер", money(fuelM + svcM) + " лей", "топливо + сервис", "#ff9500"),
+        scard("⛽ Топливо", money(fuelM) + " лей", `${liters ? liters.toFixed(2) + " л" : "—"}${fl.length ? " · " + fl.length + " запр." : ""}`, "#ff9500"),
+        scard("🧼 Мойка / сервис / расходники", money(svcM) + " лей", "", "#af52de"),
+        scard("📏 Пробег за день", +km.toFixed(1) + " км", odo.length ? "одометр: " + odo.join(", ") : "", "#8e8e93"),
+        scard("💰 Стоимость 1 км", km > 0 ? money((fuelM + svcM) / km) + " лей" : "—", km > 0 ? (fuelM + svcM) / km * 100 > 0 ? money((fuelM + svcM) / km * 100) + " лей/100км" : "" : "нет км", "#af52de"),
+        scard("⛽ Расход", km > 0 && liters > 0 ? (liters / km * 100).toFixed(2) + " л/100км" : "—", km > 0 && liters > 0 ? "" : "нужны литры и км за день", "#ff9500")
+    ]) + (fl.length ? fl.map(e => lrow(`⛽ ${e.liters.toFixed(2)} л × ${(+e.price || 0).toFixed(2)}${e.wallet ? ` <small style="color:var(--text-dim)">${esc(e.wallet)}</small>` : ""}`, `<b>${money(e.amount)}</b>`)).join("") : ""));
+    h += sec("🧾 Расходы по категориям", (() => {
+        const cats = {}; ops.filter(Core.isExpenseRaw).forEach(o => { const c = cats[o.cat] = cats[o.cat] || { t: 0, n: 0 }; c.t += Math.abs(o.amount); c.n++; });
+        const rows = Object.entries(cats).sort((a, b) => b[1].t - a[1].t).map(([n, v]) => lrow(`${esc(n)} <small style="color:var(--text-dim)">${v.n} оп.</small>${Core.isExcluded(n) ? '<span class="tag">⛔ исключено</span>' : ""}`, `<b>${money(v.t)}</b>`)).join("");
+        return (rows || empty("Трат нет")) + (exclM ? `<div class="hint" style="margin-top:6px">Исключено из расчёта: ${money(exclM)} лей</div>` : "") + (otherExp ? `<div class="hint">Прочие расходы (не скутер): ${money(otherExp)} лей</div>` : "");
+    })());
+    h += sec(`📒 Все операции дня (${ops.length})`, ops.length ? ops.map(opRow).join("") : empty("Операций нет"));
+    if (finOther.length) h += sec(`🔁 Другие движения в «Финансах» (${finOther.length})`, `<div class="hint">Не входят в доход и расходы: переводы, корректировки, долги, платежи по кредитам и картам.</div>` +
+        finOther.map(z => lrow(`${esc(z.tip)} ${esc(z.kat || (z.kuda ? "→ " + z.kuda : ""))} <small style="color:var(--text-dim)">${esc(z.koshel || "")}${z.zametka ? " · " + esc(z.zametka) : ""}</small>`, `<b>${money(z.summa)}</b>`)).join(""));
+    h += sec(`🕐 Лог заказов (${log.length})`, log.length ? log.map(e => lrow(`🕐 ${esc(e.time)}`, `<b>${e.addedNight ? (e.addedNight > 0 ? "+" : "") + e.addedNight + "🌙 " : ""}${e.addedAp ? (e.addedAp > 0 ? "+" : "") + e.addedAp + "📦" : ""}</b>`)).join("") : empty("Записей нет"));
+    h += sec("📈 Сравнение с месяцем", orders > 0 ? lrow("Доход дня / средний рабочий день", `<b>${income}</b> / ${Math.round(avgInc)} <span class="${income >= avgInc ? "pos" : "neg"}">(${sgn(income - avgInc)})</span>`) +
+        lrow("Ходок дня / среднее", `<b>${orders}</b> / ${avgOrd.toFixed(1)}`) +
+        lrow("Место по доходу в месяце", `<b>${rank}</b> из ${md.length}`) +
+        lrow("Нарастающим итогом: зарплата / чистый", `<b>${cumSal}</b> / <b class="${cumNet >= 0 ? "pos" : "neg"}">${sgn(cumNet)}</b>`) :
+        lrow("Нарастающим итогом: зарплата / чистый", `<b>${cumSal}</b> / <b class="${cumNet >= 0 ? "pos" : "neg"}">${sgn(cumNet)}</b>`));
+    $("daySheet").innerHTML = h;
+    $("daySheet").scrollTop = 0;
+    $("dayOv").classList.add("on"); document.body.style.overflow = "hidden";
+}
+const isRealExpenseRaw = o => Core.isExpenseRaw(o);
 
 // ============================================================
 //  ЗАПУСК

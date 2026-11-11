@@ -198,7 +198,38 @@ const rawDate = o => normDate(o.date ?? o.timestamp ?? o.ts ?? o.createdAt ?? o.
 const arr = k => { const v = LS(k, []); return Array.isArray(v) ? v.filter(x => x && typeof x === "object") : []; };
 const getHistory = () => arr("courierData").map(d => ({ ...d, date: rawDate(d), total: num(d.total), nightOrders: num(d.nightOrders), apOrders: num(d.apOrders) })).filter(d => d.date)
     .sort((a, b) => a.date.localeCompare(b.date));
-const cashOps = () => arr("cashOperations").map(o => ({ ...o, amount: num(o.amount), date: rawDate(o) }));
+// Касса + операции из «Финансов» (localStorage["fin"].istorija).
+// Если за день в кассе уже есть записи — день считается кассой (чтобы не удвоить зеркальные записи).
+let _ops = null;
+function finOps() {
+    const f = LS("fin", null);
+    if (!f || !Array.isArray(f.istorija)) return [];
+    const out = [];
+    f.istorija.forEach(z => {
+        if (!z || typeof z !== "object") return;
+        const date = normDate(z.data); if (!date) return;
+        const s = Math.abs(num(z.summa)); if (!(s > 0)) return;
+        const v = z.baz != null ? Math.abs(num(z.baz)) : s; // в леях
+        const kat = String(z.kat || "Без категории");
+        let type = null, amount = 0;
+        if (z.tip === "Трата" || (z.tip === "Кредитка" && z.napr === "покупка")) { type = "fin:" + kat; amount = -v; }
+        else if (z.tip === "Доход") {
+            if (kat === "Чаевые") { type = "tips"; amount = v; }
+            else if (!/зарплат|начальн/i.test(kat)) { type = "fin:" + kat; amount = v; }
+        }
+        if (type) out.push({ id: "fin" + z.id, date, type, amount, comment: z.zametka || "", src: "fin" });
+    });
+    return out;
+}
+function cashOps() {
+    if (_ops) return _ops;
+    const base = arr("cashOperations").map(o => ({ ...o, amount: num(o.amount), date: rawDate(o) }));
+    const days = new Set(base.map(o => o.date));
+    return (_ops = base.concat(finOps().filter(o => !days.has(o.date))));
+}
+// переводы между своими счетами, начальные остатки и сверки — не доход
+const isTransferOp = o => o.type === "start" || /перевод|сверк|начальн/i.test(catName(o.type));
+const isOtherIncome = o => o.amount > 0 && o.type !== "tips" && !DEBT_TYPES.includes(o.type) && !isTransferOp(o);
 const kmLog = () => arr("dailyKmLog").map(e => ({ ...e, km: num(e.km), date: rawDate(e) }));
 const fuelEntries = () => arr("fuelLog").map(e => ({ ...e, amount: Math.abs(num(e.amount)), liters: num(e.liters), date: rawDate(e) }));
 const DEBT_TYPES = ["debt_taken", "debt_given", "debt_repaid", "debt_returned"];
@@ -209,10 +240,12 @@ const getCats = () => _cats || (_cats = arr("cashCategories"));
 function isFuelOp(op) {
     if (op.amount >= 0) return false;
     if (op.type === "fuel_quick") return true;
+    if (String(op.type).startsWith("fin:")) return /топлив/i.test(op.type);
     const c = getCats().find(c => c.id === op.type);
     return !!c && /топлив/i.test(c.name);
 }
 const catName = id => {
+    if (String(id).startsWith("fin:")) return id.slice(4);
     const c = getCats().find(c => c.id === id);
     if (c) return c.name;
     const SYS = { tips: "💵 Чаевые", debt_taken: "📥 Взял в долг", debt_given: "📤 Дал в долг", debt_repaid: "✅ Вернул долг", debt_returned: "✅ Мне вернули", fuel_quick: "⛽ Топливо" };
@@ -275,7 +308,7 @@ function quickRange(q) {
     refreshAll();
 }
 function refreshAll() {
-    _cats = null;
+    _cats = null; _ops = null;
     buildRangeSelects();
     updateTotals(); renderForecast();
     if ($("cashSection").open) renderCash();
@@ -354,7 +387,7 @@ function updateTotals() {
     function breakdownFor(pred) {
         const ops = ops_all.filter(o => pred(o.date));
         const tips = sum(ops.filter(o => o.type === "tips"), o => o.amount);
-        const otherInc = sum(ops.filter(o => o.amount > 0 && o.type !== "tips" && !DEBT_TYPES.includes(o.type)), o => o.amount);
+        const otherInc = sum(ops.filter(isOtherIncome), o => o.amount);
         const expenses = sum(ops.filter(isRealExpense), o => Math.abs(o.amount));
         return { tips, otherInc, expenses };
     }
@@ -597,7 +630,7 @@ function renderCash() {
     const coffeeLunch = real.filter(o => catIs(o, /кофе|обед|еда/i)), washCons = real.filter(o => catIs(o, /мойк|расходник/i));
     const expenses = sum(real, o => Math.abs(o.amount));
     const tips = sum(ops.filter(o => o.type === "tips"), o => o.amount);
-    const otherInc = sum(ops.filter(o => o.amount > 0 && o.type !== "tips" && !DEBT_TYPES.includes(o.type)), o => o.amount);
+    const otherInc = sum(ops.filter(isOtherIncome), o => o.amount);
     const salary = sum(getHistory().filter(d => inRange(d.date)), d => d.total);
     const net = netIncome(salary, tips, otherInc, expenses);
 

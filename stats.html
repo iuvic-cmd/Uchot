@@ -146,7 +146,9 @@ details.sub>summary{padding:10px 12px;background:var(--subtle-bg);border-radius:
 <a href="settings.html"><span>⚙</span>Настройки</a>
 </div></nav>
 
+<script src="./core.js"></script>
 <script>
+if (typeof Core === "undefined") { document.body.innerHTML = "<p style='padding:24px;font:16px sans-serif'>Не найден core.js. Положите его рядом со stats.html.</p>"; throw new Error("core.js missing"); }
 // ============================================================
 //  «СТАТИСТИКА» — только чтение из localStorage, без облака.
 //  Читает: courierData, cashOperations, cashCategories, fuelLog,
@@ -198,52 +200,17 @@ const rawDate = o => normDate(o.date ?? o.timestamp ?? o.ts ?? o.createdAt ?? o.
 const arr = k => { const v = LS(k, []); return Array.isArray(v) ? v.filter(x => x && typeof x === "object") : []; };
 const getHistory = () => arr("courierData").map(d => ({ ...d, date: rawDate(d), total: num(d.total), nightOrders: num(d.nightOrders), apOrders: num(d.apOrders) })).filter(d => d.date)
     .sort((a, b) => a.date.localeCompare(b.date));
-// Касса + операции из «Финансов» (localStorage["fin"].istorija).
-// Если за день в кассе уже есть записи — день считается кассой (чтобы не удвоить зеркальные записи).
-let _ops = null;
-function finOps() {
-    const f = LS("fin", null);
-    if (!f || !Array.isArray(f.istorija)) return [];
-    const out = [];
-    f.istorija.forEach(z => {
-        if (!z || typeof z !== "object") return;
-        const date = normDate(z.data); if (!date) return;
-        const s = Math.abs(num(z.summa)); if (!(s > 0)) return;
-        const v = z.baz != null ? Math.abs(num(z.baz)) : s; // в леях
-        const kat = String(z.kat || "Без категории");
-        let type = null, amount = 0;
-        if (z.tip === "Трата" || (z.tip === "Кредитка" && z.napr === "покупка")) { type = "fin:" + kat; amount = -v; }
-        else if (z.tip === "Доход") {
-            if (kat === "Чаевые") { type = "tips"; amount = v; }
-            else if (!/зарплат|начальн/i.test(kat)) { type = "fin:" + kat; amount = v; }
-        }
-        if (type) out.push({ id: "fin" + z.id, date, type, amount, comment: z.zametka || "", src: "fin" });
-    });
-    return out;
-}
-function cashOps() {
-    if (_ops) return _ops;
-    const base = arr("cashOperations").map(o => ({ ...o, amount: num(o.amount), date: rawDate(o) }));
-    const days = new Set(base.map(o => o.date));
-    return (_ops = base.concat(finOps().filter(o => !days.has(o.date))));
-}
-// переводы между своими счетами, начальные остатки и сверки — не доход
-const isTransferOp = o => o.type === "start" || /перевод|сверк|начальн/i.test(catName(o.type));
-const isOtherIncome = o => o.amount > 0 && o.type !== "tips" && !DEBT_TYPES.includes(o.type) && !isTransferOp(o);
+// Единый журнал операций — в core.js (fin.istorija + старая касса до первой записи «Финансов»)
+const cashOps = () => Core.ops();
+const isOtherIncome = o => o.kind === "income";
 const kmLog = () => arr("dailyKmLog").map(e => ({ ...e, km: num(e.km), date: rawDate(e) }));
 const fuelEntries = () => arr("fuelLog").map(e => ({ ...e, amount: Math.abs(num(e.amount)), liters: num(e.liters), date: rawDate(e) }));
 const DEBT_TYPES = ["debt_taken", "debt_given", "debt_repaid", "debt_returned"];
-const isRealExpense = op => op.amount < 0 && !DEBT_TYPES.includes(op.type);
+const isRealExpense = o => Core.isExpense(o);
 
 let _cats = null; // кэш категорий (сбрасывается в refreshAll)
 const getCats = () => _cats || (_cats = arr("cashCategories"));
-function isFuelOp(op) {
-    if (op.amount >= 0) return false;
-    if (op.type === "fuel_quick") return true;
-    if (String(op.type).startsWith("fin:")) return /топлив/i.test(op.type);
-    const c = getCats().find(c => c.id === op.type);
-    return !!c && /топлив/i.test(c.name);
-}
+const isFuelOp = o => o.kind === "fuel";
 const catName = id => {
     if (String(id).startsWith("fin:")) return id.slice(4);
     const c = getCats().find(c => c.id === id);
@@ -308,7 +275,7 @@ function quickRange(q) {
     refreshAll();
 }
 function refreshAll() {
-    _cats = null; _ops = null;
+    _cats = null; Core.reset();
     buildRangeSelects();
     updateTotals(); renderForecast();
     if ($("cashSection").open) renderCash();
@@ -323,47 +290,39 @@ function netIncome(inc, tips, otherInc, expenses) {
 }
 
 // ============================================================
-//  ТОПЛИВО: fuelLog; для месяцев без записей в журнале — из cashOperations
+//  ТОПЛИВО: деньги — из журнала операций, литры — из fuelLog
 // ============================================================
 function fuelForPeriod(pred) {
-    const log = fuelEntries();
-    const logMonths = new Set(log.map(e => e.date.slice(0, 7)));
-    const fromLog = log.filter(e => pred(e.date));
-    const fromCash = cashOps().filter(o => isFuelOp(o) && pred(o.date) && !logMonths.has(o.date.slice(0, 7)));
-    let liters = sum(fromLog, e => e.liters);
-    fromCash.forEach(o => {
-        const m = String(o.comment || "").replace(",", ".").match(/(\d+(?:\.\d+)?)\s*[*xх×]\s*(\d+(?:\.\d+)?)/i);
-        if (m) liters += +m[1];
-    });
-    return {
-        sum: sum(fromLog, e => e.amount) + sum(fromCash, o => Math.abs(o.amount)),
-        liters,
-        count: fromLog.length + fromCash.length,
-        source: fromCash.length ? (fromLog.length ? "mixed" : "cashOperations") : "fuelLog"
-    };
+    const fo = cashOps().filter(o => o.kind === "fuel" && o.amount < 0 && pred(o.date));
+    const liters = sum(fuelEntries().filter(e => pred(e.date)), e => e.liters);
+    return { sum: sum(fo, o => Math.abs(o.amount)), liters, count: fo.length, source: "ledger" };
 }
 
 // ============================================================
 //  СТАТИСТИКА
 // ============================================================
+// расходы на скутер кроме топлива: сервис, мойка, расходники (одинаково с cash.html через Core)
+function scooterOther(pred) {
+    return sum(cashOps().filter(o => o.kind === "scooter" && o.amount < 0 && pred(o.date)), o => Math.abs(o.amount));
+}
 const STAT_BLOCKS = [
     { cls: "stat-today", title: "📅 СЕГОДНЯ", cards: [
         ["total", "💼 Зарплата (по заказам)", "лей"], ["todayNight", "🌙 Ночной"], ["todayAp", "📦 Единый"], ["todayTrips", "Ходок"],
-        ["todayScooterExpense", "🛵 Расходы скутер", "лей", 1],
+        ["todayScooterExpense", "🛵 Расходы скутер (топливо + сервис)", "лей", 1],
         ["todayWalletExpense", "💸 Расходы за день", "лей", 1, "bad"],
         ["todayWalletDetail", "🧾 Из них", "", 1],
         ["todayCashTips", "💵 Чаевые сегодня", "лей", 1, "good"],
         ["todayNetIncome", "💰 Чистый доход (зарплата + чаевые + прочий приход − расходы)", "лей", 1, "accent"]] },
     { cls: "stat-month", title: `🗓 <span id="monthStatsLabel">—</span>`, cards: [
         ["monthlyIncome", "💼 Зарплата (по заказам)", "лей"], ["monthNight", "🌙 Ночной"], ["monthAp", "📦 Единый"], ["monthTrips", "Ходок"],
-        ["monthScooterExpense", "🛵 Расходы скутер", "лей", 1],
+        ["monthScooterExpense", "🛵 Расходы скутер (топливо + сервис)", "лей", 1],
         ["monthWalletExpense", "💸 Расходы за период", "лей", 1, "bad"],
         ["monthWalletDetail", "🧾 Из них", "", 1],
         ["monthNetIncome", "💰 Чистый доход (зарплата + чаевые + прочий приход − расходы)", "лей", 1, "good"],
         ["monthAvgDay", "Ср. в день", "лей", 1]] },
     { cls: "stat-all", title: "🌍 ЗА ВСЁ ВРЕМЯ", cards: [
         ["allTotal", "💼 Зарплата (по заказам)", "лей"], ["allAp", "📦 Единый"], ["allNight", "🌙 Ночных", "", 1],
-        ["allScooterExpense", "🛵 Расходы скутер (всего)", "лей", 1],
+        ["allScooterExpense", "🛵 Расходы скутер (топливо + сервис, всего)", "лей", 1],
         ["allNetIncome", "💰 Чистый доход (зарплата + чаевые + прочий приход − расходы)", "лей", 1, "good"]] }
 ];
 function buildStats() {
@@ -398,6 +357,9 @@ function updateTotals() {
     const todayFuel = fuelForPeriod(d => d === today).sum;
     const monthFuel = fuelForPeriod(d => inRange(d)).sum;
     const allFuel   = fuelForPeriod(() => true).sum;
+    const todayScooter = todayFuel + scooterOther(d => d === today);
+    const monthScooter = monthFuel + scooterOther(d => inRange(d));
+    const allScooter   = allFuel + scooterOther(() => true);
 
     const netToday = netIncome(T.total, todayB.tips, todayB.otherInc, todayB.expenses);
     const netMonth = netIncome(M.income, monthB.tips, monthB.otherInc, monthB.expenses);
@@ -416,14 +378,14 @@ function updateTotals() {
         monthWalletExpense: monthB.expenses.toFixed(2),
         monthWalletDetail: wDetail(monthReal),
         total: T.total, todayNight: T.night, todayAp: T.ap, todayTrips: T.night + T.ap,
-        todayScooterExpense: todayFuel.toFixed(2), todayCashTips: todayB.tips.toFixed(2),
+        todayScooterExpense: todayScooter.toFixed(2), todayCashTips: todayB.tips.toFixed(2),
         todayNetIncome: netToday.toFixed(2),
         monthStatsLabel: rangeLabel(),
         monthlyIncome: M.income, monthNight: M.night, monthAp: M.ap, monthTrips: M.night + M.ap,
-        monthScooterExpense: monthFuel.toFixed(2), monthNetIncome: netMonth.toFixed(2),
+        monthScooterExpense: monthScooter.toFixed(2), monthNetIncome: netMonth.toFixed(2),
         monthAvgDay: M.days ? Math.round(M.income / M.days) : 0,
         allTotal: A.total, allAp: A.ap, allNight: A.night,
-        allScooterExpense: allFuel.toFixed(2),
+        allScooterExpense: allScooter.toFixed(2),
         allNetIncome: netAll.toFixed(2)
     });
     const counter = $("monthlyCounter");
@@ -622,6 +584,7 @@ function drawPie(id, segs) {
 // ============================================================
 //  КАССА И СКУТЕР (только из localStorage)
 // ============================================================
+function toggleExcl(n) { Core.toggleExcl(n); refreshAll(); }
 function renderCash() {
     const c = $("cashContent"); if (!c) return;
     const keys = monthKeys(), all = cashOps();
@@ -635,30 +598,26 @@ function renderCash() {
     const net = netIncome(salary, tips, otherInc, expenses);
 
     const fuelPeriod = fuelForPeriod(d => inRange(d));
-    const liters = fuelPeriod.liters, fcost = fuelPeriod.sum;
+    const liters = fuelPeriod.liters, fcost = fuelPeriod.sum, scoOther = scooterOther(d => inRange(d));
     const km = sum(kmLog().filter(e => inRange(e.date)), e => +e.km || 0);
     const cons = km > 0 ? liters / km * 100 : 0, perKm = km > 0 ? fcost / km : 0;
 
-    // Долги — за всё время, только из cashOperations
-    const given = sum(all.filter(o => o.type === "debt_given"), o => Math.abs(o.amount));
-    const returned = sum(all.filter(o => o.type === "debt_returned"), o => Math.abs(o.amount));
-    const taken = sum(all.filter(o => o.type === "debt_taken"), o => Math.abs(o.amount));
-    const repaid = sum(all.filter(o => o.type === "debt_repaid"), o => Math.abs(o.amount));
-    const owedToMe = Math.max(given - returned, 0), iOwe = Math.max(taken - repaid, 0);
+    // Долги — за всё время, из раздела «Долги» в «Финансах»
+    const { owedToMe, iOwe } = Core.debts();
     const curKm = +(LS("mileageData", {}) || {}).currentKm || 0;
     const left = d => d && typeof d === "object" ? Math.max((+d.interval || 0) - (curKm - (+d.mileage || 0)), 0) : null;
     const oil = left(LS("oilData", null)), filt = left(LS("filterData", null));
 
     const card = (label, val, sub, color, cls = "") => `<div class="stat-card" style="border-left-color:${color}"><span class="stat-label">${label}</span><span class="stat-value ${cls}">${val}</span><span class="stat-sub">${sub}</span></div>`;
     const cats = {};
-    real.forEach(o => { const n = catName(o.type); (cats[n] = cats[n] || { t: 0, n: 0 }); cats[n].t += Math.abs(o.amount); cats[n].n++; });
-    const catRows = Object.entries(cats).sort((a, b) => b[1].t - a[1].t).map(([n, v]) =>
-        `<div class="top-row"><span>${esc(n)} <small style="color:var(--text-dim)">${v.n} оп.</small></span><span><b>${v.t.toFixed(2)}</b> · ${expenses ? (v.t / expenses * 100).toFixed(0) : 0}%</span></div>`).join("");
+    ops.filter(Core.isExpenseRaw).forEach(o => { const n = o.cat; (cats[n] = cats[n] || { t: 0, n: 0 }); cats[n].t += Math.abs(o.amount); cats[n].n++; });
+    const catRows = Object.entries(cats).sort((a, b) => b[1].t - a[1].t).map(([n, v]) => {
+        const ex = Core.isExcluded(n);
+        return `<div class="top-row" style="cursor:pointer${ex ? ";opacity:.45;text-decoration:line-through" : ""}" data-cat="${esc(n)}" onclick="toggleExcl(this.dataset.cat)"><span>${esc(n)} <small style="color:var(--text-dim)">${v.n} оп.</small></span><span><b>${v.t.toFixed(2)}</b>${ex ? "" : " · " + (expenses ? (v.t / expenses * 100).toFixed(0) : 0) + "%"}</span></div>`;
+    }).join("");
     const chart = (title, id) => `<div class="analytics-card" style="margin-top:10px"><h4>${title}</h4><div class="chart-scroll-wrap"><canvas id="${id}" data-h="160"></canvas></div></div>`;
 
-    const fuelSrcNote = fuelPeriod.source !== "fuelLog"
-        ? ` <small style="color:var(--text-dim)">(${fuelPeriod.source === "mixed" ? "частично" : "из кассы"}: журнал топлива пуст)</small>`
-        : "";
+    const fuelSrcNote = "";
 
     c.innerHTML = `<div class="hint">Период: <b>${rangeLabel()}</b></div>
       <div class="stats-grid">
@@ -666,6 +625,7 @@ function renderCash() {
         ${card("💵 Чаевые", tips.toFixed(2) + " лей", `${ops.filter(o => o.type === "tips").length} операций`, "#34c759")}
         ${card("💸 Расходы", expenses.toFixed(2) + " лей", `${real.length} операций, без долгов`, "#ff3b30")}
         ${card("⛽ Топливо", fcost.toFixed(2) + " лей" + fuelSrcNote, `${liters.toFixed(2)} л · ${fuelPeriod.count} заправок`, "#ff9500")}
+        ${card("🛵 Расходы скутер", (fcost + scoOther).toFixed(2) + " лей", `топливо ${fcost.toFixed(0)} + сервис/мойка ${scoOther.toFixed(0)}`, "#ff9500")}
         ${card("☕🍱 Кофе и обед", sum(coffeeLunch, o => Math.abs(o.amount)).toFixed(2) + " лей", `${coffeeLunch.length} операций`, "#a2845e")}
         ${card("🧼🛢 Мойка и расходники", sum(washCons, o => Math.abs(o.amount)).toFixed(2) + " лей", `${washCons.length} операций`, "#5ac8fa")}
         ${card("⛽ Цена литра (ср.)", (liters > 0 ? fcost / liters : 0).toFixed(2) + " лей", "по заправкам периода", "#ff9500")}
@@ -679,7 +639,7 @@ function renderCash() {
       </div>
       ${chart("💸 Расходы vs 💵 чаевые по месяцам", "chartCashMonthly")}
       ${chart("⛽ Топливо по месяцам", "chartFuelMonthly")}
-      <div class="analytics-card" style="margin-top:10px"><h4>📊 Расходы по категориям</h4>${catRows || empty("Нет расходов за период")}</div>`;
+      <div class="analytics-card" style="margin-top:10px"><h4>📊 Расходы по категориям</h4><div class="hint">Нажмите на категорию, чтобы исключить её из всех расчётов (например, бытовые траты). Ещё раз — вернуть.</div>${catRows || empty("Нет расходов за период")}</div>`;
 
     const inM = (list, k, f) => sum(list.filter(x => (x.date || "").slice(0, 7) === k), f);
     const lbl = keys.map(k => MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(2, 4));

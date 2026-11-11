@@ -8,6 +8,7 @@ const ASSETS = [
   './plan.html',
   './settings.html',
   './core.js',
+  './plan-safe.js',
   './scooter.js',
   './manifest.json'
 ];

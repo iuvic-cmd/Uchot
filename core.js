@@ -60,7 +60,7 @@
             if (z.tip === "Трата" || (z.tip === "Кредитка" && z.napr === "покупка")) {
                 out.push({ id: "fin" + z.id, date, type: "fin:" + kat, amount: -v, comment: z.zametka || "", cat: kat, kind: kindOf(kat, -v, ""), src: "fin" });
             } else if (z.tip === "Доход") {
-                if (kat === "Чаевые") out.push({ id: "fin" + z.id, date, type: "tips", amount: v, comment: z.zametka || "", cat: kat, kind: "tips", src: "fin" });
+                if (/чаев/i.test(kat)) out.push({ id: "fin" + z.id, date, type: "tips", amount: v, comment: z.zametka || "", cat: kat, kind: "tips", src: "fin" });
                 else if (!/зарплат|начальн/i.test(kat)) out.push({ id: "fin" + z.id, date, type: "fin:" + kat, amount: v, comment: z.zametka || "", cat: kat, kind: "income", src: "fin" });
             }
         });
@@ -76,7 +76,7 @@
         const legacy = arr("cashOperations").map(o => {
             const type = String(o.type || ""), amount = num(o.amount), date = rawDate(o);
             const cat = names[type] || SYS[type] || "❔ Без категории";
-            const kind = type === "tips" ? "tips" : DEBT.includes(type) ? "debt" : type === "start" ? "transfer" : kindOf(cat, amount, type);
+            const kind = (type === "tips" || (amount > 0 && /чаев/i.test(cat))) ? "tips" : DEBT.includes(type) ? "debt" : type === "start" ? "transfer" : kindOf(cat, amount, type);
             return { id: o.id, date, type, amount, comment: o.comment || "", cat, kind, src: "cash" };
         }).filter(o => o.date && o.date < start);
         return (_c = legacy.concat(fin));

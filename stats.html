@@ -373,7 +373,7 @@ function updateTotals() {
     // зарплата + чаевые + прочий приход − расходы (долги не считаются ни доходом, ни расходом)
     function breakdownFor(pred) {
         const ops = ops_all.filter(o => pred(o.date));
-        const tips = sum(ops.filter(o => o.type === "tips"), o => o.amount);
+        const tips = sum(ops.filter(o => o.kind === "tips"), o => o.amount);
         const otherInc = sum(ops.filter(isOtherIncome), o => o.amount);
         const expenses = sum(ops.filter(isRealExpense), o => Math.abs(o.amount));
         return { tips, otherInc, expenses };
@@ -620,7 +620,7 @@ function renderCash() {
     const catIs = (o, re) => re.test(catName(o.type));
     const coffeeLunch = real.filter(o => catIs(o, /кофе|обед|еда/i)), washCons = real.filter(o => catIs(o, /мойк|расходник/i));
     const expenses = sum(real, o => Math.abs(o.amount));
-    const tips = sum(ops.filter(o => o.type === "tips"), o => o.amount);
+    const tips = sum(ops.filter(o => o.kind === "tips"), o => o.amount);
     const otherInc = sum(ops.filter(isOtherIncome), o => o.amount);
     const salary = sum(getHistory().filter(d => inRange(d.date)), d => d.total);
     const net = netIncome(salary, tips, otherInc, expenses);
@@ -650,7 +650,7 @@ function renderCash() {
     c.innerHTML = `<div class="hint">Период: <b>${rangeLabel()}</b></div>
       <div class="stats-grid">
         ${card("💰 Чистый доход (зарплата + чаевые + прочий приход − расходы)", net.toFixed(2) + " лей", `${salary.toFixed(0)} зарплата + ${(tips + otherInc).toFixed(0)} приход − ${expenses.toFixed(0)} расход`, "#007aff", net >= 0 ? "pos" : "neg")}
-        ${card("💵 Чаевые", tips.toFixed(2) + " лей", `${ops.filter(o => o.type === "tips").length} операций`, "#34c759")}
+        ${card("💵 Чаевые", tips.toFixed(2) + " лей", `${ops.filter(o => o.kind === "tips").length} операций`, "#34c759")}
         ${card("💸 Расходы", expenses.toFixed(2) + " лей", `${real.length} операций, без долгов`, "#ff3b30")}
         ${card("⛽ Топливо", fcost.toFixed(2) + " лей" + fuelSrcNote, `${liters.toFixed(2)} л · ${fuelPeriod.count} заправок`, "#ff9500")}
         ${card("🛵 Расходы скутер", (fcost + scoOther).toFixed(2) + " лей", `топливо ${fcost.toFixed(0)} + сервис/мойка ${scoOther.toFixed(0)}`, "#ff9500")}
@@ -671,7 +671,7 @@ function renderCash() {
 
     const inM = (list, k, f) => sum(list.filter(x => (x.date || "").slice(0, 7) === k), f);
     const lbl = keys.map(k => MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(2, 4));
-    const realAll = all.filter(isRealExpense), tipsAll = all.filter(o => o.type === "tips");
+    const realAll = all.filter(isRealExpense), tipsAll = all.filter(o => o.kind === "tips");
     drawBars("chartCashMonthly", { labels: lbl, legend: ["💸 Расходы", "💵 Чаевые"], series: [
         { values: keys.map(k => Math.round(inM(realAll, k, o => Math.abs(o.amount)))), color: "#ff3b30", color2: "#ff3b30" },
         { values: keys.map(k => Math.round(inM(tipsAll, k, o => o.amount))), color: "#34c759", color2: "#34c759" }] });
